@@ -87,6 +87,16 @@ public class CrystalPlugin extends JavaPlugin {
     }
 
     /**
+     * Log warning message with throwable.
+     *
+     * @param s message
+     * @param t throwable
+     */
+    public void logWarn(@NotNull String s, @NotNull Throwable t) {
+        getSLF4JLogger().warn(s, t);
+    }
+
+    /**
      * Log warning message
      *
      * @param s message

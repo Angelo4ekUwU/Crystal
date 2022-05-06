@@ -17,13 +17,15 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class PoolManager {
+@SuppressWarnings("unused")
+public class DatabaseConnector {
 
     private final CrystalPlugin plugin;
-    private StorageType storageType = StorageType.NONE;
+    private StorageType storageType = StorageType.UNKNOWN;
     private HikariDataSource hikariDataSource = null;
+    private boolean initialized = false;
 
-    public PoolManager(CrystalPlugin plugin) {
+    public DatabaseConnector(CrystalPlugin plugin) {
         this.plugin = plugin;
     }
 
@@ -52,26 +54,42 @@ public class PoolManager {
 
             this.storageType = StorageType.SQLITE;
             this.hikariDataSource = new HikariDataSource(hikariConfig);
+            this.initialized = true;
             plugin.logDebug("Successfully loaded SQLite storage!");
         } else if (type.equalsIgnoreCase("mysql")) {
             ConfigurationSection mysqlConfig = plugin.getConfig().getConfigurationSection("storage.mysql");
             if (mysqlConfig == null)
                 throw new IllegalStateException("MySQL Settings section in the configuration not found.");
 
-            HikariConfig hikariConfig = setupConfig(
-                    mysqlConfig.getString("address"), mysqlConfig.getString("port"), mysqlConfig.getString("database"),
-                    mysqlConfig.getString("username"), mysqlConfig.getString("password"),
-                    mysqlConfig.getInt("maxPoolSize"), mysqlConfig.getInt("minimumIdle"),
-                    mysqlConfig.getLong("maxLifetime"), mysqlConfig.getLong("keepAliveTime"), mysqlConfig.getLong("connectionTimeout"));
+            String address = mysqlConfig.getString("address");
+            if (address == null)
+                throw new IllegalStateException("MySQL Address must be specified!");
 
-            ConfigurationSection properties = config.getConfigurationSection("properties");
-            if (properties != null) {
+            String port = "3306";
+            if (address.contains(":") && address.split(":").length == 2) {
+                String[] splitted = address.split(":");
+                address = splitted[0];
+                port = splitted[1];
+            }
+
+            HikariConfig hikariConfig = setupConfig(
+                    address, port, mysqlConfig.getString("database"),
+                    mysqlConfig.getString("username"), mysqlConfig.getString("password"),
+                    mysqlConfig.getInt("maxPoolSize", 6), mysqlConfig.getInt("minimumIdle", 6),
+                    mysqlConfig.getLong("maxLifetime", 1800000), mysqlConfig.getLong("keepAliveTime", 0), mysqlConfig.getLong("connectionTimeout", 5000));
+
+            if (mysqlConfig.contains("properties") && mysqlConfig.isConfigurationSection("properties")) {
+                ConfigurationSection properties = config.getConfigurationSection("properties");
                 properties.getKeys(false).forEach(key ->
-                        hikariConfig.addDataSourceProperty(key, properties.getString(key)));
+                    hikariConfig.addDataSourceProperty(key, properties.getString(key)));
+            } else {
+                hikariConfig.addDataSourceProperty("useUnicode", true);
+                hikariConfig.addDataSourceProperty("characterEncoding", "utf8");
             }
 
             this.storageType = StorageType.MYSQL;
             this.hikariDataSource = new HikariDataSource(hikariConfig);
+            this.initialized = true;
             plugin.logDebug("Successfully loaded MySQL storage");
         } else {
             plugin.logError("Could not load storage: Unknown storage type");
@@ -114,12 +132,7 @@ public class PoolManager {
         return hikariConfig;
     }
 
-    public void shutdown() {
-        if (hikariDataSource != null)
-            hikariDataSource.close();
-    }
-
-    public Connection getConnection() throws SQLException {
+    private Connection getConnection() throws SQLException {
         if (this.hikariDataSource == null) {
             throw new SQLException("Unable to get a connection from the pool. (hikari is null)");
         }
@@ -132,13 +145,59 @@ public class PoolManager {
         return connection;
     }
 
+    /**
+     * Checks if the connection to the database has been created
+     *
+     * @return true if the connection is created, otherwise false
+     */
+    public boolean isInitialized() {
+        return initialized;
+    }
+
+    /**
+     * Closes all open connections to the database
+     */
+    public void closeConnection() {
+        if (hikariDataSource != null)
+            hikariDataSource.close();
+    }
+
+    /**
+     * Executes a callback with a Connection passed and automatically closes it when finished
+     *
+     * @param callback The callback to execute once the connection is retrieved
+     */
+    public void connect(ConnectionCallback callback) {
+        try (Connection connection = getConnection()) {
+            callback.accept(connection, storageType);
+        } catch (SQLException ex) {
+            plugin.logError("An error occured executing a SQL query", ex);
+        }
+    }
+
+    /**
+     * Returns selected storage type.
+     *
+     * @return storage type
+     * @see StorageType
+     */
     public StorageType getStorageType() {
         return this.storageType;
     }
 
+    /**
+     * Wraps a connection in a callback which will automagically handle catching sql errors
+     */
+    public interface ConnectionCallback {
+        void accept(Connection connection, StorageType type) throws SQLException;
+    }
+
+    /**
+     * Type of the storage
+     */
     public enum StorageType {
-        NONE,
         SQLITE,
-        MYSQL
+        MYSQL,
+        UNKNOWN
     }
 }

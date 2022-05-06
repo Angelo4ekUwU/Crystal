@@ -9,31 +9,32 @@ package io.sapphiremc.crystal;
 
 import io.sapphiremc.crystal.config.ConfigManager;
 import io.sapphiremc.crystal.locale.LocaleManager;
-import io.sapphiremc.crystal.sql.PoolManager;
-import io.sapphiremc.crystal.sql.SQLManager;
-import lombok.Getter;
+import io.sapphiremc.crystal.sql.DatabaseConnector;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+@SuppressWarnings({"unused", "UnusedReturnValue"})
 public class CrystalPlugin extends JavaPlugin {
 
-    @Getter
-    protected static CrystalPlugin instance;
-
+    @NotNull
     private final ConsoleCommandSender console = Bukkit.getConsoleSender();
+    @NotNull
     private final ConfigManager configManager = new ConfigManager(this);
+    @NotNull
     private final LocaleManager localeManager = new LocaleManager(this);
 
-    private PoolManager poolManager;
-    private SQLManager sqlManager;
+    @NotNull
+    private final DatabaseConnector databaseConnector = new DatabaseConnector(this);
 
     private FileConfiguration config;
 
@@ -71,7 +72,7 @@ public class CrystalPlugin extends JavaPlugin {
      * @param s message
      * @param args arguments
      */
-    public void logDebug(String s, Object... args) {
+    public void logDebug(@NotNull String s, @Nullable Object... args) {
         if (getConfig().getBoolean("debug", false)) getSLF4JLogger().info("DEBUG: " + s, args);
     }
 
@@ -81,7 +82,7 @@ public class CrystalPlugin extends JavaPlugin {
      * @param s message
      * @param args arguments
      */
-    public void logInfo(String s, Object... args) {
+    public void logInfo(@NotNull String s, @Nullable Object... args) {
         getSLF4JLogger().info(s, args);
     }
 
@@ -91,7 +92,7 @@ public class CrystalPlugin extends JavaPlugin {
      * @param s message
      * @param args arguments
      */
-    public void logWarn(String s, Object... args) {
+    public void logWarn(@NotNull String s, @Nullable Object... args) {
         getSLF4JLogger().warn(s, args);
     }
 
@@ -101,7 +102,7 @@ public class CrystalPlugin extends JavaPlugin {
      * @param s message
      * @param t throwable
      */
-    public void logError(String s, Throwable t) {
+    public void logError(@NotNull String s, @NotNull Throwable t) {
         getSLF4JLogger().error(s, t);
     }
 
@@ -111,7 +112,7 @@ public class CrystalPlugin extends JavaPlugin {
      * @param s message
      * @param args arguments
      */
-    public void logError(String s, Object... args) {
+    public void logError(@NotNull String s, @Nullable Object... args) {
         getSLF4JLogger().error(s, args);
     }
 
@@ -141,6 +142,7 @@ public class CrystalPlugin extends JavaPlugin {
      * @return console command sender
      * @see ConsoleCommandSender
      */
+    @NotNull
     public ConsoleCommandSender getConsole() {
         return console;
     }
@@ -188,6 +190,7 @@ public class CrystalPlugin extends JavaPlugin {
      * @return configuration manager
      * @see ConfigManager
      */
+    @NotNull
     public ConfigManager getConfigManager() {
         return configManager;
     }
@@ -198,8 +201,15 @@ public class CrystalPlugin extends JavaPlugin {
      * @return localization manager
      * @see LocaleManager
      */
+    @NotNull
     public LocaleManager getLocaleManager() {
         return localeManager;
+    }
+
+    @NotNull
+    public DatabaseConnector loadDatabaseConnector(ConfigurationSection config) {
+        databaseConnector.load(config);
+        return databaseConnector;
     }
 
     /**
@@ -208,6 +218,7 @@ public class CrystalPlugin extends JavaPlugin {
      * @return Bukkit's plugin manager
      * @see PluginManager
      */
+    @NotNull
     public PluginManager getPluginManager() {
         return getServer().getPluginManager();
     }
@@ -217,7 +228,7 @@ public class CrystalPlugin extends JavaPlugin {
      *
      * @param listener listener to register
      */
-    public void registerListener(Listener listener) {
+    public void registerListener(@NotNull Listener listener) {
         getPluginManager().registerEvents(listener, this);
     }
 
@@ -227,7 +238,7 @@ public class CrystalPlugin extends JavaPlugin {
      * @param cmd command
      * @param executor executor for command
      */
-    public void setCommandExecutor(String cmd, CommandExecutor executor) {
+    public void setCommandExecutor(@NotNull String cmd, @NotNull CommandExecutor executor) {
         PluginCommand command = getCommand(cmd);
         if (command != null) {
             command.setExecutor(executor);
@@ -242,7 +253,7 @@ public class CrystalPlugin extends JavaPlugin {
      * @param cmd command
      * @param tabCompleter tab completer for command
      */
-    public void setCommandTabCompleter(String cmd, TabCompleter tabCompleter) {
+    public void setCommandTabCompleter(@NotNull String cmd, @NotNull TabCompleter tabCompleter) {
         PluginCommand command = getCommand(cmd);
         if (command != null) {
             command.setTabCompleter(tabCompleter);

@@ -21,14 +21,20 @@ import java.util.function.Consumer;
 @SuppressWarnings("unused")
 public abstract class AbstractDataManager {
     protected final CrystalPlugin plugin;
-    protected final DatabaseConnector databaseConnector;
+    protected DatabaseConnector databaseConnector;
 
     protected final ExecutorService asyncPool = Executors.newSingleThreadExecutor();
 
-    public AbstractDataManager(CrystalPlugin plugin, DatabaseConnector databaseConnector) {
+    public AbstractDataManager(CrystalPlugin plugin) {
         this.plugin = plugin;
-        this.databaseConnector = databaseConnector;
     }
+
+    public void loadWithConnector(DatabaseConnector databaseConnector) {
+        this.databaseConnector = databaseConnector;
+        load();
+    }
+
+    protected abstract void load();
 
     /**
      * Queue a task to be run asynchronously with all the

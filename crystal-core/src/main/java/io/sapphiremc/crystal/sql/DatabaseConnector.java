@@ -79,7 +79,7 @@ public class DatabaseConnector {
                     mysqlConfig.getLong("maxLifetime", 1800000), mysqlConfig.getLong("keepAliveTime", 0), mysqlConfig.getLong("connectionTimeout", 5000));
 
             if (mysqlConfig.contains("properties") && mysqlConfig.isConfigurationSection("properties")) {
-                ConfigurationSection properties = config.getConfigurationSection("properties");
+                ConfigurationSection properties = mysqlConfig.getConfigurationSection("properties");
                 properties.getKeys(false).forEach(key ->
                     hikariConfig.addDataSourceProperty(key, properties.getString(key)));
             } else {

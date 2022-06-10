@@ -39,6 +39,7 @@ subprojects {
         maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
         maven("https://jitpack.io")
         maven("https://oss.sonatype.org/content/repositories/snapshots/")
+        maven("https://repo.codemc.io/repository/maven-public/")
         maven("https://maven.enginehub.org/repo/")
         maven("http://repo.denaryworld.ru/snapshots/") {
             isAllowInsecureProtocol = true
@@ -48,10 +49,6 @@ subprojects {
     dependencies {
         compileOnly("io.sapphiremc.sapphire:sapphire-api:1.18.2-R0.1-SNAPSHOT")
         compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.2.10")
-        compileOnly("net.luckperms:api:5.4")
-        compileOnly("com.github.MilkBowl:VaultAPI:1.7")
-        compileOnly("io.sapphiremc.gold:gold-api:1.3.0")
-        compileOnly("me.clip:placeholderapi:2.11.1")
         compileOnly("org.projectlombok:lombok:1.18.22")
 
         annotationProcessor("org.projectlombok:lombok:1.18.22")

@@ -1,6 +1,5 @@
 plugins {
     id("com.github.johnrengelman.shadow")
-    id("org.cadixdev.licenser")
 }
 
 dependencies {
@@ -14,13 +13,6 @@ dependencies {
 
     implementation("mysql:mysql-connector-java:8.0.29")
     implementation("com.zaxxer:HikariCP:5.0.1")
-}
-
-license {
-    include("**/io/sapphiremc/hideplayers/**")
-
-    header(rootProject.file("HEADER"))
-    newLine(false)
 }
 
 java {

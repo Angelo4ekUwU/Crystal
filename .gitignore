@@ -2,6 +2,7 @@
 .idea/
 build/
 run/
+libs/
 
 *.iml
 test-plugin.settings.gradle.kts

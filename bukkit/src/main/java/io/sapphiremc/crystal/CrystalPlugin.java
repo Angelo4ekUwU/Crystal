@@ -23,7 +23,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-@SuppressWarnings({"unused", "UnusedReturnValue"})
+@SuppressWarnings("unused")
 public class CrystalPlugin extends JavaPlugin {
 
     @NotNull

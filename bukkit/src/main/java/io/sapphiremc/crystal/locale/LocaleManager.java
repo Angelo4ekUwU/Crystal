@@ -60,7 +60,7 @@ public class LocaleManager {
             locales.put(file.getName().replace(".yml", ""), plugin.getConfigManager().getConfig(file));
         }
 
-        if (!locales.keySet().contains(defaultLang)) {
+        if (!locales.containsKey(defaultLang)) {
             plugin.logWarn("The locale file " + defaultLang + ".yml does not exist in " + langDir.getPath() + " folder, using file en_us.yml");
         }
 

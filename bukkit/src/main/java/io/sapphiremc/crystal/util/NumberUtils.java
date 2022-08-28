@@ -37,7 +37,7 @@ public class NumberUtils {
         int exp = (int) (Math.log(count) / Math.log(1000));
 
         return String.format("%.1f%c", count / Math.pow(1000, exp),
-            "kMGTPE".charAt(exp - 1)).replace(".0", "");
+            "kMBTPE".charAt(exp - 1)).replace(".0", "");
     }
 
     public static boolean isInt(String number) {

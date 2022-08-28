@@ -72,7 +72,6 @@ public final class PluginHook<T extends Class> {
      * @param type       Generic hook type for this plugin
      * @param pluginName Plugin name
      * @param handler    Specific class that will handle this plugin, if enabled.
-     *
      * @return instance of the PluginHook that was added
      */
     public static <T extends Class> PluginHook addHook(T type, String pluginName, Class handler) {
@@ -113,7 +112,8 @@ public final class PluginHook<T extends Class> {
                 pluginConstructor != null
                     ? pluginConstructor.newInstance((Plugin) null)
                     : managerClass.getConstructor().newInstance());
-        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException ex) {
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
+                 InvocationTargetException ex) {
             Bukkit.getLogger().log(Level.SEVERE, "Unexpected Error while creating a new Hook Manager for " + plugin, ex);
         }
 
@@ -126,7 +126,8 @@ public final class PluginHook<T extends Class> {
                 pluginConstructor != null
                     ? pluginConstructor.newInstance(hookingPlugin)
                     : managerClass.getConstructor().newInstance());
-        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException ex) {
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
+                 InvocationTargetException ex) {
             Bukkit.getLogger().log(Level.SEVERE, "Unexpected Error while creating a new Hook Manager for " + plugin, ex);
         }
 

@@ -14,41 +14,6 @@ public enum ServerVersion {
     UNKNOWN,
 
     /**
-     * MC Versions: 1.12, 1.12.1 and 1.12.2
-     */
-    v1_12_R1,
-
-    /**
-     * MC Versions: 1.13
-     */
-    v1_13_R1,
-
-    /**
-     * MC Versions: 1.13.1, 1.13.2
-     */
-    v1_13_R2,
-
-    /**
-     * MC Versions: 1.14, 1.14.1, 1.14.2, 1.14.3, 1.14.4
-     */
-    v1_14_R1,
-
-    /**
-     * MC Versions: 1.15, 1.15.1, 1.15.2
-     */
-    v1_15_R1,
-
-    /**
-     * MC Versions: 1.16, 1.16.1
-     */
-    v1_16_R1,
-
-    /**
-     * MC Versions: 1.16.2, 1.16.3
-     */
-    v1_16_R2,
-
-    /**
      * MC Versions: 1.16.4, 1.16.5
      */
     v1_16_R3,

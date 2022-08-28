@@ -41,7 +41,6 @@ public class CrystalPlugin extends JavaPlugin {
     @Override
     public void onLoad() {
         try {
-            if (!getDataFolder().exists() && !getDataFolder().mkdirs()) return;
             onPluginLoad();
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -69,7 +68,7 @@ public class CrystalPlugin extends JavaPlugin {
     /**
      * Log debug message, if debug is enabled
      *
-     * @param s message
+     * @param s    message
      * @param args arguments
      */
     public void logDebug(@NotNull String s, @Nullable Object... args) {
@@ -79,7 +78,7 @@ public class CrystalPlugin extends JavaPlugin {
     /**
      * Log info message
      *
-     * @param s message
+     * @param s    message
      * @param args arguments
      */
     public void logInfo(@NotNull String s, @Nullable Object... args) {
@@ -99,7 +98,7 @@ public class CrystalPlugin extends JavaPlugin {
     /**
      * Log warning message
      *
-     * @param s message
+     * @param s    message
      * @param args arguments
      */
     public void logWarn(@NotNull String s, @Nullable Object... args) {
@@ -119,7 +118,7 @@ public class CrystalPlugin extends JavaPlugin {
     /**
      * Log error message
      *
-     * @param s message
+     * @param s    message
      * @param args arguments
      */
     public void logError(@NotNull String s, @Nullable Object... args) {
@@ -129,22 +128,26 @@ public class CrystalPlugin extends JavaPlugin {
     /**
      * Called when the plugin is loaded.
      */
-    protected void onPluginLoad() {}
+    protected void onPluginLoad() {
+    }
 
     /**
      * Called when the plugin is enabled.
      */
-    protected void onPluginEnable() {}
+    protected void onPluginEnable() {
+    }
 
     /**
      * Called after reloading the main config (config.yml).
      */
-    protected void onConfigReload() {}
+    protected void onConfigReload() {
+    }
 
     /**
      * Called when the plugin is disabled.
      */
-    protected void onPluginDisable() {}
+    protected void onPluginDisable() {
+    }
 
     /**
      * Returns Bukkit's console command sender.
@@ -245,7 +248,7 @@ public class CrystalPlugin extends JavaPlugin {
     /**
      * Check if command is not null and set executor for it.
      *
-     * @param cmd command
+     * @param cmd      command
      * @param executor executor for command
      */
     public void setCommandExecutor(@NotNull String cmd, @NotNull CommandExecutor executor) {
@@ -260,7 +263,7 @@ public class CrystalPlugin extends JavaPlugin {
     /**
      * Check if command is not null and set tab completer for it.
      *
-     * @param cmd command
+     * @param cmd          command
      * @param tabCompleter tab completer for command
      */
     public void setCommandTabCompleter(@NotNull String cmd, @NotNull TabCompleter tabCompleter) {

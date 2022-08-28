@@ -165,9 +165,9 @@ public class TextUtils {
         double p = (double) (parts - x + 1) / (double) parts;
 
         return new Color(
-                (int) (from.getRed() * p + to.getRed() * (1 - p)),
-                (int) (from.getGreen() * p + to.getGreen() * (1 - p)),
-                (int) (from.getBlue() * p + to.getBlue() * (1 - p))
+            (int) (from.getRed() * p + to.getRed() * (1 - p)),
+            (int) (from.getGreen() * p + to.getGreen() * (1 - p)),
+            (int) (from.getBlue() * p + to.getBlue() * (1 - p))
         );
     }
 }

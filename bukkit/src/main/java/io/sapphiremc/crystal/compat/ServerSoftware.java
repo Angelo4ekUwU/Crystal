@@ -26,7 +26,8 @@ public enum ServerSoftware {
         try {
             Class.forName("io.sapphiremc.sapphire.SapphireConfig");
             return SAPPHIRE;
-        } catch (ClassNotFoundException ignored) {}
+        } catch (ClassNotFoundException ignored) {
+        }
 
         try {
             Class.forName("org.purpurmc.purpur.PurpurConfig");
@@ -35,26 +36,30 @@ public enum ServerSoftware {
             try {
                 Class.forName("net.pl3x.purpur.PurpurConfig");
                 return PURPUR;
-            } catch (ClassNotFoundException ignored) {}
+            } catch (ClassNotFoundException ignored) {
+            }
         }
 
         try {
             Class.forName("com.destroystokyo.paper.PaperConfig");
             return PAPER;
-        } catch (ClassNotFoundException ignored) {}
+        } catch (ClassNotFoundException ignored) {
+        }
 
         try {
             Class.forName("org.spigotmc.SpigotConfig");
             return SPIGOT;
-        } catch (ClassNotFoundException ignored) {}
+        } catch (ClassNotFoundException ignored) {
+        }
 
         return Bukkit.getServer().getClass().getName().contains("craftbukkit") ? CRAFTBUKKIT : UNKNOWN;
     }
 
     /**
      * Current server software
-     *
+     * <p>
      * Supported software: CraftBukkit, Spigot, Paper, Purpur and Sapphire
+     *
      * @return current {@link ServerSoftware}
      */
     public static ServerSoftware getCurrentSoftware() {

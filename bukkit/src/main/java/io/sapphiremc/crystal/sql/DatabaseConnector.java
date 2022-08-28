@@ -73,10 +73,10 @@ public class DatabaseConnector {
             }
 
             HikariConfig hikariConfig = setupConfig(
-                    address, port, mysqlConfig.getString("database"),
-                    mysqlConfig.getString("username"), mysqlConfig.getString("password"),
-                    mysqlConfig.getInt("maxPoolSize", 6), mysqlConfig.getInt("minimumIdle", 6),
-                    mysqlConfig.getLong("maxLifetime", 1800000), mysqlConfig.getLong("keepAliveTime", 0), mysqlConfig.getLong("connectionTimeout", 5000));
+                address, port, mysqlConfig.getString("database"),
+                mysqlConfig.getString("username"), mysqlConfig.getString("password"),
+                mysqlConfig.getInt("maxPoolSize", 6), mysqlConfig.getInt("minimumIdle", 6),
+                mysqlConfig.getLong("maxLifetime", 1800000), mysqlConfig.getLong("keepAliveTime", 0), mysqlConfig.getLong("connectionTimeout", 5000));
 
             if (mysqlConfig.contains("properties") && mysqlConfig.isConfigurationSection("properties")) {
                 ConfigurationSection properties = mysqlConfig.getConfigurationSection("properties");

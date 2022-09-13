@@ -10,7 +10,6 @@ package io.sapphiremc.crystal.sql;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import io.sapphiremc.crystal.CrystalPlugin;
-import org.bukkit.configuration.ConfigurationSection;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,7 +20,7 @@ import java.sql.SQLException;
 public class DatabaseConnector {
 
     private final CrystalPlugin plugin;
-    private StorageType storageType = StorageType.UNKNOWN;
+    private IDatabaseConfig config;
     private HikariDataSource hikariDataSource = null;
     private boolean initialized = false;
 
@@ -29,14 +28,15 @@ public class DatabaseConnector {
         this.plugin = plugin;
     }
 
-    public void load(ConfigurationSection config) {
+    public void load(IDatabaseConfig config) {
+        this.config = config;
         if (config == null) {
             plugin.logError("Storage section in the configuration not found.");
             return;
         }
 
-        String type = config.getString("type", "");
-        if (type.equalsIgnoreCase("sqlite")) {
+        final var type = config.databaseType();
+        if (type.equals(DatabaseType.SQLITE)) {
             File storage = new File(plugin.getDataFolder(), "storage.db");
             if (!storage.exists()) {
                 try {
@@ -52,55 +52,33 @@ public class DatabaseConnector {
             hikariConfig.setDriverClassName("org.sqlite.JDBC");
             hikariConfig.setJdbcUrl("jdbc:sqlite:" + storage.getPath());
 
-            this.storageType = StorageType.SQLITE;
             this.hikariDataSource = new HikariDataSource(hikariConfig);
             this.initialized = true;
             plugin.logDebug("Successfully loaded SQLite storage!");
-        } else if (type.equalsIgnoreCase("mysql")) {
-            ConfigurationSection mysqlConfig = plugin.getConfig().getConfigurationSection("storage.mysql");
-            if (mysqlConfig == null)
-                throw new IllegalStateException("MySQL Settings section in the configuration not found.");
+        } else if (type.equals(DatabaseType.MYSQL)) {
+            HikariConfig hikariConfig = setupHikariConfig(
+                config.address(), config.port(), config.database(),
+                config.username(), config.password(),
+                config.maxPoolSize(), config.minimumIdle(),
+                config.maxLifeTime(), config.keepAliveTime(), config.connectionTimeout());
 
-            String address = mysqlConfig.getString("address");
-            if (address == null)
-                throw new IllegalStateException("MySQL Address must be specified!");
-
-            String port = "3306";
-            if (address.contains(":") && address.split(":").length == 2) {
-                String[] splitted = address.split(":");
-                address = splitted[0];
-                port = splitted[1];
-            }
-
-            HikariConfig hikariConfig = setupConfig(
-                address, port, mysqlConfig.getString("database"),
-                mysqlConfig.getString("username"), mysqlConfig.getString("password"),
-                mysqlConfig.getInt("maxPoolSize", 6), mysqlConfig.getInt("minimumIdle", 6),
-                mysqlConfig.getLong("maxLifetime", 1800000), mysqlConfig.getLong("keepAliveTime", 0), mysqlConfig.getLong("connectionTimeout", 5000));
-
-            if (mysqlConfig.contains("properties") && mysqlConfig.isConfigurationSection("properties")) {
-                ConfigurationSection properties = mysqlConfig.getConfigurationSection("properties");
-                properties.getKeys(false).forEach(key ->
-                    hikariConfig.addDataSourceProperty(key, properties.getString(key)));
+            if (!config.properties().isEmpty()) {
+                config.properties().forEach(hikariConfig::addDataSourceProperty);
             } else {
                 hikariConfig.addDataSourceProperty("useUnicode", true);
                 hikariConfig.addDataSourceProperty("characterEncoding", "utf8");
             }
 
-            this.storageType = StorageType.MYSQL;
             this.hikariDataSource = new HikariDataSource(hikariConfig);
             this.initialized = true;
             plugin.logDebug("Successfully loaded MySQL storage");
-        } else {
-            plugin.logError("Could not load storage: Unknown storage type");
-            plugin.disable();
         }
     }
 
-    private HikariConfig setupConfig(String address, String port, String databaseName,
-                                     String username, String password,
-                                     int maxPoolSize, int minimumIdle,
-                                     long maxLifetime, long keepaliveTime, long connectionTimeout) {
+    private HikariConfig setupHikariConfig(String address, int port, String databaseName,
+                                           String username, String password,
+                                           int maxPoolSize, int minimumIdle,
+                                           long maxLifetime, long keepaliveTime, long connectionTimeout) {
         HikariConfig hikariConfig = new HikariConfig();
 
         hikariConfig.setPoolName(plugin.getName() + "-MySQL");
@@ -169,35 +147,25 @@ public class DatabaseConnector {
      */
     public void connect(ConnectionCallback callback) {
         try (Connection connection = getConnection()) {
-            callback.accept(connection, storageType);
+            callback.accept(connection, getStorageType());
         } catch (SQLException ex) {
             plugin.logError("An error occured executing a SQL query", ex);
         }
     }
 
     /**
-     * Returns selected storage type.
+     * Returns selected database type.
      *
-     * @return storage type
-     * @see StorageType
+     * @return database type
      */
-    public StorageType getStorageType() {
-        return this.storageType;
+    public DatabaseType getStorageType() {
+        return config.databaseType();
     }
 
     /**
      * Wraps a connection in a callback which will automagically handle catching sql errors
      */
     public interface ConnectionCallback {
-        void accept(Connection connection, StorageType type) throws SQLException;
-    }
-
-    /**
-     * Type of the storage
-     */
-    public enum StorageType {
-        SQLITE,
-        MYSQL,
-        UNKNOWN
+        void accept(Connection connection, DatabaseType type) throws SQLException;
     }
 }

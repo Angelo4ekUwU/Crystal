@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    api(projects.config)
+    api(libs.configurate)
 
     compileOnly(libs.bukkit)
     compileOnly(libs.luckperms)

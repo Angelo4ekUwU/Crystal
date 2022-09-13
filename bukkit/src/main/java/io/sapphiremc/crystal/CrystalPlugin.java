@@ -10,6 +10,7 @@ package io.sapphiremc.crystal;
 import io.sapphiremc.crystal.config.ConfigManager;
 import io.sapphiremc.crystal.locale.LocaleManager;
 import io.sapphiremc.crystal.sql.DatabaseConnector;
+import io.sapphiremc.crystal.sql.IDatabaseConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.ConsoleCommandSender;
@@ -220,7 +221,7 @@ public class CrystalPlugin extends JavaPlugin {
     }
 
     @NotNull
-    public DatabaseConnector loadDatabaseConnector(ConfigurationSection config) {
+    public DatabaseConnector loadDatabaseConnector(IDatabaseConfig config) {
         databaseConnector.load(config);
         return databaseConnector;
     }

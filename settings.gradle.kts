@@ -1,3 +1,5 @@
+import java.nio.file.Files
+
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 dependencyResolutionManagement {
@@ -27,17 +29,42 @@ dependencyResolutionManagement {
             library("lombok", "org.projectlombok:lombok:1.18.24")
             library("commons-lang3", "org.apache.commons:commons-lang3:3.12.0")
             library("configurate", "org.spongepowered:configurate-hocon:4.1.2")
-            library("annotations", "org.jetbrains:annotations:23.0.0")
             library("snakeyaml", "org.yaml:snakeyaml:1.30")
 
             library("hikari", "com.zaxxer:HikariCP:5.0.1")
             library("mysql-connector", "mysql:mysql-connector-java:8.0.29")
+            library("sqlite-jdbc", "org.xerial:sqlite-jdbc:3.39.3.0")
 
-            bundle("mysql", listOf("hikari", "mysql-connector"))
+            bundle("sql", listOf("hikari", "mysql-connector"))
         }
     }
 }
 
 rootProject.name = "Crystal"
 
-include("bukkit")
+// Build logic is an included build for holding the convention plugins for generating libraries and modules.
+includeBuild("build-logic")
+
+library("core")
+library("bukkit")
+
+fun library(library: String) {
+    include(library)
+
+    val libraryProject = project(":$library")
+    libraryProject.projectDir = file("library/$library")
+
+    rootProject.projectDir.toPath().resolve("library/$library/").toFile().listFiles()?.forEach {
+        // Is the module disabled?
+        if (it.isDirectory()
+            && it.name != "src" // Ignore sources
+            && it.name != "build" // Ignore build artifacts
+            && !it.name.startsWith(".") // Ignore anything hidden on unix-like OSes
+        ) {
+            // Libraries can be disabled by adding a file named DISABLE at the root of its directory
+            if (Files.exists(it.toPath().resolve("build.gradle.kts")) && Files.notExists(it.toPath().resolve("DISABLE"))) {
+                include("$library:${it.name}")
+            }
+        }
+    }
+}

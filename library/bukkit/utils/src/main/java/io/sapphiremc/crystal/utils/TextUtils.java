@@ -5,9 +5,8 @@
  * license that can be found in the LICENSE file or at
  * https://opensource.org/licenses/MIT.
  */
-package io.sapphiremc.crystal.util;
+package io.sapphiremc.crystal.utils;
 
-import lombok.experimental.UtilityClass;
 import net.md_5.bungee.api.ChatColor;
 
 import java.awt.Color;
@@ -17,20 +16,19 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@UtilityClass
-public class TextUtils {
+public final class TextUtils {
 
-    private final Pattern HEX_COLORS_PATTERN = Pattern.compile("\\{#([a-fA-F0-9]{6})}");
-    private final Pattern HEX_GRADIENT_PATTERN = Pattern.compile("\\{#([a-fA-F0-9]{6})(:#([a-fA-F0-9]{6}))+( )([^{}])*(})");
-    private final Pattern HEX_SPIGOT_PATTERN = Pattern.compile("§[xX](§[a-fA-F0-9]){6}");
+    private static final Pattern HEX_COLORS_PATTERN = Pattern.compile("\\{#([a-fA-F0-9]{6})}");
+    private static final Pattern HEX_GRADIENT_PATTERN = Pattern.compile("\\{#([a-fA-F0-9]{6})(:#([a-fA-F0-9]{6}))+( )([^{}])*(})");
+    private static final Pattern HEX_SPIGOT_PATTERN = Pattern.compile("§[xX](§[a-fA-F0-9]){6}");
 
-    private final List<ChatColor> FORMAT_COLORS = List.of(ChatColor.BOLD, ChatColor.ITALIC, ChatColor.UNDERLINE, ChatColor.MAGIC, ChatColor.STRIKETHROUGH, ChatColor.RESET);
+    private static final List<ChatColor> FORMAT_COLORS = List.of(ChatColor.BOLD, ChatColor.ITALIC, ChatColor.UNDERLINE, ChatColor.MAGIC, ChatColor.STRIKETHROUGH, ChatColor.RESET);
 
-    public boolean isColor(ChatColor color) {
+    public static boolean isColor(final ChatColor color) {
         return !FORMAT_COLORS.contains(color);
     }
 
-    public boolean isFormat(ChatColor color) {
+    public static boolean isFormat(final ChatColor color) {
         return !isColor(color);
     }
 
@@ -40,7 +38,7 @@ public class TextUtils {
      * @param str string to strip hex
      * @return stripped string
      */
-    public String stripHex(String str, boolean stripGradients) {
+    public static String stripHex(String str, final boolean stripGradients) {
         if (str == null) {
             return null;
         }
@@ -57,35 +55,35 @@ public class TextUtils {
      * Finds simple and gradient hex patterns in string and converts it to Spigot format
      *
      * @param text string to stylish
-     * @return stylished string
+     * @return styled string
      */
-    public String stylish(String text) {
+    public static String stylish(String text) {
         if (text == null) {
             return null;
         }
 
-        Matcher matcher = HEX_GRADIENT_PATTERN.matcher(text);
+        var matcher = HEX_GRADIENT_PATTERN.matcher(text);
 
-        StringBuilder builder = new StringBuilder();
+        var builder = new StringBuilder();
 
         while (matcher.find()) {
-            String gradient = matcher.group();
+            final var gradient = matcher.group();
 
-            int groups = 0;
+            var groups = 0;
             for (int i = 1; gradient.charAt(i) == '#'; i += 8) {
                 groups++;
             }
 
-            Color[] colors = new Color[groups];
+            var colors = new Color[groups];
             for (int i = 0; i < groups; i++) {
                 colors[i] = ChatColor.of(gradient.substring((8 * i) + 1, (8 * i) + 8)).getColor();
             }
 
-            String substring = gradient.substring((groups - 1) * 8 + 9, gradient.length() - 1);
+            final var substring = gradient.substring((groups - 1) * 8 + 9, gradient.length() - 1);
 
-            char[] chars = substring.toCharArray();
+            final var chars = substring.toCharArray();
 
-            StringBuilder gradientBuilder = new StringBuilder();
+            final var gradientBuilder = new StringBuilder();
 
             int colorLength = chars.length / (colors.length - 1);
             int lastColorLength;
@@ -97,14 +95,14 @@ public class TextUtils {
                 lastColorLength = chars.length % (colorLength * (colors.length - 1)) + colorLength;
             }
 
-            List<ChatColor> currentStyles = new ArrayList<>();
+            final var currentStyles = new ArrayList<ChatColor>();
             for (int i = 0; i < (colors.length - 1); i++) {
-                int currentColorLength = ((i == colors.length - 2) ? lastColorLength : colorLength);
+                final var currentColorLength = ((i == colors.length - 2) ? lastColorLength : colorLength);
                 for (int j = 0; j < currentColorLength; j++) {
-                    Color color = calculateGradientColor(j + 1, currentColorLength, colors[i], colors[i + 1]);
-                    ChatColor chatColor = ChatColor.of(color);
+                    final var color = calculateGradientColor(j + 1, currentColorLength, colors[i], colors[i + 1]);
+                    final var chatColor = ChatColor.of(color);
 
-                    int charIndex = colorLength * i + j;
+                    final var charIndex = colorLength * i + j;
                     if (charIndex + 1 < chars.length) {
                         if (chars[charIndex] == '&' || chars[charIndex] == '§') {
                             if (chars[charIndex + 1] == 'r') {
@@ -113,7 +111,7 @@ public class TextUtils {
                                 continue;
                             }
 
-                            ChatColor style = ChatColor.getByChar(chars[charIndex + 1]);
+                            final var style = ChatColor.getByChar(chars[charIndex + 1]);
                             if (style != null) {
                                 currentStyles.add(style);
                                 j++;
@@ -122,9 +120,9 @@ public class TextUtils {
                         }
                     }
 
-                    StringBuilder colorBuilder = gradientBuilder.append(chatColor.toString());
+                    final var colorBuilder = gradientBuilder.append(chatColor.toString());
 
-                    for (ChatColor currentStyle : currentStyles) {
+                    for (final var currentStyle : currentStyles) {
                         colorBuilder.append(currentStyle.toString());
                     }
 
@@ -142,7 +140,7 @@ public class TextUtils {
         builder = new StringBuilder();
 
         while (matcher.find()) {
-            String hexColorString = matcher.group();
+            final var hexColorString = matcher.group();
             matcher.appendReplacement(builder, ChatColor.of(hexColorString.substring(1, hexColorString.length() - 1)).toString());
         }
 
@@ -157,11 +155,11 @@ public class TextUtils {
      * @param input string list to stylish
      * @return stylished string list
      */
-    public List<String> stylish(List<String> input) {
+    public static List<String> stylish(List<String> input) {
         return input.stream().map(TextUtils::stylish).toList();
     }
 
-    private Color calculateGradientColor(int x, int parts, Color from, Color to) {
+    private static Color calculateGradientColor(int x, int parts, Color from, Color to) {
         double p = (double) (parts - x + 1) / (double) parts;
 
         return new Color(

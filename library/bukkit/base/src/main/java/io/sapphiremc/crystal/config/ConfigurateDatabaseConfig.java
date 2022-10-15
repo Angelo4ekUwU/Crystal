@@ -8,8 +8,8 @@
 package io.sapphiremc.crystal.config;
 
 import io.sapphiremc.crystal.CrystalPlugin;
-import io.sapphiremc.crystal.sql.DatabaseType;
-import io.sapphiremc.crystal.sql.ICrystalSQLConfig;
+import io.sapphiremc.crystal.data.DatabaseType;
+import io.sapphiremc.crystal.data.IDatabaseConfig;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.spongepowered.configurate.ConfigurateException;
@@ -21,7 +21,7 @@ import java.nio.file.Path;
 import java.util.Map;
 
 @SuppressWarnings("unused")
-public final class ConfigurateDatabaseConfig implements ICrystalSQLConfig {
+public final class ConfigurateDatabaseConfig implements IDatabaseConfig {
 
     private final CrystalPlugin plugin;
     private final Storage storage;

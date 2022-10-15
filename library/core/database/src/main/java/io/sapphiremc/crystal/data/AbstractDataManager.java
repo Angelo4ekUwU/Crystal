@@ -5,7 +5,7 @@
  * license that can be found in the LICENSE file or at
  * https://opensource.org/licenses/MIT.
  */
-package io.sapphiremc.crystal.sql;
+package io.sapphiremc.crystal.data;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -24,7 +24,7 @@ public abstract class AbstractDataManager {
 
     protected final ExecutorService asyncPool = Executors.newSingleThreadExecutor();
 
-    public void loadDatabase(@NotNull DatabaseConnector databaseConnector) {
+    public void loadDatabase(@NotNull final DatabaseConnector databaseConnector) {
         this.databaseConnector = databaseConnector;
         onDatabaseLoad();
     }
@@ -39,7 +39,8 @@ public abstract class AbstractDataManager {
      * @return CompletableFuture
      * @see CompletableFuture
      */
-    public CompletableFuture<Void> asyncFuture(@NotNull Runnable runnable) {
+    @NotNull
+    public CompletableFuture<Void> asyncFuture(@NotNull final Runnable runnable) {
         return CompletableFuture.runAsync(runnable, this.asyncPool);
     }
 
@@ -48,7 +49,7 @@ public abstract class AbstractDataManager {
      *
      * @param runnable task to run on the next server tick
      */
-    public void sync(@NotNull Runnable runnable) {
+    public void sync(@NotNull final Runnable runnable) {
         databaseConnector.getConfig().runSyncTask(runnable);
     }
 
@@ -57,7 +58,7 @@ public abstract class AbstractDataManager {
      *
      * @param runnable task to run on the next server tick
      */
-    public void runAsync(@NotNull Runnable runnable) {
+    public void runAsync(@NotNull final Runnable runnable) {
         runAsync(runnable, null);
     }
 
@@ -67,7 +68,7 @@ public abstract class AbstractDataManager {
      * @param runnable task to run on the next server tick
      * @param callback callback
      */
-    public void runAsync(@NotNull Runnable runnable, @Nullable Consumer<Throwable> callback) {
+    public void runAsync(@NotNull final Runnable runnable, @Nullable final Consumer<Throwable> callback) {
         this.asyncPool.execute(() -> {
             try {
                 runnable.run();
@@ -90,6 +91,7 @@ public abstract class AbstractDataManager {
         this.asyncPool.shutdown();
     }
 
+    @NotNull
     public List<Runnable> forceShutdownTaskQueue() {
         return this.asyncPool.shutdownNow();
     }
@@ -109,7 +111,7 @@ public abstract class AbstractDataManager {
     /**
      * @see ExecutorService#awaitTermination(long, TimeUnit)
      */
-    public boolean waitForShutdown(long timeout, TimeUnit unit) throws InterruptedException {
+    public boolean waitForShutdown(final long timeout, @NotNull final TimeUnit unit) throws InterruptedException {
         return this.asyncPool.awaitTermination(timeout, unit);
     }
 }

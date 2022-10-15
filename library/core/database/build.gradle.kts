@@ -3,8 +3,8 @@ plugins {
 }
 
 crystalModule {
-    name.set("Crystal SQL Connector")
-    moduleName.set("sql")
+    name.set("Crystal Database Connector")
+    moduleName.set("database")
     description.set("Provides MySQL and SQLite connector")
     library.set("core")
 }

@@ -5,9 +5,10 @@
  * license that can be found in the LICENSE file or at
  * https://opensource.org/licenses/MIT.
  */
-package io.sapphiremc.crystal.sql;
+package io.sapphiremc.crystal.gui.interfaces;
 
-public enum DatabaseType {
-    SQLITE,
-    MYSQL
+import io.sapphiremc.crystal.gui.events.GuiClickEvent;
+
+public interface ClickHandler {
+    void onClick(final GuiClickEvent event);
 }

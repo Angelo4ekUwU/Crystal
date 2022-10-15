@@ -10,6 +10,7 @@ package io.sapphiremc.crystal.locale;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.checkerframework.checker.units.qual.N;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,13 +34,13 @@ public final class LocaleManager {
     private String defaultLang;
     private boolean usePlayerLang;
 
-    public void load(ICrystalLocaleModule config) {
+    public void load(final ICrystalLocaleModule config) {
         this.config = config;
         this.defaultLang = config.defaultLang();
         this.usePlayerLang = config.usePlayerLang();
 
         LOGGER.debug("Loading locale files...");
-        File langDir = new File(config.getDataFolder() + File.separator + "lang");
+        final var langDir = new File(config.getDataFolder() + File.separator + "lang");
 
         if (!langDir.exists()) {
             try {
@@ -49,7 +50,7 @@ public final class LocaleManager {
             }
         }
 
-        for (File file : langDir.listFiles()) {
+        for (final var file : langDir.listFiles()) {
             if (!localePattern.matcher(file.getName()).matches()) {
                 LOGGER.debug("Skipping file " + file.getName());
                 continue;
@@ -66,14 +67,14 @@ public final class LocaleManager {
     }
 
     @NotNull
-    public Message getMessage(@NotNull String key) {
+    public Message getMessage(@NotNull final String key) {
         return getMessage(null, key);
     }
 
     @NotNull
-    public Message getMessage(@Nullable Player player, @NotNull String key) {
+    public Message getMessage(@Nullable final Player player, @NotNull final String key) {
         if (getDefaultLang().isString(key)) {
-            String stringMsg = getLangFile(player).getString(key, getDefaultLang().getString(key));
+            var stringMsg = getLangFile(player).getString(key, getDefaultLang().getString(key));
             if (stringMsg == null || stringMsg.isEmpty()) {
                 stringMsg = getDefaultLang().getString(key);
                 if (stringMsg == null || stringMsg.isEmpty()) {
@@ -83,11 +84,11 @@ public final class LocaleManager {
 
             return new Message(stringMsg);
         } else {
-            List<String> listMsg = getLangFile(player).getStringList(key);
+            final var listMsg = getLangFile(player).getStringList(key);
             if (listMsg.isEmpty()) {
-                listMsg = getDefaultLang().getStringList(key);
+                listMsg.addAll(getDefaultLang().getStringList(key));
                 if (listMsg.isEmpty()) {
-                    listMsg = List.of("<missing key: " + key + ">");
+                    listMsg.add("<missing key: " + key + ">");
                 }
             }
 
@@ -101,11 +102,11 @@ public final class LocaleManager {
     }
 
     @NotNull
-    private FileConfiguration getLangFile(@Nullable Player player) {
+    private FileConfiguration getLangFile(@Nullable final Player player) {
         String langKey;
         if (player != null && usePlayerLang) {
             @SuppressWarnings("deprecation")
-            String playerLang = player.getLocale();
+            final var playerLang = player.getLocale();
             if (locales.containsKey(playerLang)) {
                 langKey = playerLang;
             } else {
@@ -124,20 +125,20 @@ public final class LocaleManager {
         private String msg;
         private List<String> listMsg;
 
-        private Message(String msg) {
+        private Message(@NotNull final String msg) {
             this.type = MessageType.STRING;
             this.msg = msg;
         }
 
-        private Message(List<String> listMsg) {
+        private Message(@NotNull final List<String> listMsg) {
             this.type = MessageType.LIST;
             this.listMsg = listMsg;
         }
 
-        public Message processPlaceholder(String placeholder, String replacement) {
+        public Message processPlaceholder(@NotNull final String placeholder, @NotNull final String replacement) {
             if (type == MessageType.LIST) {
-                List<String> processed = new ArrayList<>();
-                for (String s : listMsg) {
+                final var processed = new ArrayList<String>();
+                for (final var s : listMsg) {
                     if (s.contains(placeholder)) {
                         processed.add(s.replace(placeholder, replacement));
                     } else {
@@ -152,7 +153,7 @@ public final class LocaleManager {
             return this;
         }
 
-        public void send(CommandSender receiver) {
+        public void send(@NotNull final CommandSender receiver) {
             if (type == MessageType.LIST) {
                 receiver.sendMessage(asList().toArray(new String[0]));
             } else if (type == MessageType.STRING) {
@@ -160,10 +161,12 @@ public final class LocaleManager {
             }
         }
 
+        @NotNull
         public String asString() {
             return config.stylish(msg);
         }
 
+        @NotNull
         public List<String> asList() {
             return config.stylish(listMsg);
         }

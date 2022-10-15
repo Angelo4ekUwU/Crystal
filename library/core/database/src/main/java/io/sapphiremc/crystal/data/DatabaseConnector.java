@@ -5,7 +5,7 @@
  * license that can be found in the LICENSE file or at
  * https://opensource.org/licenses/MIT.
  */
-package io.sapphiremc.crystal.sql;
+package io.sapphiremc.crystal.data;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -19,16 +19,16 @@ import java.sql.SQLException;
 @SuppressWarnings("unused")
 public class DatabaseConnector {
 
-    private final ICrystalSQLConfig config;
+    private final IDatabaseConfig config;
     private HikariDataSource hikariDataSource = null;
     private boolean initialized = false;
 
-    public DatabaseConnector(@NotNull ICrystalSQLConfig config) {
+    public DatabaseConnector(@NotNull final IDatabaseConfig config) {
         this.config = config;
 
         final var type = config.databaseType();
         if (type.equals(DatabaseType.SQLITE)) {
-            File storage = new File(config.getDataFolder(), "storage.db");
+            final var storage = new File(config.getDataFolder(), "storage.db");
             if (!storage.exists()) {
                 try {
                     storage.createNewFile();
@@ -37,7 +37,7 @@ public class DatabaseConnector {
                 }
             }
 
-            HikariConfig hikariConfig = new HikariConfig();
+            final var hikariConfig = new HikariConfig();
 
             hikariConfig.setPoolName(config.getPluginName() + "-SQLite");
             hikariConfig.setDriverClassName("org.sqlite.JDBC");
@@ -47,23 +47,15 @@ public class DatabaseConnector {
             this.initialized = true;
             config.getLogger().debug("Successfully loaded SQLite storage!");
         } else if (type.equals(DatabaseType.MYSQL)) {
-            HikariConfig hikariConfig = setupHikariConfig();
-
-            if (!config.properties().isEmpty()) {
-                config.properties().forEach(hikariConfig::addDataSourceProperty);
-            } else {
-                hikariConfig.addDataSourceProperty("useUnicode", true);
-                hikariConfig.addDataSourceProperty("characterEncoding", "utf8");
-            }
-
-            this.hikariDataSource = new HikariDataSource(hikariConfig);
+            this.hikariDataSource = new HikariDataSource(setupHikariConfig());
             this.initialized = true;
             config.getLogger().debug("Successfully loaded MySQL storage");
         }
     }
 
-    private @NotNull HikariConfig setupHikariConfig() {
-        HikariConfig hikariConfig = new HikariConfig();
+    @NotNull
+    private HikariConfig setupHikariConfig() {
+        final var hikariConfig = new HikariConfig();
 
         hikariConfig.setPoolName(config.getPluginName() + "-MySQL");
         hikariConfig.setDriverClassName("com.mysql.cj.jdbc.Driver");
@@ -91,15 +83,23 @@ public class DatabaseConnector {
         hikariConfig.addDataSourceProperty("alwaysSendSetIsolation", "false");
         hikariConfig.addDataSourceProperty("cacheCallableStmts", "true");
 
+        if (!config.properties().isEmpty()) {
+            config.properties().forEach(hikariConfig::addDataSourceProperty);
+        } else {
+            hikariConfig.addDataSourceProperty("useUnicode", true);
+            hikariConfig.addDataSourceProperty("characterEncoding", "utf8");
+        }
+
         return hikariConfig;
     }
 
-    public @NotNull Connection getConnection() throws SQLException {
+    @NotNull
+    public Connection getConnection() throws SQLException {
         if (this.hikariDataSource == null) {
             throw new SQLException("Unable to get a connection from the pool. (hikari is null)");
         }
 
-        Connection connection = this.hikariDataSource.getConnection();
+        final var connection = this.hikariDataSource.getConnection();
         if (connection == null) {
             throw new SQLException("Unable to get a connection from the pool. (getConnection returned null)");
         }
@@ -107,7 +107,8 @@ public class DatabaseConnector {
         return connection;
     }
 
-    public @NotNull ICrystalSQLConfig getConfig() {
+    @NotNull
+    public IDatabaseConfig getConfig() {
         return config;
     }
 
@@ -133,8 +134,8 @@ public class DatabaseConnector {
      *
      * @param callback The callback to execute once the connection is retrieved
      */
-    public void connect(@NotNull ConnectionCallback callback) {
-        try (Connection connection = getConnection()) {
+    public void connect(@NotNull final ConnectionCallback callback) {
+        try (final var connection = getConnection()) {
             callback.accept(connection, getStorageType());
         } catch (SQLException ex) {
             config.getLogger().error("An error occured executing a SQL query", ex);
@@ -146,7 +147,8 @@ public class DatabaseConnector {
      *
      * @return database type
      */
-    public @NotNull DatabaseType getStorageType() {
+    @NotNull
+    public DatabaseType getStorageType() {
         return config.databaseType();
     }
 
@@ -154,6 +156,6 @@ public class DatabaseConnector {
      * Wraps a connection in a callback which will automagically handle catching sql errors
      */
     public interface ConnectionCallback {
-        void accept(@NotNull Connection connection, @NotNull DatabaseType type) throws SQLException;
+        void accept(@NotNull final Connection connection, @NotNull final DatabaseType type) throws SQLException;
     }
 }

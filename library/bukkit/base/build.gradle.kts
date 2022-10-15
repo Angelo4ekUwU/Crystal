@@ -13,7 +13,7 @@ dependencies {
     api(libs.configurate)
     api(projects.bukkit.locale)
     api(projects.bukkit.compat)
-    api(projects.core.sql)
+    api(projects.core.database)
 
     compileOnly(libs.bukkit)
     compileOnly(libs.luckperms)

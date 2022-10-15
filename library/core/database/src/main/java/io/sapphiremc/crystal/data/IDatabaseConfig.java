@@ -5,7 +5,7 @@
  * license that can be found in the LICENSE file or at
  * https://opensource.org/licenses/MIT.
  */
-package io.sapphiremc.crystal.sql;
+package io.sapphiremc.crystal.data;
 
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -13,10 +13,10 @@ import org.slf4j.Logger;
 import java.io.File;
 import java.util.Map;
 
-public interface ICrystalSQLConfig {
+public interface IDatabaseConfig {
     @NotNull Logger getLogger();
 
-    void runSyncTask(@NotNull Runnable task);
+    void runSyncTask(@NotNull final Runnable task);
 
     @NotNull File getDataFolder();
 
@@ -25,15 +25,18 @@ public interface ICrystalSQLConfig {
 
     @NotNull DatabaseType databaseType();
 
-    @NotNull String address();
+
+    /* The properties below are for MySQL only. */
+
+    String address();
 
     int port();
 
-    @NotNull String database();
+    String database();
 
-    @NotNull String username();
+    String username();
 
-    @NotNull String password();
+    String password();
 
     short maxPoolSize();
 
@@ -45,5 +48,5 @@ public interface ICrystalSQLConfig {
 
     int connectionTimeout();
 
-    @NotNull Map<String, String> properties();
+    Map<String, String> properties();
 }

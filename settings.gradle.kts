@@ -24,12 +24,12 @@ dependencyResolutionManagement {
             library("holographicdisplays", "me.filoghost.holographicdisplays:holographicdisplays-legacy-api-v2:3.0.0-SNAPSHOT")
             library("gold", "io.sapphiremc.gold:gold-api:1.3.1")
             library("worldedit", "com.sk89q.worldedit:worldedit-bukkit:7.2.12")
+            library("nbt", "de.tr7zw:item-nbt-api:2.10.0")
 
             library("annotations", "org.jetbrains:annotations:23.0.0")
             library("lombok", "org.projectlombok:lombok:1.18.24")
             library("commons-lang3", "org.apache.commons:commons-lang3:3.12.0")
             library("configurate", "org.spongepowered:configurate-hocon:4.1.2")
-            library("snakeyaml", "org.yaml:snakeyaml:1.30")
 
             library("hikari", "com.zaxxer:HikariCP:5.0.1")
             library("mysql-connector", "mysql:mysql-connector-java:8.0.29")

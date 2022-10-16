@@ -11,6 +11,5 @@ crystalModule {
 
 dependencies {
     api(libs.bundles.sql)
-
     implementation(libs.annotations)
 }

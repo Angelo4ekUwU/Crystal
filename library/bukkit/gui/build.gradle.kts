@@ -10,11 +10,5 @@ crystalModule {
 }
 
 dependencies {
-    implementation(projects.bukkit.utils)
-    implementation(libs.nbt)
     compileOnly(libs.bukkit)
-}
-
-tasks.shadowJar {
-    relocate("de.tr7zw.changeme", "io.sapphiremc.crystal.lib")
 }

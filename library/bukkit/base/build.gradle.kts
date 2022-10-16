@@ -12,7 +12,7 @@ crystalModule {
 dependencies {
     api(libs.configurate)
     api(projects.bukkit.locale)
-    api(projects.bukkit.compat)
+    api(projects.bukkit.compatibility)
     api(projects.core.database)
 
     compileOnly(libs.bukkit)

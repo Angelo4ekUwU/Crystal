@@ -11,4 +11,6 @@ crystalModule {
 
 dependencies {
     compileOnly(libs.bukkit)
+    compileOnly(libs.configurate)
+    implementation(projects.bukkit.configuration)
 }

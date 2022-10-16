@@ -7,7 +7,6 @@
  */
 package io.sapphiremc.crystal.locale;
 
-import org.bukkit.configuration.file.FileConfiguration;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,9 +14,9 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.util.List;
 
-public interface ICrystalLocaleModule {
+public interface ILocaleConfig {
 
-    Logger LOGGER = LoggerFactory.getLogger("Crystal Locale");
+    Logger getLogger();
 
     @NotNull
     File getDataFolder();
@@ -27,9 +26,6 @@ public interface ICrystalLocaleModule {
 
     @NotNull
     List<String> stylish(@NotNull final List<String> collection);
-
-    @NotNull
-    FileConfiguration getFileConfig(@NotNull final File file);
 
     @NotNull
     String defaultLang();

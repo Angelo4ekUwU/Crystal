@@ -13,6 +13,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Objects;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -20,20 +21,15 @@ public class JarUtils {
 
     public static final char JAR_SEPARATOR = '/';
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public static void copyFolderFromJar(String folderName, File destFolder, CopyOption option) throws IOException {
-        copyFolderFromJar(folderName, destFolder, option, null);
-    }
-
-    public static void copyFolderFromJar(String folderName, File destFolder, CopyOption option, PathTrimmer trimmer) throws IOException {
         if (!destFolder.exists())
             destFolder.mkdirs();
 
-        byte[] buffer = new byte[1024];
+        final var buffer = new byte[1024];
 
         File fullPath = null;
-        String path = JarUtils.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-        if (trimmer != null)
-            path = trimmer.trim(path);
+        var path = JarUtils.class.getProtectionDomain().getCodeSource().getLocation().getPath();
         try {
             if (!path.startsWith("file"))
                 path = "file://" + path;
@@ -42,14 +38,14 @@ public class JarUtils {
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
-        ZipInputStream zis = new ZipInputStream(new FileInputStream(fullPath));
+        final var zis = new ZipInputStream(new FileInputStream(Objects.requireNonNull(fullPath)));
 
         ZipEntry entry;
         while ((entry = zis.getNextEntry()) != null) {
             if (!entry.getName().startsWith(folderName + JAR_SEPARATOR))
                 continue;
 
-            String fileName = entry.getName();
+            final var  fileName = entry.getName();
 
             if (fileName.charAt(fileName.length() - 1) == JAR_SEPARATOR) {
                 File file = new File(destFolder + File.separator + fileName);
@@ -60,7 +56,7 @@ public class JarUtils {
                 continue;
             }
 
-            File file = new File(destFolder + File.separator + fileName);
+            final var  file = new File(destFolder + File.separator + fileName);
             if (option == CopyOption.COPY_IF_NOT_EXIST && file.exists())
                 continue;
 
@@ -69,7 +65,7 @@ public class JarUtils {
 
             if (!file.exists())
                 file.createNewFile();
-            FileOutputStream fos = new FileOutputStream(file);
+            final var  fos = new FileOutputStream(file);
 
             int len;
             while ((len = zis.read(buffer)) > 0) {
@@ -84,10 +80,5 @@ public class JarUtils {
 
     public enum CopyOption {
         COPY_IF_NOT_EXIST, REPLACE_IF_EXIST
-    }
-
-    @FunctionalInterface
-    public interface PathTrimmer {
-        String trim(String original);
     }
 }

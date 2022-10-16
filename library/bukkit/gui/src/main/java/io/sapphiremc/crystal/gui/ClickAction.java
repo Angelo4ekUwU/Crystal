@@ -5,10 +5,9 @@
  * license that can be found in the LICENSE file or at
  * https://opensource.org/licenses/MIT.
  */
-package io.sapphiremc.crystal.gui.interfaces;
+package io.sapphiremc.crystal.gui;
 
-import io.sapphiremc.crystal.gui.events.GuiClickEvent;
-
-public interface ClickHandler {
-    void onClick(final GuiClickEvent event);
+@FunctionalInterface
+public interface ClickAction {
+    void click(ClickContext context);
 }

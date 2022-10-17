@@ -29,13 +29,16 @@ dependencyResolutionManagement {
             library("annotations", "org.jetbrains:annotations:23.0.0")
             library("lombok", "org.projectlombok:lombok:1.18.24")
             library("commons-lang3", "org.apache.commons:commons-lang3:3.12.0")
-            library("configurate", "org.spongepowered:configurate-hocon:4.1.2")
+            library("hocon", "org.spongepowered:configurate-hocon:4.1.2")
+            library("yaml", "org.spongepowered:configurate-yaml:4.1.2")
+            library("gson", "org.spongepowered:configurate-gson:4.1.2")
 
             library("hikari", "com.zaxxer:HikariCP:5.0.1")
             library("mysql-connector", "mysql:mysql-connector-java:8.0.29")
             library("sqlite-jdbc", "org.xerial:sqlite-jdbc:3.39.3.0")
 
             bundle("sql", listOf("hikari", "mysql-connector"))
+            bundle("configurate", listOf("hocon", "yaml", "gson"))
         }
     }
 }

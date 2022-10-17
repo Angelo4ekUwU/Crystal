@@ -8,5 +8,10 @@ crystalModule {
 dependencies {
     compileOnly(libs.bukkit)
     implementation(projects.bukkit.utils)
-    api(libs.configurate)
+    api(libs.bundles.configurate) {
+        exclude("com.google.code.gson")
+        exclude("com.google.errorprone")
+        exclude("org.yaml")
+        exclude("org.checkerframework")
+    }
 }

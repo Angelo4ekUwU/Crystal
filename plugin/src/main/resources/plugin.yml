@@ -1,0 +1,5 @@
+name: Crystal
+main: io.sapphiremc.crystal.plugin.CrystalPlugin
+version: ${version}
+author: DenaryDev
+api-version: 1.19

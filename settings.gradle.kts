@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 import java.nio.file.Files
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
@@ -45,6 +47,8 @@ dependencyResolutionManagement {
 
 rootProject.name = "crystal"
 
+include("plugin")
+
 library("core")
 library("bukkit")
 
@@ -56,7 +60,7 @@ fun library(library: String) {
 
     rootProject.projectDir.toPath().resolve("library/$library/").toFile().listFiles()?.forEach {
         // Is the module disabled?
-        if (it.isDirectory()
+        if (it.isDirectory
             && it.name != "src" // Ignore sources
             && it.name != "build" // Ignore build artifacts
             && !it.name.startsWith(".") // Ignore anything hidden on unix-like OSes

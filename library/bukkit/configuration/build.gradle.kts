@@ -1,7 +1,3 @@
-plugins {
-    id("crystal.module")
-}
-
 crystalModule {
     name.set("Crystal Configuration")
     moduleName.set("configuration")

@@ -13,8 +13,12 @@ import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 
 import javax.inject.Inject;
+import java.io.Serial;
+import java.io.Serializable;
 
-public class CrystalModuleExtension extends CrystalExtension {
+public class CrystalModuleExtension extends CrystalExtension implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
     private final Property<String> name;
     private final Property<String> library;
     private final Property<String> moduleName;

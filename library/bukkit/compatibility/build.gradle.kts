@@ -1,7 +1,3 @@
-plugins {
-    id("crystal.module")
-}
-
 crystalModule {
     name.set("Crystal Bukkit Compatibilirt")
     moduleName.set("compatibility")

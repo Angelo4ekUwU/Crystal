@@ -17,7 +17,7 @@ afterEvaluate {
 
     publishing {
         publications.create<MavenPublication>("shadow") {
-            project.shadow.component(this)
+            artifact(tasks["shadowJar"])
             artifact(tasks["sourcesJar"])
             artifact(tasks["javadocJar"])
         }

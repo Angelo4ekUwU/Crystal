@@ -40,10 +40,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Crystal"
-
-// Build logic is an included build for holding the convention plugins for generating libraries and modules.
-includeBuild("build-logic")
+rootProject.name = "crystal"
 
 library("core")
 library("bukkit")

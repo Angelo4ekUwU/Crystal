@@ -1,7 +1,3 @@
-plugins {
-    id("crystal.module")
-}
-
 crystalModule {
     name.set("Crystal Database Connector")
     moduleName.set("database")

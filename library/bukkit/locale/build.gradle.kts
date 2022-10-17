@@ -1,7 +1,3 @@
-plugins {
-    id("crystal.module")
-}
-
 crystalModule {
     name.set("Crystal Locale")
     moduleName.set("locale")
@@ -11,6 +7,5 @@ crystalModule {
 
 dependencies {
     compileOnly(libs.bukkit)
-    compileOnly(libs.configurate)
     implementation(projects.bukkit.configuration)
 }

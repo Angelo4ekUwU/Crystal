@@ -15,17 +15,21 @@ import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.ConfigurationNode;
+import org.spongepowered.configurate.gson.GsonConfigurationLoader;
 import org.spongepowered.configurate.hocon.HoconConfigurationLoader;
+import org.spongepowered.configurate.loader.ConfigurationLoader;
 import org.spongepowered.configurate.serialize.SerializationException;
 import org.spongepowered.configurate.util.CheckedFunction;
+import org.spongepowered.configurate.yaml.NodeStyle;
+import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
 
+@SuppressWarnings("unused")
 public final class CrystalConfiguration {
 
     /**
-     * Returns hocon config loader with custom serializers.
+     * Returns hocon configuration loader with custom serializers.
      *
      * @param path Path to configuration file
      * @return {@link HoconConfigurationLoader}
@@ -41,20 +45,67 @@ public final class CrystalConfiguration {
     }
 
     /**
-     * Load configuration from file.
+     * Returns yaml configuration loader with custom serializers.
      *
      * @param path Path to configuration file
-     * @param clazz Configuration class type
+     * @return {@link YamlConfigurationLoader}
+     */
+    public static YamlConfigurationLoader yamlLoader(@NotNull final Path path) {
+        return YamlConfigurationLoader.builder()
+            .path(path)
+            .defaultOptions(options -> options.serializers(builder ->
+                builder.register(ItemStack.class, new ItemStackSerializer())
+                    .register(Location.class, new LocationSerializer())))
+            .nodeStyle(NodeStyle.BLOCK)
+            .indent(2)
+            .build();
+    }
+
+    /**
+     * Returns json configuration loader with custom serializers.
+     *
+     * @param path Path to configuration file
+     * @return {@link GsonConfigurationLoader}
+     */
+    public static GsonConfigurationLoader gsonLoader(@NotNull final Path path) {
+        return GsonConfigurationLoader.builder()
+            .path(path)
+            .defaultOptions(options -> options.serializers(builder ->
+                builder.register(ItemStack.class, new ItemStackSerializer())
+                    .register(Location.class, new LocationSerializer())))
+            .indent(2)
+            .build();
+    }
+
+    /**
+     * Load configuration from file using hocon loader.
+     *
+     * @param path        Path to configuration file
+     * @param clazz       Configuration class type
      * @param refreshNode refresh node or not
      * @return Configuration class instance with values
      * @throws ConfigurateException if configuration loading failed
      */
-    public static <T> T loadConfig(@NotNull final Path path, @NotNull final Class<T> clazz, final boolean refreshNode) throws ConfigurateException {
+    public static <T> T loadConfig(@NotNull final Path path, @NotNull final Class<T> clazz,
+                                   final boolean refreshNode) throws ConfigurateException {
+        return loadConfig(hoconLoader(path), clazz, refreshNode);
+    }
+
+    /**
+     * Load configuration from file using specified loader.
+     *
+     * @param loader      Configuration loader
+     * @param clazz       Configuration class type
+     * @param refreshNode refresh node or not
+     * @return Configuration class instance with values
+     * @throws ConfigurateException if configuration loading failed
+     */
+    public static <T> T loadConfig(@NotNull final ConfigurationLoader<? extends ConfigurationNode> loader, @NotNull final Class<T> clazz,
+                                   final boolean refreshNode) throws ConfigurateException {
         final var creator = creator(clazz, refreshNode);
-        final var loader = hoconLoader(path);
 
         final ConfigurationNode node;
-        if (Files.exists(path)) {
+        if (loader.canLoad()) {
             node = loader.load();
         } else {
             node = CommentedConfigurationNode.root(loader.defaultOptions());

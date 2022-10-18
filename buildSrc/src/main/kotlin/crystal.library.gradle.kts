@@ -17,6 +17,8 @@ java {
 }
 
 afterEvaluate {
+    group = "io.sapphiremc.crystal"
+
     subprojects.forEach {
         it.plugins.apply("crystal.module")
     }

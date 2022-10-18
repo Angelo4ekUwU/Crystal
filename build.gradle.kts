@@ -1,10 +1,11 @@
 plugins {
+    `java-library`
     `maven-publish`
 }
 
 allprojects {
     group = "io.sapphiremc"
-    version = "0.1.0-SNAPSHOT"
+    version = "1.0.0"
 }
 
 publishing {

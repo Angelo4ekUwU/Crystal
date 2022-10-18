@@ -8,16 +8,21 @@
 package io.sapphiremc.crystal.locale;
 
 import io.sapphiremc.crystal.configurate.CrystalConfiguration;
+import io.sapphiremc.crystal.utils.JarUtils;
+import io.sapphiremc.crystal.utils.TextUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.ConfigurateException;
+import org.spongepowered.configurate.ConfigurationNode;
+import org.spongepowered.configurate.loader.ConfigurationLoader;
 import org.spongepowered.configurate.serialize.SerializationException;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -28,35 +33,42 @@ import java.util.regex.Pattern;
 @SuppressWarnings("unused")
 public final class LocaleManager {
 
-    private final Pattern localePattern = Pattern.compile("([a-z]{2})_([a-z]{2}).conf");
-    private final Map<String, CommentedConfigurationNode> locales = new HashMap<>();
+    private final Plugin plugin;
+    private final LoaderType loaderType;
+    private final Pattern localePattern;
+    private final Map<String, ConfigurationNode> locales = new HashMap<>();
 
-    private ILocaleConfig config;
     private String defaultLang;
     private boolean usePlayerLang;
 
-    public void load(final ILocaleConfig config) {
-        this.config = config;
-        this.defaultLang = config.defaultLang();
-        this.usePlayerLang = config.usePlayerLang();
+    public LocaleManager(final Plugin plugin, final LoaderType loaderType) {
+        this.plugin = plugin;
+        this.loaderType = loaderType;
+        this.localePattern = Pattern.compile("([a-z]{2})_([a-z]{2})." + loaderType.getFormat());
+    }
 
-        config.getLogger().debug("Loading locale files...");
-        final var localesDir = new File(config.getDataFolder() + File.separator + "locales");
+    public void load(final String defaultLang, final boolean usePlayerLang) {
+        this.defaultLang = defaultLang;
+        this.usePlayerLang = usePlayerLang;
+
+        plugin.getSLF4JLogger().debug("Loading locale files...");
+        final var localesDir = new File(plugin.getDataFolder() + File.separator + "locales");
 
         if (!localesDir.exists()) {
             try {
-                JarUtils.copyFolderFromJar("locales", config.getDataFolder(), JarUtils.CopyOption.COPY_IF_NOT_EXIST);
+                JarUtils.copyFolderFromJar("locales", plugin.getDataFolder(), JarUtils.CopyOption.COPY_IF_NOT_EXIST);
             } catch (IOException e) {
                 throw new RuntimeException("Unable to copy locales folder from plugin ", e);
             }
         }
 
         for (final var file : Objects.requireNonNull(localesDir.listFiles())) {
-            final var loader = CrystalConfiguration.hoconLoader(file.toPath());
             if (!localePattern.matcher(file.getName()).matches()) {
-                config.getLogger().debug("Skipping file " + file.getName());
+                plugin.getSLF4JLogger().debug("Skipping file " + file.getName());
                 continue;
             }
+
+            final var loader = loaderType.getLoader(file.toPath());
 
             try {
                 locales.put(file.getName().replace(".conf", ""), loader.load());
@@ -66,10 +78,10 @@ public final class LocaleManager {
         }
 
         if (!locales.containsKey(defaultLang)) {
-            config.getLogger().warn("The locale file " + defaultLang + ".conf does not exist in " + localesDir.getPath() + " folder, using file en_us.conf");
+            plugin.getSLF4JLogger().warn("The locale file " + defaultLang + ".conf does not exist in " + localesDir.getPath() + " folder, using file en_us.conf");
         }
 
-        config.getLogger().warn("Successfully loaded " + locales.size() + " locales.");
+        plugin.getSLF4JLogger().warn("Successfully loaded " + locales.size() + " locales.");
     }
 
     @NotNull
@@ -80,16 +92,16 @@ public final class LocaleManager {
     @NotNull
     public Message getMessage(@Nullable final Player player, @NotNull final String key) {
         try {
-            if (getDefaultLang().node(key).isList()) {
+            if (getDefaultLocale().node(key).isList()) {
                 final List<String> listMsg;
                 listMsg = getLangFile(player).node(key).getList(String.class, Collections.emptyList());
                 if (listMsg.isEmpty()) {
-                    listMsg.addAll(getDefaultLang().node(key).getList(String.class, Collections.singletonList("<missing key: " + key + ">")));
+                    listMsg.addAll(getDefaultLocale().node(key).getList(String.class, Collections.singletonList("<missing key: " + key + ">")));
                 }
 
                 return new Message(listMsg);
             } else {
-                var stringMsg = getLangFile(player).node(key).getString(getDefaultLang().node(key).getString("<missing key: " + key + ">"));
+                var stringMsg = getLangFile(player).node(key).getString(getDefaultLocale().node(key).getString("<missing key: " + key + ">"));
                 return new Message(stringMsg);
             }
         } catch (SerializationException ex) {
@@ -98,19 +110,19 @@ public final class LocaleManager {
     }
 
     @NotNull
-    public CommentedConfigurationNode getDefaultLang() {
+    public ConfigurationNode getDefaultLocale() {
         return locales.get(defaultLang);
     }
 
     @NotNull
-    private CommentedConfigurationNode getLangFile(@Nullable final Player player) {
+    private ConfigurationNode getLangFile(@Nullable final Player player) {
         String langKey;
         if (player != null && usePlayerLang) {
             @SuppressWarnings("deprecation") final var playerLang = player.getLocale();
             if (locales.containsKey(playerLang)) {
                 langKey = playerLang;
             } else {
-                config.getLogger().debug("Cannot find language " + playerLang + " for player " + player.getName());
+                plugin.getSLF4JLogger().debug("Cannot find language " + playerLang + " for player " + player.getName());
                 langKey = defaultLang;
             }
         } else {
@@ -120,19 +132,19 @@ public final class LocaleManager {
         return locales.get(langKey);
     }
 
-    public final class Message {
-        private final MessageType type;
+    public static final class Message {
+        private final boolean isString;
         private String msg;
         private List<String> listMsg;
         private List<Pair> pairs;
 
         private Message(@NotNull final String msg) {
-            this.type = MessageType.STRING;
+            this.isString = true;
             this.msg = msg;
         }
 
         private Message(@NotNull final List<String> listMsg) {
-            this.type = MessageType.LIST;
+            this.isString = false;
             this.listMsg = listMsg;
         }
 
@@ -154,10 +166,10 @@ public final class LocaleManager {
          */
         public void send(@NotNull final CommandSender receiver) {
             prepareMessage();
-            if (type == MessageType.LIST) {
-                receiver.sendMessage(asList().toArray(new String[0]));
-            } else if (type == MessageType.STRING) {
+            if (this.isString) {
                 receiver.sendMessage(asString());
+            } else {
+                receiver.sendMessage(asList().toArray(new String[0]));
             }
         }
 
@@ -179,24 +191,63 @@ public final class LocaleManager {
             return listMsg;
         }
 
+        /**
+         * Replace all placeholders and process colors and gradients.
+         */
         private void prepareMessage() {
-            if (type == MessageType.LIST) {
+            if (isString) {
+                for (final var pair : pairs) {
+                    msg = msg.replace(pair.key(), pair.value());
+                }
+                msg = TextUtils.stylish(msg);
+            } else {
                 this.listMsg = listMsg.stream().map(s -> {
                     for (final var pair : pairs) {
                         s = s.replace(pair.key(), pair.value());
                     }
-                    return s;
+                    return TextUtils.stylish(s);
                 }).toList();
-            } else {
-                for (final var pair : pairs) {
-                    msg = msg.replace(pair.key(), pair.value());
-                }
-                msg = config.stylish(msg);
             }
         }
+    }
 
-        private enum MessageType {
-            STRING, LIST
+    public record Pair(String key, Object obj) {
+
+        public static Pair of(final String key, final Object value) {
+            return new Pair(key, value);
+        }
+
+        @Override
+        public String key() {
+            return "%" + key + "%";
+        }
+
+        public String value() {
+            return obj.toString();
+        }
+    }
+
+    public enum LoaderType {
+        HOCON("conf"),
+        YAML("yml"),
+        JSON("json");
+
+        private final String format;
+
+        LoaderType(String format) {
+            this.format = format;
+        }
+
+        public String getFormat() {
+            return format;
+        }
+
+        public ConfigurationLoader<? extends ConfigurationNode> getLoader(final Path path) {
+            return switch (this) {
+                case HOCON -> CrystalConfiguration.hoconLoader(path);
+                case YAML -> CrystalConfiguration.yamlLoader(path);
+                case JSON -> CrystalConfiguration.gsonLoader(path);
+            };
         }
     }
 }

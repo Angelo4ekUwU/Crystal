@@ -44,7 +44,7 @@ public final class LocaleManager {
     public LocaleManager(final Plugin plugin, final LoaderType loaderType) {
         this.plugin = plugin;
         this.loaderType = loaderType;
-        this.localePattern = Pattern.compile("([a-z]{2})_([a-z]{2})." + loaderType.getFormat());
+        this.localePattern = Pattern.compile("([a-z]{2})_([a-z]{2})" + loaderType.getFormat());
     }
 
     public void load(final String defaultLang, final boolean usePlayerLang) {

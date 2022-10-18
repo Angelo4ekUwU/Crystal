@@ -52,17 +52,22 @@ public final class LocaleManager {
         this.usePlayerLang = usePlayerLang;
 
         plugin.getSLF4JLogger().debug("Loading locale files...");
-        final var localesDir = new File(plugin.getDataFolder() + File.separator + "locales");
+        final var localeDir = new File(plugin.getDataFolder() + File.separator + "locale");
 
-        if (!localesDir.exists()) {
+        if (!localeDir.exists()) {
             try {
-                JarUtils.copyFolderFromJar("locales", plugin.getDataFolder(), JarUtils.CopyOption.COPY_IF_NOT_EXIST);
+                JarUtils.copyFolderFromJar("locale", plugin.getDataFolder(), JarUtils.CopyOption.COPY_IF_NOT_EXIST);
             } catch (IOException e) {
                 throw new RuntimeException("Unable to copy locales folder from plugin ", e);
             }
         }
 
-        for (final var file : Objects.requireNonNull(localesDir.listFiles())) {
+        if (localeDir.listFiles() == null || localeDir.listFiles().length < 1) {
+            plugin.getSLF4JLogger().warn("Locales not found");
+            return;
+        }
+
+        for (final var file : Objects.requireNonNull(localeDir.listFiles())) {
             if (!localePattern.matcher(file.getName()).matches()) {
                 plugin.getSLF4JLogger().debug("Skipping file " + file.getName());
                 continue;
@@ -78,7 +83,7 @@ public final class LocaleManager {
         }
 
         if (!locales.containsKey(defaultLang)) {
-            plugin.getSLF4JLogger().warn("The locale file " + defaultLang + ".conf does not exist in " + localesDir.getPath() + " folder, using file en_us.conf");
+            plugin.getSLF4JLogger().warn("The locale file " + defaultLang + ".conf does not exist in " + localeDir.getPath() + " folder, using file en_us.conf");
         }
 
         plugin.getSLF4JLogger().warn("Successfully loaded " + locales.size() + " locales.");

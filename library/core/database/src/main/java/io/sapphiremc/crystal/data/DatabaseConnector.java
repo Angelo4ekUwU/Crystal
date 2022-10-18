@@ -19,11 +19,11 @@ import java.sql.SQLException;
 @SuppressWarnings("unused")
 public class DatabaseConnector {
 
-    private final IDatabaseConfig config;
+    private final AbstractDatabaseConfig config;
     private HikariDataSource hikariDataSource = null;
     private boolean initialized = false;
 
-    public DatabaseConnector(@NotNull final IDatabaseConfig config) {
+    DatabaseConnector(@NotNull final AbstractDatabaseConfig config) {
         this.config = config;
 
         final var type = config.databaseType();
@@ -93,6 +93,10 @@ public class DatabaseConnector {
         return hikariConfig;
     }
 
+    /**
+     * @return {@link Connection}
+     * @throws SQLException when the connection could not be received
+     */
     @NotNull
     public Connection getConnection() throws SQLException {
         if (this.hikariDataSource == null) {
@@ -107,8 +111,11 @@ public class DatabaseConnector {
         return connection;
     }
 
+    /**
+     * @return Current database config
+     */
     @NotNull
-    public IDatabaseConfig getConfig() {
+    public AbstractDatabaseConfig getConfig() {
         return config;
     }
 

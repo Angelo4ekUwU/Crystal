@@ -24,11 +24,16 @@ public abstract class AbstractDataManager {
 
     protected final ExecutorService asyncPool = Executors.newSingleThreadExecutor();
 
-    public void loadDatabase(@NotNull final DatabaseConnector databaseConnector) {
-        this.databaseConnector = databaseConnector;
+    public void loadDatabase(@NotNull final AbstractDatabaseConfig databaseConfig) {
+        this.databaseConnector = new DatabaseConnector(databaseConfig);
         onDatabaseLoad();
     }
 
+    /**
+     * Called when loading the database
+     * <p>
+     * You can use this method to create tables in the database.
+     */
     protected abstract void onDatabaseLoad();
 
     /**

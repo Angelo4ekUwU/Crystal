@@ -7,14 +7,19 @@
  */
 package io.sapphiremc.crystal.utils;
 
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Base64;
 import java.util.List;
+import java.util.UUID;
 
 @SuppressWarnings("unused")
 public final class ItemUtils {
@@ -114,5 +119,42 @@ public final class ItemUtils {
         }
 
         return item;
+    }
+
+    @NotNull
+    public static ItemStack getCustomHead(final String texture) {
+        return getCustomHead(null, texture);
+    }
+
+    @NotNull
+    public static ItemStack getCustomHead(final String signature, final String texture) {
+        final var head = new ItemStack(Material.PLAYER_HEAD);
+        if (texture == null)
+            return head;
+
+        final var skullMeta = (SkullMeta) head.getItemMeta();
+        GameProfile profile;
+
+        if (texture.endsWith("=")) {
+            profile = new GameProfile(UUID.nameUUIDFromBytes(texture.getBytes()), "CrystalCustomHead");
+            if (signature == null)
+                profile.getProperties().put("textures", new Property("texture", texture.replaceAll("=", "")));
+            else
+                profile.getProperties().put("textures", new Property("textures", texture, signature));
+        } else {
+            profile = new GameProfile(UUID.nameUUIDFromBytes(texture.getBytes()), "CrystalCustomHead");
+            final var encodedData = Base64.getEncoder().encode(String.format("{textures:{SKIN:{url:\"https://textures.minecraft.net/texture/%s\"}}}", texture).getBytes());
+            profile.getProperties().put("textures", new Property("textures", new String(encodedData)));
+        }
+
+        try {
+            final var profileField = skullMeta.getClass().getDeclaredField("profile");
+            profileField.setAccessible(true);
+            profileField.set(skullMeta, profile);
+            head.setItemMeta(skullMeta);
+            return head;
+        } catch (NoSuchFieldException | IllegalAccessException | SecurityException ex) {
+            throw new RuntimeException("Reflection error while setting head texture", ex);
+        }
     }
 }

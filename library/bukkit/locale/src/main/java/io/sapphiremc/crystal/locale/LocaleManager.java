@@ -27,7 +27,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.regex.Pattern;
 
 @SuppressWarnings("unused")
@@ -62,12 +61,13 @@ public final class LocaleManager {
             }
         }
 
-        if (localeDir.listFiles() == null || localeDir.listFiles().length < 1) {
+        if (localeDir.listFiles() == null && localeDir.listFiles().length < 1) {
             plugin.getSLF4JLogger().warn("Locales not found");
             return;
         }
 
-        for (final var file : Objects.requireNonNull(localeDir.listFiles())) {
+        for (final var file : localeDir.listFiles()) {
+            if (file == null) continue;
             if (!localePattern.matcher(file.getName()).matches()) {
                 plugin.getSLF4JLogger().debug("Skipping file " + file.getName());
                 continue;
@@ -76,7 +76,7 @@ public final class LocaleManager {
             final var loader = loaderType.getLoader(file.toPath());
 
             try {
-                locales.put(file.getName().replace(".conf", ""), loader.load());
+                locales.put(file.getName().replace(loaderType.format, ""), loader.load());
             } catch (ConfigurateException ex) {
                 throw new RuntimeException("Failed to load locale " + file.getName(), ex);
             }

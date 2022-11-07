@@ -5,7 +5,7 @@ plugins {
 
 allprojects {
     group = "io.sapphiremc"
-    version = "1.0.1"
+    version = "1.0.2-SNAPSHOT"
 }
 
 publishing {

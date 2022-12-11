@@ -28,12 +28,16 @@ dependencyResolutionManagement {
             library("worldedit", "com.sk89q.worldedit:worldedit-bukkit:7.2.12")
             library("nbt", "de.tr7zw:item-nbt-api:2.10.0")
 
+            library("slf4j", "org.slf4j:slf4j-api:2.0.3")
             library("annotations", "org.jetbrains:annotations:23.0.0")
             library("lombok", "org.projectlombok:lombok:1.18.24")
             library("commons-lang3", "org.apache.commons:commons-lang3:3.12.0")
-            library("hocon", "org.spongepowered:configurate-hocon:4.1.2")
-            library("yaml", "org.spongepowered:configurate-yaml:4.1.2")
-            library("gson", "org.spongepowered:configurate-gson:4.1.2")
+
+            val configurateVersion = "4.1.2"
+            library("configurate", "org.spongepowered:configurate-core:$configurateVersion")
+            library("hocon", "org.spongepowered:configurate-hocon:$configurateVersion")
+            library("yaml", "org.spongepowered:configurate-yaml:$configurateVersion")
+            library("gson", "org.spongepowered:configurate-gson:$configurateVersion")
 
             library("hikari", "com.zaxxer:HikariCP:5.0.1")
             library("mysql-connector", "mysql:mysql-connector-java:8.0.29")
@@ -66,7 +70,10 @@ fun library(library: String) {
             && !it.name.startsWith(".") // Ignore anything hidden on unix-like OSes
         ) {
             // Libraries can be disabled by adding a file named DISABLE at the root of its directory
-            if (Files.exists(it.toPath().resolve("build.gradle.kts")) && Files.notExists(it.toPath().resolve("DISABLE"))) {
+            if (Files.exists(it.toPath().resolve("build.gradle.kts")) && Files.notExists(
+                    it.toPath().resolve("DISABLE")
+                )
+            ) {
                 include("$library:${it.name}")
             }
         }

@@ -7,9 +7,8 @@
  */
 package io.sapphiremc.crystal.locale;
 
+import io.sapphiremc.crystal.CrystalPlugin;
 import io.sapphiremc.crystal.utils.JarUtils;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.configurate.ConfigurateException;
@@ -28,50 +27,48 @@ import java.util.regex.Pattern;
 @SuppressWarnings({"unused", "ConstantConditions"})
 public final class LocaleManager {
 
-    private final Plugin plugin;
+    private final CrystalPlugin plugin;
     private final LoaderType loaderType;
     private final Pattern localePattern;
     private final Map<String, ConfigurationNode> locales = new HashMap<>();
 
-    private String defaultLang;
-    private boolean usePlayerLang;
+    private String defaultLocale;
 
-    public LocaleManager(final Plugin plugin, final LoaderType loaderType) {
+    public LocaleManager(final CrystalPlugin plugin, final LoaderType loaderType) {
         this.plugin = plugin;
         this.loaderType = loaderType;
         this.localePattern = Pattern.compile("([a-z]{2})_([a-z]{2})" + loaderType.getExtension());
     }
 
-    public void load(final String defaultLang, final boolean usePlayerLang) {
-        this.defaultLang = defaultLang;
-        this.usePlayerLang = usePlayerLang;
+    public void load(final String defaultLocale) {
+        this.defaultLocale = defaultLocale;
 
-        plugin.getSLF4JLogger().debug("Loading locale files...");
-        final var localeDir = new File(plugin.getDataFolder() + File.separator + "locale");
+        plugin.logger().debug("Loading locale files...");
+        final var localeDir = new File(plugin.dataFolder() + File.separator + "locale");
 
         if (!localeDir.exists()) {
             try {
-                JarUtils.copyFolderFromJar("locale", plugin.getDataFolder(), JarUtils.CopyOption.COPY_IF_NOT_EXIST);
+                JarUtils.copyFolderFromJar("locale", plugin.dataFolder(), JarUtils.CopyOption.COPY_IF_NOT_EXIST);
             } catch (IOException e) {
                 throw new RuntimeException("Unable to copy locales folder from plugin ", e);
             }
         }
 
         if (!localeDir.exists() || !localeDir.isDirectory()) {
-            plugin.getSLF4JLogger().warn("Failed to copy locales from plugin");
-            plugin.getServer().getPluginManager().disablePlugin(plugin);
+            plugin.logger().warn("Failed to copy locales from plugin");
+            plugin.disable();
             return;
         }
 
         if (localeDir.listFiles() == null && localeDir.listFiles().length < 1) {
-            plugin.getSLF4JLogger().warn("Locales not found");
+            plugin.logger().warn("Locales not found");
             return;
         }
 
         for (final var file : localeDir.listFiles()) {
             if (file == null) continue;
             if (!localePattern.matcher(file.getName()).matches()) {
-                plugin.getSLF4JLogger().info("Skipping file " + file.getName());
+                plugin.logger().info("Skipping file " + file.getName());
                 continue;
             }
 
@@ -84,11 +81,11 @@ public final class LocaleManager {
             }
         }
 
-        if (!locales.containsKey(defaultLang)) {
-            plugin.getSLF4JLogger().warn("The locale file " + defaultLang + loaderType.getExtension() + " does not exist in " + localeDir.getPath() + " folder, try using en_us" + loaderType.getExtension());
+        if (!locales.containsKey(defaultLocale)) {
+            plugin.logger().warn("The locale file " + defaultLocale + loaderType.getExtension() + " does not exist in " + localeDir.getPath() + " folder, try using en_us" + loaderType.getExtension());
         }
 
-        plugin.getSLF4JLogger().warn("Successfully loaded " + locales.size() + " locales.");
+        plugin.logger().warn("Successfully loaded " + locales.size() + " locales.");
     }
 
     @NotNull
@@ -97,20 +94,20 @@ public final class LocaleManager {
     }
 
     @NotNull
-    public Message getMessage(@Nullable final Player player, @NotNull final String... path) {
+    public Message getMessage(@Nullable final String locale, @NotNull final String... path) {
         try {
             final var finalPath = (Object[]) (path.length == 1 ? path[0].split("\\.") : path);
             if (getDefaultLocale().node(finalPath).isList()) {
                 final List<String> listMsg;
-                listMsg = getLangFile(player).node(finalPath).getList(String.class, Collections.emptyList());
+                listMsg = getLocale(locale).node(finalPath).getList(String.class, Collections.emptyList());
                 if (listMsg.isEmpty()) {
                     listMsg.addAll(getDefaultLocale().node(finalPath).getList(String.class, Collections.singletonList("<missing path: " + Arrays.toString(finalPath) + ">")));
                 }
 
-                return new Message(listMsg);
+                return new Message(plugin, listMsg);
             } else {
-                var stringMsg = getLangFile(player).node(finalPath).getString(getDefaultLocale().node(finalPath).getString("<missing path: " + Arrays.toString(finalPath) + ">"));
-                return new Message(stringMsg);
+                var stringMsg = getLocale(locale).node(finalPath).getString(getDefaultLocale().node(finalPath).getString("<missing path: " + Arrays.toString(finalPath) + ">"));
+                return new Message(plugin, stringMsg);
             }
         } catch (SerializationException ex) {
             throw new RuntimeException("Failed to get message", ex);
@@ -119,24 +116,19 @@ public final class LocaleManager {
 
     @NotNull
     public ConfigurationNode getDefaultLocale() {
-        return locales.get(defaultLang);
+        return locales.get(defaultLocale);
     }
 
     @NotNull
-    private ConfigurationNode getLangFile(@Nullable final Player player) {
-        String langKey;
-        if (player != null && usePlayerLang) {
-            @SuppressWarnings("deprecation") final var playerLang = player.getLocale();
-            if (locales.containsKey(playerLang)) {
-                langKey = playerLang;
-            } else {
-                plugin.getSLF4JLogger().debug("Cannot find language " + playerLang + " for player " + player.getName());
-                langKey = defaultLang;
-            }
+    private ConfigurationNode getLocale(@Nullable final String locale) {
+        String key;
+        if (locale != null && locales.containsKey(locale)) {
+            key = locale;
         } else {
-            langKey = defaultLang;
+            plugin.logger().debug("Locale {} not found, try using default locale", locale);
+            key = defaultLocale;
         }
 
-        return locales.get(langKey);
+        return locales.get(key);
     }
 }

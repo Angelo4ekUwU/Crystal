@@ -7,11 +7,8 @@
  */
 package io.sapphiremc.crystal.configurate;
 
-import io.sapphiremc.crystal.configurate.serializers.ItemStackSerializer;
-import io.sapphiremc.crystal.configurate.serializers.LocationSerializer;
-import org.bukkit.Location;
-import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.ConfigurationNode;
@@ -19,62 +16,110 @@ import org.spongepowered.configurate.gson.GsonConfigurationLoader;
 import org.spongepowered.configurate.hocon.HoconConfigurationLoader;
 import org.spongepowered.configurate.loader.ConfigurationLoader;
 import org.spongepowered.configurate.serialize.SerializationException;
+import org.spongepowered.configurate.serialize.TypeSerializer;
+import org.spongepowered.configurate.serialize.TypeSerializerCollection;
 import org.spongepowered.configurate.util.CheckedFunction;
 import org.spongepowered.configurate.yaml.NodeStyle;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 import java.nio.file.Path;
+import java.util.Map;
 
-@SuppressWarnings("unused")
-public final class CrystalConfiguration {
+@SuppressWarnings({"unused", "rawtypes"})
+public final class CrystalConfig {
 
     /**
-     * Returns hocon configuration loader with custom serializers.
+     * Returns hocon configuration loader.
      *
      * @param path Path to configuration file
      * @return {@link HoconConfigurationLoader}
      */
     public static HoconConfigurationLoader hoconLoader(@NotNull final Path path) {
-        return HoconConfigurationLoader.builder()
-            .path(path)
-            .defaultOptions(options -> options.serializers(builder ->
-                builder.register(ItemStack.class, new ItemStackSerializer())
-                    .register(Location.class, new LocationSerializer())))
-            .emitJsonCompatible(false)
-            .build();
-    }
-
-    /**
-     * Returns yaml configuration loader with custom serializers.
-     *
-     * @param path Path to configuration file
-     * @return {@link YamlConfigurationLoader}
-     */
-    public static YamlConfigurationLoader yamlLoader(@NotNull final Path path) {
-        return YamlConfigurationLoader.builder()
-            .path(path)
-            .defaultOptions(options -> options.serializers(builder ->
-                builder.register(ItemStack.class, new ItemStackSerializer())
-                    .register(Location.class, new LocationSerializer())))
-            .nodeStyle(NodeStyle.BLOCK)
-            .indent(2)
-            .build();
+        return hoconLoader(path, null);
     }
 
     /**
      * Returns json configuration loader with custom serializers.
      *
      * @param path Path to configuration file
+     * @param serializers custom serializers
+     * @return {@link HoconConfigurationLoader}
+     */
+    public static HoconConfigurationLoader hoconLoader(@NotNull final Path path, @Nullable Map<Class, TypeSerializer> serializers) {
+        final var builder = HoconConfigurationLoader.builder()
+            .path(path)
+            .emitJsonCompatible(false);
+
+        if (serializers != null) {
+            final var collectionBuilder = TypeSerializerCollection.builder();
+            serializers.forEach(collectionBuilder::register);
+            return builder.defaultOptions(options -> options.serializers(collectionBuilder.build())).build();
+        } else {
+            return builder.build();
+        }
+    }
+
+    /**
+     * Returns yaml configuration loader.
+     *
+     * @param path Path to configuration file
+     * @return {@link YamlConfigurationLoader}
+     */
+    public static YamlConfigurationLoader yamlLoader(@NotNull final Path path) {
+        return yamlLoader(path, null);
+    }
+
+    /**
+     * Returns yaml configuration loader with custom serializers.
+     *
+     * @param path Path to configuration file
+     * @param serializers custom serializers
+     * @return {@link YamlConfigurationLoader}
+     */
+    public static YamlConfigurationLoader yamlLoader(@NotNull final Path path, @Nullable Map<Class, TypeSerializer> serializers) {
+        final var builder = YamlConfigurationLoader.builder()
+            .path(path)
+            .nodeStyle(NodeStyle.BLOCK)
+            .indent(2);
+
+        if (serializers != null) {
+            final var collectionBuilder = TypeSerializerCollection.builder();
+            serializers.forEach(collectionBuilder::register);
+            return builder.defaultOptions(options -> options.serializers(collectionBuilder.build())).build();
+        } else {
+            return builder.build();
+        }
+    }
+
+    /**
+     * Returns json configuration loader.
+     *
+     * @param path Path to configuration file
      * @return {@link GsonConfigurationLoader}
      */
     public static GsonConfigurationLoader gsonLoader(@NotNull final Path path) {
-        return GsonConfigurationLoader.builder()
+        return gsonLoader(path, null);
+    }
+
+    /**
+     * Returns json configuration loader with custom serializers.
+     *
+     * @param path Path to configuration file
+     * @param serializers custom serializers
+     * @return {@link GsonConfigurationLoader}
+     */
+    public static GsonConfigurationLoader gsonLoader(@NotNull final Path path, @Nullable Map<Class, TypeSerializer> serializers) {
+        final var builder = GsonConfigurationLoader.builder()
             .path(path)
-            .defaultOptions(options -> options.serializers(builder ->
-                builder.register(ItemStack.class, new ItemStackSerializer())
-                    .register(Location.class, new LocationSerializer())))
-            .indent(2)
-            .build();
+            .indent(2);
+
+        if (serializers != null) {
+            final var collectionBuilder = TypeSerializerCollection.builder();
+            serializers.forEach(collectionBuilder::register);
+            return builder.defaultOptions(options -> options.serializers(collectionBuilder.build())).build();
+        } else {
+            return builder.build();
+        }
     }
 
     /**

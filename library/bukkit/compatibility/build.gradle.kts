@@ -7,4 +7,5 @@ crystalModule {
 
 dependencies {
     compileOnly(libs.bukkit)
+    compileOnly(libs.commons.lang3)
 }

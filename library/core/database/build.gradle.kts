@@ -6,6 +6,6 @@ crystalModule {
 }
 
 dependencies {
+    api(projects.core.base)
     api(libs.bundles.sql)
-    implementation(libs.annotations)
 }

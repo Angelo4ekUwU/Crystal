@@ -7,7 +7,7 @@
  */
 package io.sapphiremc.crystal.locale;
 
-import io.sapphiremc.crystal.configurate.CrystalConfiguration;
+import io.sapphiremc.crystal.configurate.CrystalConfig;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.loader.ConfigurationLoader;
 
@@ -30,9 +30,9 @@ public enum LoaderType {
 
     public ConfigurationLoader<? extends ConfigurationNode> getLoader(final Path path) {
         return switch (this) {
-            case HOCON -> CrystalConfiguration.hoconLoader(path);
-            case YAML -> CrystalConfiguration.yamlLoader(path);
-            case JSON -> CrystalConfiguration.gsonLoader(path);
+            case HOCON -> CrystalConfig.hoconLoader(path);
+            case YAML -> CrystalConfig.yamlLoader(path);
+            case JSON -> CrystalConfig.gsonLoader(path);
         };
     }
 }

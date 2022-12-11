@@ -8,23 +8,13 @@
 package io.sapphiremc.crystal.data;
 
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
 
-import java.io.File;
 import java.util.Map;
 
 /**
  * Database configuration class
  */
 public abstract class AbstractDatabaseConfig {
-    public abstract @NotNull Logger getLogger();
-
-    public abstract void runSyncTask(@NotNull final Runnable task);
-
-    public abstract @NotNull File getDataFolder();
-
-    public abstract @NotNull String getPluginName();
-
 
     /**
      * Database type
@@ -33,6 +23,7 @@ public abstract class AbstractDatabaseConfig {
      * <p>
      * {@link AbstractDatabaseConfig#address()}, {@link AbstractDatabaseConfig#database()},
      * {@link AbstractDatabaseConfig#username()}, {@link AbstractDatabaseConfig#password()}
+     *
      * @see DatabaseType
      */
     public abstract @NotNull DatabaseType databaseType();

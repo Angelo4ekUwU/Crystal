@@ -7,29 +7,34 @@
  */
 package io.sapphiremc.crystal.locale;
 
+import io.sapphiremc.crystal.CrystalPlugin;
 import io.sapphiremc.crystal.utils.TextUtils;
-import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 @SuppressWarnings("unused")
 public class Message {
+    private final CrystalPlugin plugin;
     private final boolean isString;
     private final List<Pair> placeholders = new ArrayList<>();
     private String msg;
     private List<String> listMsg;
 
-    Message(@NotNull final String msg) {
-        this.isString = true;
+    Message(@NotNull final CrystalPlugin plugin, @NotNull final String msg) {
+        this.plugin = plugin;
         this.msg = msg;
+        this.isString = true;
     }
 
-    Message(@NotNull final List<String> listMsg) {
-        this.isString = false;
+    Message(@NotNull final CrystalPlugin plugin, @NotNull final List<String> listMsg) {
+        this.plugin = plugin;
         this.listMsg = listMsg;
+        this.isString = false;
     }
 
     /**
@@ -44,16 +49,23 @@ public class Message {
     }
 
     /**
-     * Send this message to the {@link CommandSender}
+     * Send this message to the console
+     */
+    public void send() {
+        send(null);
+    }
+
+    /**
+     * Send this message to the player
      *
      * @param target target
      */
-    public void send(@NotNull final CommandSender target) {
+    public void send(@Nullable final UUID target) {
         prepareMessage();
         if (this.isString) {
-            target.sendMessage(asString());
+            plugin.sendMessage(target, asString());
         } else {
-            target.sendMessage(asList().toArray(new String[0]));
+            plugin.sendMessage(target, asList().toArray(new String[0]));
         }
     }
 

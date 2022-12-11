@@ -13,11 +13,12 @@ dependencies {
 
     listOf(
         projects.bukkit.compatibility,
-        projects.bukkit.configuration,
+        projects.bukkit.configserializers,
         projects.bukkit.gui,
-        projects.bukkit.locale,
         projects.bukkit.utils,
-        projects.core.database
+        projects.core.database,
+        projects.core.locale,
+        projects.core.config,
     ).forEach {
         implementation(it)
     }

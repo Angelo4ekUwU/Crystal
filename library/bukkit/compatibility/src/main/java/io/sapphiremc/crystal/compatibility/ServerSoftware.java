@@ -84,7 +84,7 @@ public enum ServerSoftware {
         if (Bukkit.getServer().getClass().getName().contains("craftbukkit")) {
             return CRAFTBUKKIT;
         } else {
-            LoggerFactory.getLogger("CrystalCompat").error("Couldn't detect server type " + Bukkit.getServer().getName());
+            LoggerFactory.getLogger("Crystal").error("Couldn't detect server type " + Bukkit.getServer().getName());
             return UNKNOWN;
         }
     }

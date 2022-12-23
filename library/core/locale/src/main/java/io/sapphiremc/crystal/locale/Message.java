@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
 public class Message {
@@ -90,7 +91,7 @@ public class Message {
     private void prepareMessage() {
         if (isString) {
             if (placeholders.size() > 0) {
-                for (final var placeholder : placeholders) {
+                for (final Pair placeholder : placeholders) {
                     msg = msg.replace(placeholder.key(), placeholder.value());
                 }
             }
@@ -98,12 +99,12 @@ public class Message {
         } else {
             this.listMsg = listMsg.stream().map(s -> {
                 if (placeholders.size() > 0) {
-                    for (final var placeholder : placeholders) {
+                    for (final Pair placeholder : placeholders) {
                         s = s.replace(placeholder.key(), placeholder.value());
                     }
                 }
                 return TextUtils.stylish(s);
-            }).toList();
+            }).collect(Collectors.toList());
         }
     }
 }

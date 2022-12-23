@@ -113,39 +113,43 @@ public enum MethodMapping {
 
     public Method getMethod(final Class<?> clazz) {
         try {
-            var methodName = _1_18;
+            String methodName = _1_18;
             switch (ServerVersion.getServerVersion()) {
-                case v1_14_R1 -> {
+                case v1_14_R1: {
                     if (_1_14 != null) {
                         methodName = _1_14;
                     }
+                    break;
                 }
-                case v1_17_R1 -> {
+                case v1_17_R1: {
                     if (_1_17 != null) {
                         methodName = _1_17;
                     }
+                    break;
                 }
-                case v1_18_R1 -> {
+                case v1_18_R1: {
                     if (_1_18_2 != null) {
                         methodName = _1_18_2;
                     }
+                    break;
                 }
-                case v1_19_R1 -> {
+                case v1_19_R1: {
                     if (_1_19 != null) {
                         methodName = _1_19;
                     }
+                    break;
                 }
             }
 
             try {
-                final var method = clazz.getMethod(methodName, parameters);
+                final Method method = clazz.getMethod(methodName, parameters);
                 method.setAccessible(true);
 
                 return method;
             } catch (NullPointerException | NoSuchMethodException ex) {
                 if (saneFallback != null && !saneFallback.equals(methodName)) {
                     try {
-                        final var method = clazz.getMethod(saneFallback, parameters);
+                        final Method method = clazz.getMethod(saneFallback, parameters);
                         method.setAccessible(true);
 
                         return method;

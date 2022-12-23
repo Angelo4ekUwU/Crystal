@@ -7,6 +7,7 @@
  */
 package io.sapphiremc.crystal.utils;
 
+import io.sapphiremc.crystal.compatibility.ServerVersion;
 import net.md_5.bungee.api.ChatColor;
 
 import java.awt.Color;
@@ -15,6 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public final class TextUtils {
 
@@ -22,7 +24,7 @@ public final class TextUtils {
     private static final Pattern HEX_GRADIENT_PATTERN = Pattern.compile("\\{#([a-fA-F0-9]{6})(:#([a-fA-F0-9]{6}))+( )([^{}])*(})");
     private static final Pattern HEX_SPIGOT_PATTERN = Pattern.compile("§[xX](§[a-fA-F0-9]){6}");
 
-    private static final List<ChatColor> FORMAT_COLORS = List.of(ChatColor.BOLD, ChatColor.ITALIC, ChatColor.UNDERLINE, ChatColor.MAGIC, ChatColor.STRIKETHROUGH, ChatColor.RESET);
+    private static final List<ChatColor> FORMAT_COLORS = Arrays.asList(ChatColor.BOLD, ChatColor.ITALIC, ChatColor.UNDERLINE, ChatColor.MAGIC, ChatColor.STRIKETHROUGH, ChatColor.RESET);
 
     public static boolean isColor(final ChatColor color) {
         return !FORMAT_COLORS.contains(color);
@@ -62,28 +64,32 @@ public final class TextUtils {
             return null;
         }
 
-        var matcher = HEX_GRADIENT_PATTERN.matcher(text);
+        if (ServerVersion.isServerVersionBelow(ServerVersion.v1_16_R1)) {
+            return ChatColor.translateAlternateColorCodes('&', text);
+        }
 
-        var builder = new StringBuilder();
+        Matcher matcher = HEX_GRADIENT_PATTERN.matcher(text);
+
+        StringBuffer builder = new StringBuffer();
 
         while (matcher.find()) {
-            final var gradient = matcher.group();
+            final String gradient = matcher.group();
 
-            var groups = 0;
+            int groups = 0;
             for (int i = 1; gradient.charAt(i) == '#'; i += 8) {
                 groups++;
             }
 
-            var colors = new Color[groups];
+            Color[] colors = new Color[groups];
             for (int i = 0; i < groups; i++) {
                 colors[i] = ChatColor.of(gradient.substring((8 * i) + 1, (8 * i) + 8)).getColor();
             }
 
-            final var substring = gradient.substring((groups - 1) * 8 + 9, gradient.length() - 1);
+            final String substring = gradient.substring((groups - 1) * 8 + 9, gradient.length() - 1);
 
-            final var chars = substring.toCharArray();
+            final char[] chars = substring.toCharArray();
 
-            final var gradientBuilder = new StringBuilder();
+            final StringBuilder gradientBuilder = new StringBuilder();
 
             int colorLength = chars.length / (colors.length - 1);
             int lastColorLength;
@@ -95,14 +101,14 @@ public final class TextUtils {
                 lastColorLength = chars.length % (colorLength * (colors.length - 1)) + colorLength;
             }
 
-            final var currentStyles = new ArrayList<ChatColor>();
+            final List<ChatColor> currentStyles = new ArrayList<>();
             for (int i = 0; i < (colors.length - 1); i++) {
-                final var currentColorLength = ((i == colors.length - 2) ? lastColorLength : colorLength);
+                final int currentColorLength = ((i == colors.length - 2) ? lastColorLength : colorLength);
                 for (int j = 0; j < currentColorLength; j++) {
-                    final var color = calculateGradientColor(j + 1, currentColorLength, colors[i], colors[i + 1]);
-                    final var chatColor = ChatColor.of(color);
+                    final Color color = calculateGradientColor(j + 1, currentColorLength, colors[i], colors[i + 1]);
+                    final ChatColor chatColor = ChatColor.of(color);
 
-                    final var charIndex = colorLength * i + j;
+                    final int charIndex = colorLength * i + j;
                     if (charIndex + 1 < chars.length) {
                         if (chars[charIndex] == '&' || chars[charIndex] == '§') {
                             if (chars[charIndex + 1] == 'r') {
@@ -111,7 +117,7 @@ public final class TextUtils {
                                 continue;
                             }
 
-                            final var style = ChatColor.getByChar(chars[charIndex + 1]);
+                            final ChatColor style = ChatColor.getByChar(chars[charIndex + 1]);
                             if (style != null) {
                                 currentStyles.add(style);
                                 j++;
@@ -120,9 +126,9 @@ public final class TextUtils {
                         }
                     }
 
-                    final var colorBuilder = gradientBuilder.append(chatColor.toString());
+                    final StringBuilder colorBuilder = gradientBuilder.append(chatColor.toString());
 
-                    for (final var currentStyle : currentStyles) {
+                    for (final ChatColor currentStyle : currentStyles) {
                         colorBuilder.append(currentStyle.toString());
                     }
 
@@ -137,10 +143,10 @@ public final class TextUtils {
         text = builder.toString();
 
         matcher = HEX_COLORS_PATTERN.matcher(text);
-        builder = new StringBuilder();
+        builder = new StringBuffer();
 
         while (matcher.find()) {
-            final var hexColorString = matcher.group();
+            final String hexColorString = matcher.group();
             matcher.appendReplacement(builder, ChatColor.of(hexColorString.substring(1, hexColorString.length() - 1)).toString());
         }
 
@@ -153,10 +159,10 @@ public final class TextUtils {
      * Finds simple and gradient hex patterns in string list and converts it to Spigot format
      *
      * @param input string list to stylish
-     * @return stylished string list
+     * @return styled string list
      */
     public static List<String> stylish(List<String> input) {
-        return input.stream().map(TextUtils::stylish).toList();
+        return input.stream().map(TextUtils::stylish).collect(Collectors.toList());
     }
 
     private static Color calculateGradientColor(int x, int parts, Color from, Color to) {

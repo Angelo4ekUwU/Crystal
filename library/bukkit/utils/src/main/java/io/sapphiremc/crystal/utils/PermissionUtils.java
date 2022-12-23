@@ -9,18 +9,20 @@ package io.sapphiremc.crystal.utils;
 
 import org.bukkit.entity.Player;
 
+import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public final class PermissionUtils {
 
     public static int getNumberFromPermission(final Player player, final String permission) {
         Logger.getLogger("");
-        final var values = player.getEffectivePermissions().stream()
+        final List<Integer> values = player.getEffectivePermissions().stream()
             .filter(info -> info.getPermission().startsWith(permission))
             .map(info -> info.getPermission().substring(permission.length()))
             .map(Integer::parseInt)
             .sorted()
-            .toList();
+            .collect(Collectors.toList());
         return values.get(values.size() - 1);
     }
 }

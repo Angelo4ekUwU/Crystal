@@ -9,99 +9,155 @@ package io.sapphiremc.crystal.utils;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import io.sapphiremc.crystal.compatibility.ServerVersion;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Field;
 import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
 public final class ItemUtils {
 
     @NotNull
     public static ItemStack createItem(@NotNull final Material type, final int amount) {
-        return createItem(type, amount, null, null, null, null, null);
+        return createItem(type, amount, (short) 0, null, null, null, null, null);
+    }
+
+    @NotNull
+    public static ItemStack createItem(@NotNull final Material type, final int amount, final short durability) {
+        return createItem(type, amount, durability, null, null, null, null, null);
     }
 
     @NotNull
     public static ItemStack createItem(@NotNull final Material type, final int amount,
                                        @Nullable final String displayName) {
-        return createItem(type, amount, displayName, null, null, null, null);
+        return createItem(type, amount, (short) 0, displayName, null, null, null, null);
+    }
+
+    @NotNull
+    public static ItemStack createItem(@NotNull final Material type, final int amount, final short durability,
+                                       @Nullable final String displayName) {
+        return createItem(type, amount, durability, displayName, null, null, null, null);
     }
 
     @NotNull
     public static ItemStack createItem(@NotNull final Material type, final int amount,
                                        @Nullable final String displayName, @Nullable final Placeholder[] placeholders) {
-        return createItem(type, amount, displayName, null, placeholders, null, null);
+        return createItem(type, amount, (short) 0, displayName, null, placeholders, null, null);
     }
 
     @NotNull
-    public static ItemStack createItem(@NotNull final Material type, final int amount, @Nullable final String displayName,
-                                       @Nullable final List<String> lore) {
-        return createItem(type, amount, displayName, lore, null, null, null);
+    public static ItemStack createItem(@NotNull final Material type, final int amount, final short durability,
+                                       @Nullable final String displayName, @Nullable final Placeholder[] placeholders) {
+        return createItem(type, amount, durability, displayName, null, placeholders, null, null);
     }
 
     @NotNull
-    public static ItemStack createItem(@NotNull final Material type, final int amount, @Nullable final String displayName,
-                                       @Nullable final List<String> lore, @Nullable final Placeholder[] placeholders) {
-        return createItem(type, amount, displayName, lore, placeholders, null, null);
+    public static ItemStack createItem(@NotNull final Material type, final int amount,
+                                       @Nullable final String displayName, @Nullable final List<String> lore) {
+        return createItem(type, amount, (short) 0, displayName, lore, null, null, null);
+    }
+
+    @NotNull
+    public static ItemStack createItem(@NotNull final Material type, final int amount, final short durability,
+                                       @Nullable final String displayName, @Nullable final List<String> lore) {
+        return createItem(type, amount, durability, displayName, lore, null, null, null);
+    }
+
+    @NotNull
+    public static ItemStack createItem(@NotNull final Material type, final int amount,
+                                       @Nullable final String displayName, @Nullable final List<String> lore,
+                                       @Nullable final Placeholder[] placeholders) {
+        return createItem(type, amount, (short) 0, displayName, lore, placeholders, null, null);
+    }
+
+    @NotNull
+    public static ItemStack createItem(@NotNull final Material type, final int amount, final short durability,
+                                       @Nullable final String displayName, @Nullable final List<String> lore,
+                                       @Nullable final Placeholder[] placeholders) {
+        return createItem(type, amount, durability, displayName, lore, placeholders, null, null);
     }
 
     @NotNull
     public static ItemStack createItem(@NotNull final Material type, final int amount,
                                        @Nullable final String displayName, @Nullable final List<String> lore,
                                        @Nullable Enchantment[] enchantments) {
-        return createItem(type, amount, displayName, lore, null, enchantments, null);
+        return createItem(type, amount, (short) 0, displayName, lore, null, enchantments, null);
+    }
+
+    @NotNull
+    public static ItemStack createItem(@NotNull final Material type, final int amount, final short durability,
+                                       @Nullable final String displayName, @Nullable final List<String> lore,
+                                       @Nullable Enchantment[] enchantments) {
+        return createItem(type, amount, durability, displayName, lore, null, enchantments, null);
     }
 
     @NotNull
     public static ItemStack createItem(@NotNull final Material type, final int amount,
                                        @Nullable final String displayName, @Nullable final List<String> lore,
                                        @Nullable final Placeholder[] placeholders, @Nullable Enchantment[] enchantments) {
-        return createItem(type, amount, displayName, lore, placeholders, enchantments, null);
+        return createItem(type, amount, (short) 0, displayName, lore, placeholders, enchantments, null);
+    }
+
+    @NotNull
+    public static ItemStack createItem(@NotNull final Material type, final int amount, final short durability,
+                                       @Nullable final String displayName, @Nullable final List<String> lore,
+                                       @Nullable final Placeholder[] placeholders, @Nullable Enchantment[] enchantments) {
+        return createItem(type, amount, durability, displayName, lore, placeholders, enchantments, null);
     }
 
     public static ItemStack createItem(@NotNull final Material type, final int amount,
                                        @Nullable final String displayName, @Nullable final List<String> lore,
                                        @Nullable Enchantment[] enchantments, @Nullable ItemFlag[] flags) {
-        return createItem(type, amount, displayName, lore, null, enchantments, flags);
+        return createItem(type, amount, (short) 0, displayName, lore, null, enchantments, flags);
+    }
+
+    public static ItemStack createItem(@NotNull final Material type, final int amount, final short durability,
+                                       @Nullable final String displayName, @Nullable final List<String> lore,
+                                       @Nullable Enchantment[] enchantments, @Nullable ItemFlag[] flags) {
+        return createItem(type, amount, durability, displayName, lore, null, enchantments, flags);
     }
 
     @NotNull
     @SuppressWarnings("deprecation")
-    public static ItemStack createItem(@NotNull final Material type, final int amount,
+    public static ItemStack createItem(@NotNull final Material type, final int amount, final short durability,
                                        @Nullable String displayName, @Nullable final List<String> lore,
                                        @Nullable final Placeholder[] placeholders, @Nullable Enchantment[] enchantments, @Nullable ItemFlag[] flags) {
-        final var item = new ItemStack(type, Math.max(Math.min(amount, 64), 1));
-        final var meta = item.getItemMeta();
+        final ItemStack item = new ItemStack(type, Math.max(Math.min(amount, 64), 1));
+        if (durability > 0) item.setDurability(durability);
+        final ItemMeta meta = item.getItemMeta();
 
         if (displayName != null) {
             if (placeholders != null) {
-                for (final var placeholder : placeholders) {
+                for (final Placeholder placeholder : placeholders) {
                     if (placeholder != null) {
                         displayName = displayName.replace(placeholder.key(), placeholder.value());
                     }
                 }
             }
-            item.setDisplayName(TextUtils.stylish(displayName));
+            meta.setDisplayName(TextUtils.stylish(displayName));
             item.setItemMeta(meta);
         }
         if (lore != null) {
             if (placeholders != null) {
                 meta.setLore(TextUtils.stylish(lore.stream().map(s -> {
-                    for (final var placeholder : placeholders) {
+                    for (final Placeholder placeholder : placeholders) {
                         if (placeholder != null) {
                             s = s.replace(placeholder.key(), placeholder.value());
                         }
                     }
                     return s;
-                }).toList()));
+                }).collect(Collectors.toList())));
             } else {
                 meta.setLore(TextUtils.stylish(lore));
             }
@@ -109,9 +165,9 @@ public final class ItemUtils {
         }
 
         if (enchantments != null) {
-            for (final var enchantment : enchantments) {
+            for (final Enchantment enchantment : enchantments) {
                 if (enchantment != null)
-                    item.addEnchant(enchantment, 1, true);
+                    meta.addEnchant(enchantment, 1, true);
             }
         } else if (flags != null) {
             //noinspection NullableProblems
@@ -128,11 +184,11 @@ public final class ItemUtils {
 
     @NotNull
     public static ItemStack getCustomHead(final String signature, final String texture) {
-        final var head = new ItemStack(Material.PLAYER_HEAD);
+        final ItemStack head = new ItemStack(ServerVersion.isServerVersionAtLeast(ServerVersion.v1_13_R1) ? Material.PLAYER_HEAD : Material.getMaterial("SKULL"));
         if (texture == null)
             return head;
 
-        final var skullMeta = (SkullMeta) head.getItemMeta();
+        final SkullMeta skullMeta = (SkullMeta) head.getItemMeta();
         GameProfile profile;
 
         if (texture.endsWith("=")) {
@@ -143,12 +199,12 @@ public final class ItemUtils {
                 profile.getProperties().put("textures", new Property("textures", texture, signature));
         } else {
             profile = new GameProfile(UUID.nameUUIDFromBytes(texture.getBytes()), "CrystalCustomHead");
-            final var encodedData = Base64.getEncoder().encode(String.format("{textures:{SKIN:{url:\"https://textures.minecraft.net/texture/%s\"}}}", texture).getBytes());
+            final byte[] encodedData = Base64.getEncoder().encode(String.format("{textures:{SKIN:{url:\"https://textures.minecraft.net/texture/%s\"}}}", texture).getBytes());
             profile.getProperties().put("textures", new Property("textures", new String(encodedData)));
         }
 
         try {
-            final var profileField = skullMeta.getClass().getDeclaredField("profile");
+            final Field profileField = skullMeta.getClass().getDeclaredField("profile");
             profileField.setAccessible(true);
             profileField.set(skullMeta, profile);
             head.setItemMeta(skullMeta);

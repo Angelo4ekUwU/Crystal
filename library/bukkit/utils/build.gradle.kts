@@ -8,5 +8,7 @@ crystalModule {
 dependencies {
     compileOnly(libs.bukkit)
     compileOnly(libs.lombok)
+    compileOnly(libs.authlib)
+    api(projects.bukkit.compatibility)
     annotationProcessor(libs.lombok)
 }

@@ -9,6 +9,7 @@ package io.sapphiremc.crystal.data;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -110,9 +111,9 @@ public abstract class AbstractDatabaseConfig {
      * ...and any other MySQL properties</pre>
      */
     public Map<String, String> properties() {
-        return Map.of(
-            "useUnicode", "true",
-            "characterEncoding", "utf8"
-        );
+        Map<String, String> map = new HashMap<>();
+        map.put("useUnicode", "true");
+        map.put("characterEncoding", "utf8");
+        return map;
     }
 }

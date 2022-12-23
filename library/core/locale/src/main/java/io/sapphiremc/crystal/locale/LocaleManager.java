@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.ConfigurationNode;
+import org.spongepowered.configurate.loader.ConfigurationLoader;
 import org.spongepowered.configurate.serialize.SerializationException;
 
 import java.io.File;
@@ -44,7 +45,7 @@ public final class LocaleManager {
         this.defaultLocale = defaultLocale;
 
         plugin.logger().debug("Loading locale files...");
-        final var localeDir = new File(plugin.dataFolder() + File.separator + "locale");
+        final File localeDir = new File(plugin.dataFolder() + File.separator + "locale");
 
         if (!localeDir.exists()) {
             try {
@@ -65,14 +66,14 @@ public final class LocaleManager {
             return;
         }
 
-        for (final var file : localeDir.listFiles()) {
+        for (final File file : localeDir.listFiles()) {
             if (file == null) continue;
             if (!localePattern.matcher(file.getName()).matches()) {
                 plugin.logger().info("Skipping file " + file.getName());
                 continue;
             }
 
-            final var loader = loaderType.getLoader(file.toPath());
+            final ConfigurationLoader<? extends ConfigurationNode> loader = loaderType.getLoader(file.toPath());
 
             try {
                 locales.put(file.getName().replace(loaderType.getExtension(), ""), loader.load());
@@ -96,7 +97,7 @@ public final class LocaleManager {
     @NotNull
     public Message getMessage(@Nullable final String locale, @NotNull final String... path) {
         try {
-            final var finalPath = (Object[]) (path.length == 1 ? path[0].split("\\.") : path);
+            final Object[] finalPath = path.length == 1 ? path[0].split("\\.") : path;
             if (getDefaultLocale().node(finalPath).isList()) {
                 final List<String> listMsg;
                 listMsg = getLocale(locale).node(finalPath).getList(String.class, Collections.emptyList());
@@ -106,7 +107,7 @@ public final class LocaleManager {
 
                 return new Message(plugin, listMsg);
             } else {
-                var stringMsg = getLocale(locale).node(finalPath).getString(getDefaultLocale().node(finalPath).getString("<missing path: " + Arrays.toString(finalPath) + ">"));
+                String stringMsg = getLocale(locale).node(finalPath).getString(getDefaultLocale().node(finalPath).getString("<missing path: " + Arrays.toString(finalPath) + ">"));
                 return new Message(plugin, stringMsg);
             }
         } catch (SerializationException ex) {

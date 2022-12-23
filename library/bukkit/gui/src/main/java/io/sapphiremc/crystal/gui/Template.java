@@ -35,6 +35,10 @@ public final class Template {
         return size;
     }
 
+    public InventoryType getType() {
+        return type;
+    }
+
     public Map<Integer, ItemStack> getItems() {
         return items;
     }
@@ -73,7 +77,7 @@ public final class Template {
         }
 
         public Builder item(final ItemStack item, final int from, final int to) {
-            for (var i = from; i <= to; i++) {
+            for (int i = from; i <= to; i++) {
                 items.put(i, item);
             }
             return this;

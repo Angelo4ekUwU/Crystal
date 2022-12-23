@@ -7,9 +7,16 @@
  */
 package io.sapphiremc.crystal.utils;
 
-public record Placeholder(String key, Object val) {
+public class Placeholder {
 
-    @Override
+    private final String key;
+    private final Object val;
+
+    public Placeholder(String key, Object val) {
+        this.key = key;
+        this.val = val;
+    }
+
     public String key() {
         return "%" + key + "%";
     }

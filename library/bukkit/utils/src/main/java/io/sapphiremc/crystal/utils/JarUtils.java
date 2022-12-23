@@ -13,6 +13,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Objects;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -26,10 +28,10 @@ public class JarUtils {
         if (!destFolder.exists())
             destFolder.mkdirs();
 
-        final var buffer = new byte[1024];
+        final byte[] buffer = new byte[1024];
 
         File fullPath = null;
-        var path = JarUtils.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+        String path = JarUtils.class.getProtectionDomain().getCodeSource().getLocation().getPath();
         try {
             if (!path.startsWith("file"))
                 path = "file://" + path;
@@ -38,14 +40,14 @@ public class JarUtils {
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
-        final var zis = new ZipInputStream(new FileInputStream(Objects.requireNonNull(fullPath)));
+        final ZipInputStream zis = new ZipInputStream(Files.newInputStream(Objects.requireNonNull(fullPath).toPath()));
 
         ZipEntry entry;
         while ((entry = zis.getNextEntry()) != null) {
             if (!entry.getName().startsWith(folderName + JAR_SEPARATOR))
                 continue;
 
-            final var  fileName = entry.getName();
+            final String fileName = entry.getName();
 
             if (fileName.charAt(fileName.length() - 1) == JAR_SEPARATOR) {
                 File file = new File(destFolder + File.separator + fileName);
@@ -56,7 +58,7 @@ public class JarUtils {
                 continue;
             }
 
-            final var  file = new File(destFolder + File.separator + fileName);
+            final File file = new File(destFolder + File.separator + fileName);
             if (option == CopyOption.COPY_IF_NOT_EXIST && file.exists())
                 continue;
 
@@ -65,7 +67,7 @@ public class JarUtils {
 
             if (!file.exists())
                 file.createNewFile();
-            final var  fos = new FileOutputStream(file);
+            final FileOutputStream fos = new FileOutputStream(file);
 
             int len;
             while ((len = zis.read(buffer)) > 0) {

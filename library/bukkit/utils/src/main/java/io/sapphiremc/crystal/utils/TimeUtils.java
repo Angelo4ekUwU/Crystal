@@ -21,12 +21,12 @@ public final class TimeUtils {
     }
 
     private static String toString(final long millis, final String day, final String hour, final String minute, final String second) {
-        final var builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
 
-        final var days = TimeUnit.MILLISECONDS.toDays(millis);
-        final var hours = TimeUnit.MILLISECONDS.toHours(millis) - TimeUnit.DAYS.toHours(TimeUnit.MILLISECONDS.toDays(millis));
-        final var minutes = TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis));
-        final var seconds = TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis));
+        final long days = TimeUnit.MILLISECONDS.toDays(millis);
+        final long hours = TimeUnit.MILLISECONDS.toHours(millis) - TimeUnit.DAYS.toHours(TimeUnit.MILLISECONDS.toDays(millis));
+        final long minutes = TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis));
+        final long seconds = TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis));
 
         if (days > 0) {
             builder.append(days);

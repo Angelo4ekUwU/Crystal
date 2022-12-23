@@ -29,9 +29,9 @@ public class DatabaseConnector {
         this.plugin = plugin;
         this.config = config;
 
-        final var type = config.databaseType();
+        final DatabaseType type = config.databaseType();
         if (type.equals(DatabaseType.SQLITE)) {
-            final var storage = new File(plugin.dataFolder(), "storage.db");
+            final File storage = new File(plugin.dataFolder(), "storage.db");
             if (!storage.exists()) {
                 try {
                     storage.createNewFile();
@@ -40,7 +40,7 @@ public class DatabaseConnector {
                 }
             }
 
-            final var hikariConfig = new HikariConfig();
+            final HikariConfig hikariConfig = new HikariConfig();
 
             hikariConfig.setPoolName(plugin.name() + "-SQLite");
             hikariConfig.setDriverClassName("org.sqlite.JDBC");
@@ -58,7 +58,7 @@ public class DatabaseConnector {
 
     @NotNull
     private HikariConfig setupHikariConfig() {
-        final var hikariConfig = new HikariConfig();
+        final HikariConfig hikariConfig = new HikariConfig();
 
         hikariConfig.setPoolName(plugin.name() + "-MySQL");
         hikariConfig.setDriverClassName("com.mysql.cj.jdbc.Driver");
@@ -106,7 +106,7 @@ public class DatabaseConnector {
             throw new SQLException("Unable to get a connection from the pool. (hikari is null)");
         }
 
-        final var connection = this.hikariDataSource.getConnection();
+        final Connection connection = this.hikariDataSource.getConnection();
         if (connection == null) {
             throw new SQLException("Unable to get a connection from the pool. (getConnection returned null)");
         }
@@ -145,7 +145,7 @@ public class DatabaseConnector {
      * @param callback The callback to execute once the connection is retrieved
      */
     public void connect(@NotNull final ConnectionCallback callback) {
-        try (final var connection = getConnection()) {
+        try (final Connection connection = getConnection()) {
             callback.accept(connection, getStorageType());
         } catch (SQLException ex) {
             plugin.logger().error("An error occured executing a SQL query", ex);

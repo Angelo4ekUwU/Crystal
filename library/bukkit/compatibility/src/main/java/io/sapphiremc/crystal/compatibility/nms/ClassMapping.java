@@ -76,7 +76,7 @@ public enum ClassMapping {
     }
 
     public Class<?> getClazz(String sub) {
-        final var name = sub == null ? className : className + "$" + sub;
+        final String name = sub == null ? className : className + "$" + sub;
 
         try {
             if (className.startsWith("Craft")) {

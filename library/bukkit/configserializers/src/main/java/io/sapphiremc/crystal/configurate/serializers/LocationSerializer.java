@@ -19,9 +19,9 @@ import java.lang.reflect.Type;
 public class LocationSerializer implements TypeSerializer<Location> {
     @Override
     public Location deserialize(Type type, ConfigurationNode node) throws SerializationException {
-        final var s = node.getString();
+        final String s = node.getString();
         if (s != null) {
-            final var loc = s.split(";");
+            final String[] loc = s.split(";");
             if (loc.length == 3) { // X;Y;Z
                 return new Location(null,
                     Double.parseDouble(loc[0]), Double.parseDouble(loc[1]), Double.parseDouble(loc[2]));
@@ -43,7 +43,7 @@ public class LocationSerializer implements TypeSerializer<Location> {
     @Override
     public void serialize(Type type, @Nullable Location loc, ConfigurationNode node) throws SerializationException {
         if (loc != null) {
-            final var builder = new StringBuilder();
+            final StringBuilder builder = new StringBuilder();
 
             if (loc.isWorldLoaded()) builder.append(loc.getWorld().getName()).append(";"); // World
 

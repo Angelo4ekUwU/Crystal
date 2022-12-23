@@ -13,7 +13,7 @@ import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 import org.spongepowered.configurate.serialize.TypeSerializer;
 
-import java.util.Map;
+import java.util.HashMap;
 
 @SuppressWarnings("unused")
 public final class Serializers {
@@ -21,12 +21,12 @@ public final class Serializers {
     /**
      * Return serializers map.
      *
-     * @return {@link Map<Class, TypeSerializer>}
+     * @return {@link HashMap}
      */
-    public static Map<Class, TypeSerializer> get() {
-        return Map.of(
-            ItemStack.class, new ItemStackSerializer(),
-            Location.class, new LocationSerializer()
-        );
+    public static HashMap<Class, TypeSerializer> get() {
+        HashMap<Class, TypeSerializer> serializers = new HashMap<>();
+        serializers.put(ItemStack.class, new ItemStackSerializer());
+        serializers.put(Location.class, new LocationSerializer());
+        return serializers;
     }
 }

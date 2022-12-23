@@ -46,12 +46,12 @@ public final class CrystalConfig {
      * @return {@link HoconConfigurationLoader}
      */
     public static HoconConfigurationLoader hoconLoader(@NotNull final Path path, @Nullable Map<Class, TypeSerializer> serializers) {
-        final var builder = HoconConfigurationLoader.builder()
+        final HoconConfigurationLoader.Builder builder = HoconConfigurationLoader.builder()
             .path(path)
             .emitJsonCompatible(false);
 
         if (serializers != null) {
-            final var collectionBuilder = TypeSerializerCollection.builder();
+            final TypeSerializerCollection.Builder collectionBuilder = TypeSerializerCollection.builder();
             serializers.forEach(collectionBuilder::register);
             return builder.defaultOptions(options -> options.serializers(collectionBuilder.build())).build();
         } else {
@@ -77,13 +77,13 @@ public final class CrystalConfig {
      * @return {@link YamlConfigurationLoader}
      */
     public static YamlConfigurationLoader yamlLoader(@NotNull final Path path, @Nullable Map<Class, TypeSerializer> serializers) {
-        final var builder = YamlConfigurationLoader.builder()
+        final YamlConfigurationLoader.Builder builder = YamlConfigurationLoader.builder()
             .path(path)
             .nodeStyle(NodeStyle.BLOCK)
             .indent(2);
 
         if (serializers != null) {
-            final var collectionBuilder = TypeSerializerCollection.builder();
+            final TypeSerializerCollection.Builder collectionBuilder = TypeSerializerCollection.builder();
             serializers.forEach(collectionBuilder::register);
             return builder.defaultOptions(options -> options.serializers(collectionBuilder.build())).build();
         } else {
@@ -109,12 +109,12 @@ public final class CrystalConfig {
      * @return {@link GsonConfigurationLoader}
      */
     public static GsonConfigurationLoader gsonLoader(@NotNull final Path path, @Nullable Map<Class, TypeSerializer> serializers) {
-        final var builder = GsonConfigurationLoader.builder()
+        final GsonConfigurationLoader.Builder builder = GsonConfigurationLoader.builder()
             .path(path)
             .indent(2);
 
         if (serializers != null) {
-            final var collectionBuilder = TypeSerializerCollection.builder();
+            final TypeSerializerCollection.Builder collectionBuilder = TypeSerializerCollection.builder();
             serializers.forEach(collectionBuilder::register);
             return builder.defaultOptions(options -> options.serializers(collectionBuilder.build())).build();
         } else {
@@ -147,7 +147,7 @@ public final class CrystalConfig {
      */
     public static <T> T loadConfig(@NotNull final ConfigurationLoader<? extends ConfigurationNode> loader, @NotNull final Class<T> clazz,
                                    final boolean refreshNode) throws ConfigurateException {
-        final var creator = creator(clazz, refreshNode);
+        final CheckedFunction<ConfigurationNode, T, SerializationException> creator = creator(clazz, refreshNode);
 
         final ConfigurationNode node;
         if (loader.canLoad()) {
@@ -155,7 +155,7 @@ public final class CrystalConfig {
         } else {
             node = CommentedConfigurationNode.root(loader.defaultOptions());
         }
-        final var instance = creator.apply(node);
+        final T instance = creator.apply(node);
         loader.save(node);
         return instance;
     }

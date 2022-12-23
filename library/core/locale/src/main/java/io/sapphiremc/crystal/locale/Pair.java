@@ -7,13 +7,20 @@
  */
 package io.sapphiremc.crystal.locale;
 
-public record Pair(String key, Object obj) {
+public class Pair {
+
+    private final String key;
+    private final Object obj;
+
+    public Pair(String key, Object obj) {
+        this.key = key;
+        this.obj = obj;
+    }
 
     public static Pair of(final String key, final Object value) {
         return new Pair(key, value);
     }
 
-    @Override
     public String key() {
         return "%" + key + "%";
     }

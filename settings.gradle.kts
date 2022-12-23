@@ -12,6 +12,7 @@ dependencyResolutionManagement {
         maven("https://repo.codemc.org/repository/maven-public/")
         maven("https://maven.enginehub.org/repo/")
         maven("https://jitpack.io")
+        maven("https://libraries.minecraft.net/")
         maven("http://repo.denaryworld.ru/snapshots") {
             isAllowInsecureProtocol = true
         }
@@ -19,19 +20,13 @@ dependencyResolutionManagement {
 
     versionCatalogs {
         create("libs") {
-            library("bukkit", "io.sapphiremc.sapphire:sapphire-api:1.19.2-R0.1-SNAPSHOT")
-            library("placeholderapi", "me.clip:placeholderapi:2.11.2")
-            library("luckperms", "net.luckperms:api:5.4")
-            library("vault", "com.github.MilkBowl:VaultAPI:1.7")
-            library("holographicdisplays", "me.filoghost.holographicdisplays:holographicdisplays-legacy-api-v2:3.0.0-SNAPSHOT")
-            library("gold", "io.sapphiremc.gold:gold-api:1.3.1")
-            library("worldedit", "com.sk89q.worldedit:worldedit-bukkit:7.2.12")
-            library("nbt", "de.tr7zw:item-nbt-api:2.10.0")
+            library("bukkit", "com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT")
 
             library("slf4j", "org.slf4j:slf4j-api:2.0.3")
             library("annotations", "org.jetbrains:annotations:23.0.0")
             library("lombok", "org.projectlombok:lombok:1.18.24")
             library("commons-lang3", "org.apache.commons:commons-lang3:3.12.0")
+            library("authlib", "com.mojang:authlib:2.1.28")
 
             val configurateVersion = "4.1.2"
             library("configurate", "org.spongepowered:configurate-core:$configurateVersion")
@@ -39,7 +34,7 @@ dependencyResolutionManagement {
             library("yaml", "org.spongepowered:configurate-yaml:$configurateVersion")
             library("gson", "org.spongepowered:configurate-gson:$configurateVersion")
 
-            library("hikari", "com.zaxxer:HikariCP:5.0.1")
+            library("hikari", "com.zaxxer:HikariCP:4.0.2")
             library("mysql-connector", "mysql:mysql-connector-java:8.0.29")
             library("sqlite-jdbc", "org.xerial:sqlite-jdbc:3.39.3.0")
 

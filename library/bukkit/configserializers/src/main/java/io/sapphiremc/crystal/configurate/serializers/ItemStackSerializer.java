@@ -10,7 +10,6 @@ package io.sapphiremc.crystal.configurate.serializers;
 import io.sapphiremc.crystal.compatibility.ServerVersion;
 import io.sapphiremc.crystal.utils.TextUtils;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -26,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("deprecation")
@@ -54,10 +54,14 @@ public class ItemStackSerializer implements TypeSerializer<ItemStack> {
 
             meta.setUnbreakable(nMeta.node("unbreakable").getBoolean(false));
             if (nMeta.hasChild("item-flags"))
-                nMeta.node("item-flags").getList(ItemFlag.class, Collections.emptyList()).forEach(meta::addItemFlags);
+                nMeta.node("item-flags").getList(String.class, Collections.emptyList()).stream()
+                    .map(this::parseFlag)
+                    .filter(Objects::nonNull)
+                    .forEach(meta::addItemFlags);
 
             if (ServerVersion.isServerVersionAtLeast(ServerVersion.v1_13_R1)) {
-                if (nMeta.hasChild("custom-model-data")) meta.setCustomModelData(nMeta.node("custom-model-data").getInt(0));
+                if (nMeta.hasChild("custom-model-data"))
+                    meta.setCustomModelData(nMeta.node("custom-model-data").getInt(0));
                 if (meta instanceof Damageable) ((Damageable) meta).setDamage(nMeta.node("item-damage").getInt(0));
             }
 
@@ -74,6 +78,14 @@ public class ItemStackSerializer implements TypeSerializer<ItemStack> {
         }
 
         return stack;
+    }
+
+    private ItemFlag parseFlag(String s) {
+        try {
+            return ItemFlag.valueOf(s);
+        } catch (IllegalArgumentException ex) {
+            return null;
+        }
     }
 
     @Override

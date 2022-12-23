@@ -76,13 +76,6 @@ public final class Template {
             return this;
         }
 
-        public Builder item(final ItemStack item, final int from, final int to) {
-            for (int i = from; i <= to; i++) {
-                items.put(i, item);
-            }
-            return this;
-        }
-
         public Template build() {
             return new Template(title, size, type, items);
         }

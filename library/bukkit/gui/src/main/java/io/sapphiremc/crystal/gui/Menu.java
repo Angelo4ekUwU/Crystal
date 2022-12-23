@@ -89,20 +89,20 @@ public class Menu implements InventoryHolder {
             return this;
         }
 
-        public Builder item(ItemStack item, int from, int to) {
-            for (int i = from; i <= to; i++) {
-                dynItems.put(i, item);
+        public Builder item(final ItemStack item, final int... slots) {
+            for (int slot : slots) {
+                dynItems.put(slot, item);
             }
             return this;
         }
 
-        public Builder item(int slot, ItemStack item, ClickAction action) {
+        public Builder item(ItemStack item, int slot, ClickAction action) {
             dynItems.put(slot, item);
             dynClicks.put(slot, action);
             return this;
         }
 
-        public Builder click(int slot, ClickAction action) {
+        public Builder click(ClickAction action, int slot) {
             dynClicks.put(slot, action);
             return this;
         }

@@ -81,11 +81,8 @@ public enum ServerVersion {
 
     static {
         serverPackagePath = Bukkit.getServer().getClass().getPackage().getName();
-        System.out.println(serverPackagePath);
         serverPackageVersion = serverPackagePath.substring(serverPackagePath.lastIndexOf('.') + 1);
-        System.out.println(serverPackageVersion);
         serverReleaseVersion = serverPackageVersion.indexOf('R') != -1 ? serverPackageVersion.substring(serverPackageVersion.indexOf('R') + 1) : "";
-        System.out.println(serverReleaseVersion);
 
         serverVersion = getVersion();
     }

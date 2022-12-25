@@ -20,12 +20,14 @@ import java.util.Map;
 public class Menu implements InventoryHolder {
 
     private final Template template;
+    private final long clickCooldown;
     private final Inventory inventory;
     private final Map<Integer, ClickAction> actions = new HashMap<>();
     private Player viewer;
 
-    public Menu(final Template template, Map<Integer, ItemStack> dynItems, Map<Integer, ClickAction> dynClicks) {
+    public Menu(final Template template, final long clickCooldown, final Map<Integer, ItemStack> dynItems, final Map<Integer, ClickAction> dynClicks) {
         this.template = template;
+        this.clickCooldown = clickCooldown;
         this.inventory = template.getType() != null ?
             Bukkit.createInventory(this, template.getType(), template.getTitle()) :
             Bukkit.createInventory(this, template.getSize(), template.getTitle());
@@ -38,8 +40,16 @@ public class Menu implements InventoryHolder {
         return template;
     }
 
+    public long getClickCooldown() {
+        return clickCooldown;
+    }
+
     public Player getViewer() {
         return viewer;
+    }
+
+    public boolean hasItem(int slot) {
+        return inventory.getItem(slot) != null;
     }
 
     public void setItem(int slot, ItemStack item) {
@@ -79,6 +89,7 @@ public class Menu implements InventoryHolder {
         private final Template template;
         private final Map<Integer, ItemStack> dynItems = new HashMap<>();
         private final Map<Integer, ClickAction> dynClicks = new HashMap<>();
+        private long clickCooldown;
 
         public Builder(Template template) {
             this.template = template;
@@ -107,8 +118,13 @@ public class Menu implements InventoryHolder {
             return this;
         }
 
+        public Builder clickCooldown(long clickCooldown) {
+            this.clickCooldown = clickCooldown;
+            return this;
+        }
+
         public Menu build() {
-            final Menu menu = new Menu(template, dynItems, dynClicks);
+            final Menu menu = new Menu(template, clickCooldown, dynItems, dynClicks);
             return menu;
         }
     }

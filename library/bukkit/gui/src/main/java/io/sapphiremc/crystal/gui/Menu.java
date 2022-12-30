@@ -53,8 +53,13 @@ public class Menu implements InventoryHolder {
     }
 
     public void setItem(int slot, ItemStack item) {
+        setItem(slot, item, false);
+    }
+
+    public void setItem(int slot, ItemStack item, boolean update) {
         if (inventory != null) {
             inventory.setItem(slot, item);
+            if (update) update();
         }
     }
 
@@ -73,6 +78,11 @@ public class Menu implements InventoryHolder {
     public void open(Player viewer) {
         this.viewer = viewer;
         viewer.openInventory(inventory);
+    }
+
+    public void update() {
+        if (viewer == null) return;
+        viewer.updateInventory();
     }
 
     @Override

@@ -46,8 +46,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "crystal"
 
-include("plugin")
-
 library("core")
 library("bukkit")
 

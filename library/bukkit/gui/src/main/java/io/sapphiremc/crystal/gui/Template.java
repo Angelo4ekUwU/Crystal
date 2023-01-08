@@ -27,6 +27,10 @@ public final class Template {
         this.items = items;
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public String getTitle() {
         return title;
     }
@@ -43,10 +47,6 @@ public final class Template {
         return items;
     }
 
-    public static Builder builder() {
-        return new Builder();
-    }
-
     public static class Builder {
 
         private String title;
@@ -54,24 +54,33 @@ public final class Template {
         private InventoryType type;
         private final Map<Integer, ItemStack> items = new HashMap<>();
 
-        public Builder title(final String title) {
+        public Builder title(String title) {
             this.title = title;
             return this;
         }
 
-        public Builder size(final int size) {
+        public Builder size(int size) {
             this.size = size;
             return this;
         }
 
-        public Builder type(final InventoryType type) {
+        public Builder type(InventoryType type) {
             this.type = type;
             return this;
         }
 
-        public Builder item(final ItemStack item, final int... slots) {
+        public Builder item(ItemStack item, int... slots) {
             for (int slot : slots) {
                 items.put(slot, item);
+            }
+            return this;
+        }
+
+        public Builder item(Item item) {
+            final ItemStack stack = item.getItem();
+            final int[] slots = item.getSlots();
+            for (int slot : slots) {
+                items.put(slot, stack);
             }
             return this;
         }

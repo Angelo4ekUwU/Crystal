@@ -18,7 +18,7 @@ import java.util.WeakHashMap;
 
 public final class InventoryListener implements Listener {
 
-    private final Map<Player, Long> antiClickSpam = new WeakHashMap<>();
+    private final Map<Player, Long> activeCooldowns = new WeakHashMap<>();
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onEarlyInvClick(InventoryClickEvent event) {
@@ -43,20 +43,20 @@ public final class InventoryListener implements Listener {
 
             final Player player = (Player) event.getWhoClicked();
 
-            Long cooldownUntil = antiClickSpam.get(player);
-            long now = System.currentTimeMillis();
-            long cooldown = menu.getClickCooldown();
+            final Long cooldownUntil = activeCooldowns.get(player);
+            final long now = System.currentTimeMillis();
+            final long cooldown = menu.getClickCooldown();
 
             if (cooldown > 0) {
                 if (cooldownUntil != null && cooldownUntil > now) {
                     return;
                 } else {
-                    antiClickSpam.put(player, now + cooldown);
+                    activeCooldowns.put(player, now + cooldown);
                 }
             }
 
-            final ClickContext context = new ClickContext(player, menu, slot, event);
-            menu.click(event.getSlot(), context);
+            final Action.Context context = new Action.Context(player, menu, slot, event);
+            menu.click(context);
         }
     }
 }

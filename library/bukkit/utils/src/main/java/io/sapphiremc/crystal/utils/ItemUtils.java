@@ -189,16 +189,15 @@ public final class ItemUtils {
             return head;
 
         final SkullMeta skullMeta = (SkullMeta) head.getItemMeta();
-        GameProfile profile;
+        GameProfile profile = new GameProfile(UUID.nameUUIDFromBytes(texture.getBytes()), "CrystalCustomHead");
 
         if (texture.endsWith("=")) {
-            profile = new GameProfile(UUID.nameUUIDFromBytes(texture.getBytes()), "CrystalCustomHead");
-            if (signature == null)
+            if (signature == null) {
                 profile.getProperties().put("textures", new Property("texture", texture.replaceAll("=", "")));
-            else
+            } else {
                 profile.getProperties().put("textures", new Property("textures", texture, signature));
+            }
         } else {
-            profile = new GameProfile(UUID.nameUUIDFromBytes(texture.getBytes()), "CrystalCustomHead");
             final byte[] encodedData = Base64.getEncoder().encode(String.format("{textures:{SKIN:{url:\"https://textures.minecraft.net/texture/%s\"}}}", texture).getBytes());
             profile.getProperties().put("textures", new Property("textures", new String(encodedData)));
         }
@@ -211,6 +210,65 @@ public final class ItemUtils {
             return head;
         } catch (NoSuchFieldException | IllegalAccessException | SecurityException ex) {
             throw new RuntimeException("Reflection error while setting head texture", ex);
+        }
+    }
+
+    public static ItemBuilder itemBuilder() {
+        return new ItemBuilder();
+    }
+
+    public static class ItemBuilder {
+        private Material type;
+        private int amount;
+        private short durability;
+        private String displayname;
+        private List<String> lore;
+        private Placeholder[] placeholders;
+        private Enchantment[] enchantments;
+        private ItemFlag[] itemFlags;
+
+        public ItemBuilder type(Material type) {
+            this.type = type;
+            return this;
+        }
+
+        public ItemBuilder amount(int amount) {
+            this.amount = amount;
+            return this;
+        }
+
+        public ItemBuilder durability(short durability) {
+            this.durability = durability;
+            return this;
+        }
+
+        public ItemBuilder displayname(String displayname) {
+            this.displayname = displayname;
+            return this;
+        }
+
+        public ItemBuilder lore(List<String> lore) {
+            this.lore = lore;
+            return this;
+        }
+
+        public ItemBuilder placeholders(Placeholder... placeholders) {
+            this.placeholders = placeholders;
+            return this;
+        }
+
+        public ItemBuilder enchantments(Enchantment... enchantments) {
+            this.enchantments = enchantments;
+            return this;
+        }
+
+        public ItemBuilder itemFlags(ItemFlag... itemFlags) {
+            this.itemFlags = itemFlags;
+            return this;
+        }
+
+        public ItemStack build() {
+            return createItem(type, amount, durability, displayname, lore, placeholders, enchantments, itemFlags);
         }
     }
 }

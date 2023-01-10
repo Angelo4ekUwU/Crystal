@@ -54,7 +54,7 @@ public class Item {
         }
 
         public Builder slot(int slot) {
-            this.slots[0] = slot;
+            this.slots = new int[]{slot};
             return this;
         }
 

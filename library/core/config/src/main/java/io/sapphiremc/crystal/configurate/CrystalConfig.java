@@ -41,7 +41,7 @@ public final class CrystalConfig {
     /**
      * Returns json configuration loader with custom serializers.
      *
-     * @param path Path to configuration file
+     * @param path        Path to configuration file
      * @param serializers custom serializers
      * @return {@link HoconConfigurationLoader}
      */
@@ -72,7 +72,7 @@ public final class CrystalConfig {
     /**
      * Returns yaml configuration loader with custom serializers.
      *
-     * @param path Path to configuration file
+     * @param path        Path to configuration file
      * @param serializers custom serializers
      * @return {@link YamlConfigurationLoader}
      */
@@ -104,7 +104,7 @@ public final class CrystalConfig {
     /**
      * Returns json configuration loader with custom serializers.
      *
-     * @param path Path to configuration file
+     * @param path        Path to configuration file
      * @param serializers custom serializers
      * @return {@link GsonConfigurationLoader}
      */
@@ -133,7 +133,22 @@ public final class CrystalConfig {
      */
     public static <T> T loadConfig(@NotNull final Path path, @NotNull final Class<T> clazz,
                                    final boolean refreshNode) throws ConfigurateException {
-        return loadConfig(hoconLoader(path), clazz, refreshNode);
+        return loadConfig(hoconLoader(path), null, clazz, refreshNode);
+    }
+
+    /**
+     * Load configuration from file using hocon loader with custom serializers.
+     *
+     * @param path        Path to configuration file
+     * @param serializers Custom serializers
+     * @param clazz       Configuration class type
+     * @param refreshNode refresh node or not
+     * @return Configuration class instance with values
+     * @throws ConfigurateException if configuration loading failed
+     */
+    public static <T> T loadConfig(@NotNull final Path path, @Nullable Map<Class, TypeSerializer> serializers, @NotNull final Class<T> clazz,
+                                   final boolean refreshNode) throws ConfigurateException {
+        return loadConfig(hoconLoader(path), serializers, clazz, refreshNode);
     }
 
     /**
@@ -147,6 +162,21 @@ public final class CrystalConfig {
      */
     public static <T> T loadConfig(@NotNull final ConfigurationLoader<? extends ConfigurationNode> loader, @NotNull final Class<T> clazz,
                                    final boolean refreshNode) throws ConfigurateException {
+        return loadConfig(loader, null, clazz, refreshNode);
+    }
+
+    /**
+     * Load configuration from file using specified loader.
+     *
+     * @param loader      Configuration loader
+     * @param serializers Custom serializers
+     * @param clazz       Configuration class type
+     * @param refreshNode refresh node or not
+     * @return Configuration class instance with values
+     * @throws ConfigurateException if configuration loading failed
+     */
+    public static <T> T loadConfig(@NotNull final ConfigurationLoader<? extends ConfigurationNode> loader, @Nullable Map<Class, TypeSerializer> serializers,
+                                   @NotNull final Class<T> clazz, final boolean refreshNode) throws ConfigurateException {
         final CheckedFunction<ConfigurationNode, T, SerializationException> creator = creator(clazz, refreshNode);
 
         final ConfigurationNode node;

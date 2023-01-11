@@ -21,118 +21,24 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
 public final class ItemUtils {
 
-    @NotNull
-    public static ItemStack createItem(@NotNull final Material type, final int amount) {
-        return createItem(type, amount, (short) 0, null, null, null, null, null);
-    }
-
-    @NotNull
-    public static ItemStack createItem(@NotNull final Material type, final int amount, final short durability) {
-        return createItem(type, amount, durability, null, null, null, null, null);
-    }
-
-    @NotNull
-    public static ItemStack createItem(@NotNull final Material type, final int amount,
-                                       @Nullable final String displayName) {
-        return createItem(type, amount, (short) 0, displayName, null, null, null, null);
-    }
-
-    @NotNull
-    public static ItemStack createItem(@NotNull final Material type, final int amount, final short durability,
-                                       @Nullable final String displayName) {
-        return createItem(type, amount, durability, displayName, null, null, null, null);
-    }
-
-    @NotNull
-    public static ItemStack createItem(@NotNull final Material type, final int amount,
-                                       @Nullable final String displayName, @Nullable final Placeholder[] placeholders) {
-        return createItem(type, amount, (short) 0, displayName, null, placeholders, null, null);
-    }
-
-    @NotNull
-    public static ItemStack createItem(@NotNull final Material type, final int amount, final short durability,
-                                       @Nullable final String displayName, @Nullable final Placeholder[] placeholders) {
-        return createItem(type, amount, durability, displayName, null, placeholders, null, null);
-    }
-
-    @NotNull
-    public static ItemStack createItem(@NotNull final Material type, final int amount,
-                                       @Nullable final String displayName, @Nullable final List<String> lore) {
-        return createItem(type, amount, (short) 0, displayName, lore, null, null, null);
-    }
-
-    @NotNull
-    public static ItemStack createItem(@NotNull final Material type, final int amount, final short durability,
-                                       @Nullable final String displayName, @Nullable final List<String> lore) {
-        return createItem(type, amount, durability, displayName, lore, null, null, null);
-    }
-
-    @NotNull
-    public static ItemStack createItem(@NotNull final Material type, final int amount,
-                                       @Nullable final String displayName, @Nullable final List<String> lore,
-                                       @Nullable final Placeholder[] placeholders) {
-        return createItem(type, amount, (short) 0, displayName, lore, placeholders, null, null);
-    }
-
-    @NotNull
-    public static ItemStack createItem(@NotNull final Material type, final int amount, final short durability,
-                                       @Nullable final String displayName, @Nullable final List<String> lore,
-                                       @Nullable final Placeholder[] placeholders) {
-        return createItem(type, amount, durability, displayName, lore, placeholders, null, null);
-    }
-
-    @NotNull
-    public static ItemStack createItem(@NotNull final Material type, final int amount,
-                                       @Nullable final String displayName, @Nullable final List<String> lore,
-                                       @Nullable Enchantment[] enchantments) {
-        return createItem(type, amount, (short) 0, displayName, lore, null, enchantments, null);
-    }
-
-    @NotNull
-    public static ItemStack createItem(@NotNull final Material type, final int amount, final short durability,
-                                       @Nullable final String displayName, @Nullable final List<String> lore,
-                                       @Nullable Enchantment[] enchantments) {
-        return createItem(type, amount, durability, displayName, lore, null, enchantments, null);
-    }
-
-    @NotNull
-    public static ItemStack createItem(@NotNull final Material type, final int amount,
-                                       @Nullable final String displayName, @Nullable final List<String> lore,
-                                       @Nullable final Placeholder[] placeholders, @Nullable Enchantment[] enchantments) {
-        return createItem(type, amount, (short) 0, displayName, lore, placeholders, enchantments, null);
-    }
-
-    @NotNull
-    public static ItemStack createItem(@NotNull final Material type, final int amount, final short durability,
-                                       @Nullable final String displayName, @Nullable final List<String> lore,
-                                       @Nullable final Placeholder[] placeholders, @Nullable Enchantment[] enchantments) {
-        return createItem(type, amount, durability, displayName, lore, placeholders, enchantments, null);
-    }
-
-    public static ItemStack createItem(@NotNull final Material type, final int amount,
-                                       @Nullable final String displayName, @Nullable final List<String> lore,
-                                       @Nullable Enchantment[] enchantments, @Nullable ItemFlag[] flags) {
-        return createItem(type, amount, (short) 0, displayName, lore, null, enchantments, flags);
-    }
-
-    public static ItemStack createItem(@NotNull final Material type, final int amount, final short durability,
-                                       @Nullable final String displayName, @Nullable final List<String> lore,
-                                       @Nullable Enchantment[] enchantments, @Nullable ItemFlag[] flags) {
-        return createItem(type, amount, durability, displayName, lore, null, enchantments, flags);
+    public static ItemBuilder itemBuilder() {
+        return new ItemBuilder();
     }
 
     @NotNull
     @SuppressWarnings("deprecation")
-    public static ItemStack createItem(@NotNull final Material type, final int amount, final short durability,
+    private static ItemStack createItem(@NotNull final Material type, final int amount, final short durability,
                                        @Nullable String displayName, @Nullable final List<String> lore,
-                                       @Nullable final Placeholder[] placeholders, @Nullable Enchantment[] enchantments, @Nullable ItemFlag[] flags) {
+                                       @Nullable final Placeholder[] placeholders, @Nullable Map<Enchantment, Integer> enchantments, @Nullable ItemFlag[] flags) {
         final ItemStack item = new ItemStack(type, Math.max(Math.min(amount, 64), 1));
         if (durability > 0) item.setDurability(durability);
         final ItemMeta meta = item.getItemMeta();
@@ -165,9 +71,9 @@ public final class ItemUtils {
         }
 
         if (enchantments != null) {
-            for (final Enchantment enchantment : enchantments) {
-                if (enchantment != null)
-                    meta.addEnchant(enchantment, 1, true);
+            for (final Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
+                if (entry != null)
+                    meta.addEnchant(entry.getKey(), entry.getValue(), true);
             }
         } else if (flags != null) {
             //noinspection NullableProblems
@@ -213,10 +119,6 @@ public final class ItemUtils {
         }
     }
 
-    public static ItemBuilder itemBuilder() {
-        return new ItemBuilder();
-    }
-
     public static class ItemBuilder {
         private Material type;
         private int amount;
@@ -224,7 +126,7 @@ public final class ItemUtils {
         private String displayname;
         private List<String> lore;
         private Placeholder[] placeholders;
-        private Enchantment[] enchantments;
+        private Map<Enchantment, Integer> enchantments = new HashMap<>();
         private ItemFlag[] itemFlags;
 
         public ItemBuilder type(Material type) {
@@ -258,7 +160,19 @@ public final class ItemUtils {
         }
 
         public ItemBuilder enchantments(Enchantment... enchantments) {
+            for (final Enchantment enchantment : enchantments) {
+                this.enchantments.put(enchantment, 1);
+            }
+            return this;
+        }
+
+        public ItemBuilder enchantments(Map<Enchantment, Integer> enchantments) {
             this.enchantments = enchantments;
+            return this;
+        }
+
+        public ItemBuilder enchantment(Enchantment enchantment, int level) {
+            this.enchantments.put(enchantment, level);
             return this;
         }
 

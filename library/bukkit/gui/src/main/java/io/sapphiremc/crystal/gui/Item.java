@@ -13,7 +13,9 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Item {
 
@@ -45,7 +47,7 @@ public class Item {
         private short durability;
         private String displayname;
         private List<String> lore;
-        private Enchantment[] enchantments;
+        private Map<Enchantment, Integer> enchantments = new HashMap<>();
         private ItemFlag[] itemFlags;
 
         public Builder type(Material type) {
@@ -84,7 +86,19 @@ public class Item {
         }
 
         public Builder enchantments(Enchantment... enchantments) {
+            for (final Enchantment enchantment : enchantments) {
+                this.enchantments.put(enchantment, 1);
+            }
+            return this;
+        }
+
+        public Builder enchantments(Map<Enchantment, Integer> enchantments) {
             this.enchantments = enchantments;
+            return this;
+        }
+
+        public Builder enchantment(Enchantment enchantment, int level) {
+            this.enchantments.put(enchantment, level);
             return this;
         }
 
@@ -108,9 +122,9 @@ public class Item {
             }
 
             if (enchantments != null) {
-                for (final Enchantment enchantment : enchantments) {
-                    if (enchantment != null)
-                        meta.addEnchant(enchantment, 1, true);
+                for (final Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
+                    if (entry != null)
+                        meta.addEnchant(entry.getKey(), entry.getValue(), true);
                 }
             } else if (itemFlags != null) {
                 item.addItemFlags(itemFlags);

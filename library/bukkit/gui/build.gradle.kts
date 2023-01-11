@@ -7,4 +7,5 @@ crystalModule {
 
 dependencies {
     compileOnly(libs.bukkit)
+    api(projects.core.base)
 }

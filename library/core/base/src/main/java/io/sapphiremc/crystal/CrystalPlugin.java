@@ -16,11 +16,22 @@ import java.util.List;
 import java.util.UUID;
 
 public abstract class CrystalPlugin {
+
+    protected static CrystalPlugin instance;
+
+    protected CrystalPlugin(CrystalPlugin impl) {
+        instance = impl;
+    }
+
+    public static CrystalPlugin instance() {
+        return instance;
+    }
+
     public abstract @NotNull String name();
 
     public abstract @NotNull Logger logger();
 
-   public abstract @NotNull File dataFolder();
+    public abstract @NotNull File dataFolder();
 
     public void disable() {
         throw new UnsupportedOperationException("Not implemented yet");

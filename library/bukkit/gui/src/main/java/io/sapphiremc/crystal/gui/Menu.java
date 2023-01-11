@@ -9,10 +9,13 @@ package io.sapphiremc.crystal.gui;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,12 +25,16 @@ public class Menu implements InventoryHolder {
     private final Template template;
     private final long clickCooldown;
     private final Inventory inventory;
-    private final Map<Integer, Action> actions = new HashMap<>();
+    @Nullable
+    private final CloseAction closeAction;
+    private final Map<Integer, ClickAction> clicks = new HashMap<>();
+
     private Player viewer;
 
-    public Menu(final Template template, final long clickCooldown, final Map<Integer, ItemStack> dynItems, final Map<Integer, Action> dynClicks) {
+    public Menu(final Template template, final long clickCooldown, final CloseAction closeAction, final Map<Integer, ItemStack> dynItems, final Map<Integer, ClickAction> dynClicks) {
         this.template = template;
         this.clickCooldown = clickCooldown;
+        this.closeAction = closeAction;
         this.inventory = template.getType() != null ?
             Bukkit.createInventory(this, template.getType(), template.getTitle()) :
             Bukkit.createInventory(this, template.getSize(), template.getTitle());
@@ -36,10 +43,11 @@ public class Menu implements InventoryHolder {
         dynClicks.forEach((slot, action) -> setAction(action, slot));
     }
 
-    public static Builder builder(Template template) {
+    public static Builder builder(@NotNull Template template) {
         return new Builder(template);
     }
 
+    @NotNull
     public Template getTemplate() {
         return template;
     }
@@ -48,6 +56,7 @@ public class Menu implements InventoryHolder {
         return clickCooldown;
     }
 
+    @Nullable
     public Player getViewer() {
         return viewer;
     }
@@ -56,27 +65,27 @@ public class Menu implements InventoryHolder {
         return inventory.getItem(slot) != null;
     }
 
-    public void item(ItemStack item, int... slots) {
+    public void item(@NotNull ItemStack item, int @NotNull ... slots) {
         setItem(item, false, slots);
     }
 
-    public void item(ItemStack item, boolean update, int... slots) {
+    public void item(@NotNull ItemStack item, boolean update, int @NotNull ... slots) {
         setItem(item, update, slots);
     }
 
-    public void item(Item item) {
+    public void item(@NotNull Item item) {
         setItem(item.getItem(), false, item.getSlots());
     }
 
-    public void item(Item item, boolean update) {
+    public void item(@NotNull Item item, boolean update) {
         setItem(item.getItem(), update, item.getSlots());
     }
 
-    public void action(Action action, int... slots) {
-            setAction(action, slots);
+    public void action(@NotNull ClickAction action, int @NotNull ... slots) {
+        setAction(action, slots);
     }
 
-    public void open(Player viewer) {
+    public void open(@NotNull Player viewer) {
         this.viewer = viewer;
         viewer.openInventory(inventory);
     }
@@ -95,17 +104,23 @@ public class Menu implements InventoryHolder {
         }
     }
 
-    void setAction(Action action, int... slots) {
+    void setAction(ClickAction action, int... slots) {
         for (final int slot : slots) {
-            actions.put(slot, action);
+            clicks.put(slot, action);
         }
     }
 
-    void click(Action.Context ctx) {
-        final Action action = actions.get(ctx.getSlot());
+    void click(InventoryClickEvent event) {
+        final ClickAction action = clicks.get(event.getSlot());
 
         if (action != null) {
-            action.click(ctx);
+            action.click(event);
+        }
+    }
+
+    void close(InventoryCloseEvent event) {
+        if (closeAction != null) {
+            closeAction.close(event);
         }
     }
 
@@ -118,21 +133,22 @@ public class Menu implements InventoryHolder {
 
         private final Template template;
         private final Map<Integer, ItemStack> dynItems = new HashMap<>();
-        private final Map<Integer, Action> dynClicks = new HashMap<>();
+        private final Map<Integer, ClickAction> dynClicks = new HashMap<>();
         private long clickCooldown;
+        private CloseAction closeAction;
 
-        public Builder(Template template) {
+        public Builder(@NotNull Template template) {
             this.template = template;
         }
 
-        public Builder item(ItemStack item, int... slots) {
+        public Builder item(@NotNull ItemStack item, int @NotNull ... slots) {
             for (int slot : slots) {
                 dynItems.put(slot, item);
             }
             return this;
         }
 
-        public Builder item(Item item) {
+        public Builder item(@NotNull Item item) {
             final ItemStack stack = item.getItem();
             final int[] slots = item.getSlots();
             for (int slot : slots) {
@@ -141,7 +157,7 @@ public class Menu implements InventoryHolder {
             return this;
         }
 
-        public Builder item(ItemStack item, Action action, int... slots) {
+        public Builder item(@NotNull ItemStack item, @NotNull ClickAction action, int @NotNull ... slots) {
             for (int slot : slots) {
                 dynItems.put(slot, item);
                 dynClicks.put(slot, action);
@@ -149,7 +165,7 @@ public class Menu implements InventoryHolder {
             return this;
         }
 
-        public Builder item(Item item, Action action) {
+        public Builder item(@NotNull Item item, @NotNull ClickAction action) {
             final ItemStack stack = item.getItem();
             final int[] slots = item.getSlots();
             for (int slot : slots) {
@@ -159,7 +175,7 @@ public class Menu implements InventoryHolder {
             return this;
         }
 
-        public Builder click(Action action, int slot) {
+        public Builder click(@NotNull ClickAction action, int slot) {
             dynClicks.put(slot, action);
             return this;
         }
@@ -169,8 +185,13 @@ public class Menu implements InventoryHolder {
             return this;
         }
 
+        public Builder closeAction(@Nullable CloseAction closeAction) {
+            this.closeAction = closeAction;
+            return this;
+        }
+
         public Menu build() {
-            final Menu menu = new Menu(template, clickCooldown, dynItems, dynClicks);
+            final Menu menu = new Menu(template, clickCooldown, closeAction, dynItems, dynClicks);
             return menu;
         }
     }

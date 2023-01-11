@@ -35,13 +35,20 @@ java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(8))
 }
 
+val env: Map<String, String> = System.getenv()
+
 publishing {
     repositories {
-        maven {
-            name = "SapphireMC"
-            url = uri("http://repo.denaryworld.ru/snapshots")
-            isAllowInsecureProtocol = true
-            credentials(PasswordCredentials::class)
+        if (env.containsKey("MAVEN_URL")) {
+            maven(env["MAVEN_URL"]!!) {
+                name = "SapphireMC"
+                if (env["MAVEN_URL"]!!.startsWith("http://"))
+                    isAllowInsecureProtocol = true
+                credentials {
+                    username = env["MAVEN_USERNAME"]
+                    password = env["MAVEN_PASSWORD"]
+                }
+            }
         }
     }
 }

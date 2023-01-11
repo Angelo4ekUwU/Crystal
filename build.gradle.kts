@@ -28,6 +28,8 @@ publishing {
 }
 
 fun versionMetadata(): String {
+    if (System.getenv("release") != null) return ""
+
     val ghNumber = System.getenv("GITHUB_RUN_NUMBER")
 
     // CI builds only

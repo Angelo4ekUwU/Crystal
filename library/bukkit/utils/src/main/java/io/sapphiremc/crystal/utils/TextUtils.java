@@ -56,6 +56,10 @@ public final class TextUtils {
     /**
      * Finds simple and gradient hex patterns in string and converts it to Spigot format
      *
+     * Supported hex formats:<p>
+     * Single color: {#FFFFFF}text<p>
+     * Gradient: {#FFFFFF:#999999:#000000 text}
+     *
      * @param text string to stylish
      * @return styled string
      */

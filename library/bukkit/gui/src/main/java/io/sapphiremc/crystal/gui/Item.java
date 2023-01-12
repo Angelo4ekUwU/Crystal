@@ -7,11 +7,13 @@
  */
 package io.sapphiremc.crystal.gui;
 
+import io.sapphiremc.crystal.compatibility.ServerVersion;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.List;
@@ -49,6 +51,8 @@ public class Item {
         private List<String> lore;
         private Map<Enchantment, Integer> enchantments = new HashMap<>();
         private ItemFlag[] itemFlags;
+        private boolean unbreakable;
+        private Integer customModelData;
 
         public Builder type(Material type) {
             this.type = type;
@@ -107,28 +111,47 @@ public class Item {
             return this;
         }
 
+        public Builder unbreakable(boolean unbreakable) {
+            this.unbreakable = unbreakable;
+            return this;
+        }
+
+        /**
+         * @since Minecraft 1.14
+         */
+        public Builder customModelData(Integer customModelData) {
+            this.customModelData = customModelData;
+            return this;
+        }
+
+        @SuppressWarnings("deprecation")
         public Item build() {
             final ItemStack item = new ItemStack(type, Math.max(Math.min(amount, 64), 1));
-            if (durability > 0) item.setDurability(durability);
             final ItemMeta meta = item.getItemMeta();
 
-            if (displayname != null) {
+            if (durability > 0)
+                item.setDurability(durability);
+
+            if (displayname != null)
                 meta.setDisplayName(displayname);
-                item.setItemMeta(meta);
-            }
-            if (lore != null) {
+            if (lore != null)
                 meta.setLore(lore);
-                item.setItemMeta(meta);
-            }
 
             if (enchantments != null) {
                 for (final Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
                     if (entry != null)
                         meta.addEnchant(entry.getKey(), entry.getValue(), true);
                 }
-            } else if (itemFlags != null) {
-                item.addItemFlags(itemFlags);
             }
+
+            if (itemFlags != null)
+                item.addItemFlags(itemFlags);
+
+            if (ServerVersion.isServerVersionAtLeast(ServerVersion.v1_14_R1) && customModelData != null)
+                meta.setCustomModelData(customModelData);
+
+            meta.setUnbreakable(unbreakable);
+            item.setItemMeta(meta);
 
             return new Item(item, slots);
         }

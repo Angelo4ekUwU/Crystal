@@ -10,7 +10,6 @@ package io.sapphiremc.crystal.utils;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 
-@SuppressWarnings("unused")
 public class NumberUtils {
     public static String formatEconomy(char currencySymbol, double number) {
         return currencySymbol + formatNumber(number);

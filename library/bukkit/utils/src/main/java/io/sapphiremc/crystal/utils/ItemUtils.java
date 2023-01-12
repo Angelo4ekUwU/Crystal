@@ -25,11 +25,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
-@SuppressWarnings("unused")
 public final class ItemUtils {
 
+    /**
+     * @return new {@link ItemBuilder}, that allows you to create
+     * an {@link ItemStack} with custom parameters
+     */
     public static ItemBuilder itemBuilder() {
         return new ItemBuilder();
     }
@@ -37,49 +39,35 @@ public final class ItemUtils {
     @NotNull
     @SuppressWarnings("deprecation")
     private static ItemStack createItem(@NotNull final Material type, final int amount, final short durability,
-                                       @Nullable String displayName, @Nullable final List<String> lore,
-                                       @Nullable final Placeholder[] placeholders, @Nullable Map<Enchantment, Integer> enchantments, @Nullable ItemFlag[] flags) {
+                                        @Nullable String displayname, @Nullable final List<String> lore,
+                                        @Nullable final Map<Enchantment, Integer> enchantments, @Nullable final ItemFlag[] itemFlags,
+                                        final boolean unbreakable, @Nullable final Integer customModelData) {
         final ItemStack item = new ItemStack(type, Math.max(Math.min(amount, 64), 1));
-        if (durability > 0) item.setDurability(durability);
         final ItemMeta meta = item.getItemMeta();
 
-        if (displayName != null) {
-            if (placeholders != null) {
-                for (final Placeholder placeholder : placeholders) {
-                    if (placeholder != null) {
-                        displayName = displayName.replace(placeholder.key(), placeholder.value());
-                    }
-                }
-            }
-            meta.setDisplayName(TextUtils.stylish(displayName));
-            item.setItemMeta(meta);
-        }
-        if (lore != null) {
-            if (placeholders != null) {
-                meta.setLore(TextUtils.stylish(lore.stream().map(s -> {
-                    for (final Placeholder placeholder : placeholders) {
-                        if (placeholder != null) {
-                            s = s.replace(placeholder.key(), placeholder.value());
-                        }
-                    }
-                    return s;
-                }).collect(Collectors.toList())));
-            } else {
-                meta.setLore(TextUtils.stylish(lore));
-            }
-            item.setItemMeta(meta);
-        }
+        if (durability > 0)
+            item.setDurability(durability);
+
+        if (displayname != null)
+            meta.setDisplayName(displayname);
+        if (lore != null)
+            meta.setLore(lore);
 
         if (enchantments != null) {
             for (final Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
                 if (entry != null)
                     meta.addEnchant(entry.getKey(), entry.getValue(), true);
             }
-        } else if (flags != null) {
-            //noinspection NullableProblems
-            item.addItemFlags(flags);
         }
 
+        if (itemFlags != null)
+            item.addItemFlags(itemFlags);
+
+        if (ServerVersion.isServerVersionAtLeast(ServerVersion.v1_14_R1) && customModelData != null)
+            meta.setCustomModelData(customModelData);
+
+        meta.setUnbreakable(unbreakable);
+        item.setItemMeta(meta);
         return item;
     }
 
@@ -119,15 +107,19 @@ public final class ItemUtils {
         }
     }
 
+    /**
+     * Builder for {@link ItemStack}
+     */
     public static class ItemBuilder {
         private Material type;
         private int amount;
         private short durability;
         private String displayname;
         private List<String> lore;
-        private Placeholder[] placeholders;
         private Map<Enchantment, Integer> enchantments = new HashMap<>();
         private ItemFlag[] itemFlags;
+        private boolean unbreakable;
+        private Integer customModelData;
 
         public ItemBuilder type(Material type) {
             this.type = type;
@@ -154,11 +146,6 @@ public final class ItemUtils {
             return this;
         }
 
-        public ItemBuilder placeholders(Placeholder... placeholders) {
-            this.placeholders = placeholders;
-            return this;
-        }
-
         public ItemBuilder enchantments(Enchantment... enchantments) {
             for (final Enchantment enchantment : enchantments) {
                 this.enchantments.put(enchantment, 1);
@@ -181,8 +168,21 @@ public final class ItemUtils {
             return this;
         }
 
+        public ItemBuilder unbreakable(boolean unbreakable) {
+            this.unbreakable = unbreakable;
+            return this;
+        }
+
+        /**
+         * @since Minecraft 1.14
+         */
+        public ItemBuilder customModelData(Integer customModelData) {
+            this.customModelData = customModelData;
+            return this;
+        }
+
         public ItemStack build() {
-            return createItem(type, amount, durability, displayname, lore, placeholders, enchantments, itemFlags);
+            return createItem(type, amount, durability, displayname, lore, enchantments, itemFlags, unbreakable, customModelData);
         }
     }
 }

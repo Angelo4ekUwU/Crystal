@@ -64,6 +64,11 @@ public final class Template {
             return this;
         }
 
+        public Builder rows(int rows) {
+            this.size = rows * 9;
+            return this;
+        }
+
         public Builder type(InventoryType type) {
             this.type = type;
             return this;

@@ -1,12 +1,11 @@
 crystalModule {
     name.set("Crystal Locale")
     moduleName.set("locale")
-    description.set("")
-    library.set("bukkit")
+    description.set("Multiplatform locale module for Bukkit, BungeeCord and Velocity.")
+    library.set("core")
 }
 
 dependencies {
-    api(projects.core.base)
-    implementation(projects.core.config)
-    implementation(projects.bukkit.utils)
+    compileOnlyApi(libs.slf4j)
+    api(projects.core.config)
 }

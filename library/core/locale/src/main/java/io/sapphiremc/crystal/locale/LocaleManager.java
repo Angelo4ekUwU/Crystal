@@ -7,10 +7,9 @@
  */
 package io.sapphiremc.crystal.locale;
 
-import io.sapphiremc.crystal.CrystalPlugin;
-import io.sapphiremc.crystal.utils.JarUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.loader.ConfigurationLoader;
@@ -25,51 +24,54 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-@SuppressWarnings({"unused", "ConstantConditions"})
+@SuppressWarnings("ConstantConditions")
 public final class LocaleManager {
 
-    private final CrystalPlugin plugin;
+    private final Logger logger;
+    private final File dataFolder;
     private final LoaderType loaderType;
+    private final MessageSender sender;
     private final Pattern localePattern;
     private final Map<String, ConfigurationNode> locales = new HashMap<>();
 
     private String defaultLocale;
 
-    public LocaleManager(final CrystalPlugin plugin, final LoaderType loaderType) {
-        this.plugin = plugin;
+    public LocaleManager(Logger logger, File dataFolder, LoaderType loaderType, MessageSender sender) {
+        this.logger = logger;
+        this.dataFolder = dataFolder;
         this.loaderType = loaderType;
+        this.sender = sender;
         this.localePattern = Pattern.compile("([a-z]{2})_([a-z]{2})" + loaderType.getExtension());
     }
 
-    public void load(final String defaultLocale) {
+    public void load(String defaultLocale) {
         this.defaultLocale = defaultLocale;
 
-        plugin.logger().debug("Loading locale files...");
-        final File localeDir = new File(plugin.dataFolder() + File.separator + "locale");
+        logger.debug("Loading locale files...");
+        final File localeDir = new File(dataFolder + File.separator + "locale");
 
         if (!localeDir.exists()) {
             try {
-                JarUtils.copyFolderFromJar("locale", plugin.dataFolder(), JarUtils.CopyOption.COPY_IF_NOT_EXIST);
+                JarUtils.copyFolderFromJar("locale", dataFolder, JarUtils.CopyOption.COPY_IF_NOT_EXIST);
             } catch (IOException e) {
                 throw new RuntimeException("Unable to copy locales folder from plugin ", e);
             }
         }
 
         if (!localeDir.exists() || !localeDir.isDirectory()) {
-            plugin.logger().warn("Failed to copy locales from plugin");
-            plugin.disable();
+            logger.warn("Failed to copy locales from plugin");
             return;
         }
 
         if (localeDir.listFiles() == null && localeDir.listFiles().length < 1) {
-            plugin.logger().warn("Locales not found");
+            logger.warn("Locales not found");
             return;
         }
 
         for (final File file : localeDir.listFiles()) {
             if (file == null) continue;
             if (!localePattern.matcher(file.getName()).matches()) {
-                plugin.logger().info("Skipping file " + file.getName());
+                logger.info("Skipping file " + file.getName());
                 continue;
             }
 
@@ -83,19 +85,19 @@ public final class LocaleManager {
         }
 
         if (!locales.containsKey(defaultLocale)) {
-            plugin.logger().warn("The locale file " + defaultLocale + loaderType.getExtension() + " does not exist in " + localeDir.getPath() + " folder, try using en_us" + loaderType.getExtension());
+            logger.warn("The locale file " + defaultLocale + loaderType.getExtension() + " does not exist in " + localeDir.getPath() + " folder, try using en_us" + loaderType.getExtension());
         }
 
-        plugin.logger().warn("Successfully loaded " + locales.size() + " locales.");
+        logger.warn("Successfully loaded " + locales.size() + " locales.");
     }
 
     @NotNull
-    public Message getMessage(@NotNull final String... path) {
+    public Message getMessage(@NotNull String... path) {
         return getMessage(null, path);
     }
 
     @NotNull
-    public Message getMessage(@Nullable final String locale, @NotNull final String... path) {
+    public Message getMessage(@Nullable String locale, @NotNull String... path) {
         try {
             final Object[] finalPath = path.length == 1 ? path[0].split("\\.") : path;
             if (getDefaultLocale().node(finalPath).isList()) {
@@ -105,10 +107,10 @@ public final class LocaleManager {
                     listMsg.addAll(getDefaultLocale().node(finalPath).getList(String.class, Collections.singletonList("<missing path: " + Arrays.toString(finalPath) + ">")));
                 }
 
-                return new Message(plugin, listMsg);
+                return new Message(sender, listMsg);
             } else {
                 String stringMsg = getLocale(locale).node(finalPath).getString(getDefaultLocale().node(finalPath).getString("<missing path: " + Arrays.toString(finalPath) + ">"));
-                return new Message(plugin, stringMsg);
+                return new Message(sender, stringMsg);
             }
         } catch (SerializationException ex) {
             throw new RuntimeException("Failed to get message", ex);
@@ -126,7 +128,7 @@ public final class LocaleManager {
         if (locale != null && locales.containsKey(locale)) {
             key = locale;
         } else {
-            plugin.logger().debug("Locale {} not found, try using default locale", locale);
+            logger.debug("Locale {} not found, try using default locale", locale);
             key = defaultLocale;
         }
 

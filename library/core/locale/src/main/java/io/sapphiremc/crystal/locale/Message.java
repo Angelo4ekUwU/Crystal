@@ -7,8 +7,6 @@
  */
 package io.sapphiremc.crystal.locale;
 
-import io.sapphiremc.crystal.CrystalPlugin;
-import io.sapphiremc.crystal.utils.TextUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,20 +18,20 @@ import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
 public class Message {
-    private final CrystalPlugin plugin;
+    private final MessageSender sender;
     private final boolean isString;
     private final List<Pair> placeholders = new ArrayList<>();
     private String msg;
     private List<String> listMsg;
 
-    Message(@NotNull final CrystalPlugin plugin, @NotNull final String msg) {
-        this.plugin = plugin;
+    Message(MessageSender sender, String msg) {
+        this.sender = sender;
         this.msg = msg;
         this.isString = true;
     }
 
-    Message(@NotNull final CrystalPlugin plugin, @NotNull final List<String> listMsg) {
-        this.plugin = plugin;
+    Message(MessageSender sender, List<String> listMsg) {
+        this.sender = sender;
         this.listMsg = listMsg;
         this.isString = false;
     }
@@ -44,7 +42,7 @@ public class Message {
      * @param placeholders Array of placeholders
      * @return this message
      */
-    public Message placeholders(final Pair... placeholders) {
+    public Message placeholders(Pair... placeholders) {
         Collections.addAll(this.placeholders, placeholders);
         return this;
     }
@@ -61,12 +59,12 @@ public class Message {
      *
      * @param target target
      */
-    public void send(@Nullable final UUID target) {
+    public void send(@Nullable UUID target) {
         prepareMessage();
         if (this.isString) {
-            plugin.sendMessage(target, asString());
+            sender.sendMessage(target, asString());
         } else {
-            plugin.sendMessage(target, asList().toArray(new String[0]));
+            sender.sendMessage(target, asList().toArray(new String[0]));
         }
     }
 
@@ -95,7 +93,6 @@ public class Message {
                     msg = msg.replace(placeholder.key(), placeholder.value());
                 }
             }
-            msg = TextUtils.stylish(msg);
         } else {
             this.listMsg = listMsg.stream().map(s -> {
                 if (placeholders.size() > 0) {
@@ -103,7 +100,7 @@ public class Message {
                         s = s.replace(placeholder.key(), placeholder.value());
                     }
                 }
-                return TextUtils.stylish(s);
+                return s;
             }).collect(Collectors.toList());
         }
     }

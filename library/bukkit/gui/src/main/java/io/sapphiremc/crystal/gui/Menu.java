@@ -31,7 +31,7 @@ public class Menu implements InventoryHolder {
 
     private Player viewer;
 
-    public Menu(final Template template, final long clickCooldown, final CloseAction closeAction, final Map<Integer, ItemStack> dynItems, final Map<Integer, ClickAction> dynClicks) {
+    public Menu(Template template, long clickCooldown, CloseAction closeAction, Map<Integer, ItemStack> dynItems, Map<Integer, ClickAction> dynClicks) {
         this.template = template;
         this.clickCooldown = clickCooldown;
         this.closeAction = closeAction;

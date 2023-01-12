@@ -20,7 +20,7 @@ public final class Template {
     private final InventoryType type;
     private final Map<Integer, ItemStack> items;
 
-    private Template(final String title, final int size, final InventoryType type, final Map<Integer, ItemStack> items) {
+    private Template(String title, int size, InventoryType type, Map<Integer, ItemStack> items) {
         this.title = title;
         this.size = size;
         this.type = type;
@@ -60,6 +60,7 @@ public final class Template {
         }
 
         public Builder size(int size) {
+
             this.size = size;
             return this;
         }

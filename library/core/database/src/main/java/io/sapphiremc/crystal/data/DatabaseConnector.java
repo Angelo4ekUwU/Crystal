@@ -9,7 +9,6 @@ package io.sapphiremc.crystal.data;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import io.sapphiremc.crystal.CrystalPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -17,50 +16,49 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-@SuppressWarnings("unused")
 public class DatabaseConnector {
 
-    private final CrystalPlugin plugin;
     private final AbstractDatabaseConfig config;
     private HikariDataSource hikariDataSource = null;
     private boolean initialized = false;
 
-    DatabaseConnector(@NotNull final CrystalPlugin plugin, @NotNull final AbstractDatabaseConfig config) {
-        this.plugin = plugin;
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    DatabaseConnector(@NotNull final AbstractDatabaseConfig config) {
         this.config = config;
 
         final DatabaseType type = config.databaseType();
         if (type.equals(DatabaseType.SQLITE)) {
-            final File storage = new File(plugin.dataFolder(), "storage.db");
+            final File storage = config.sqliteStorageFile();
             if (!storage.exists()) {
                 try {
                     storage.createNewFile();
                 } catch (IOException ex) {
-                    plugin.logger().error("Failed to create sqlite storage file!", ex);
+                    config.logger().error("Failed to create sqlite storage file!", ex);
                 }
             }
 
             final HikariConfig hikariConfig = new HikariConfig();
 
-            hikariConfig.setPoolName(plugin.name() + "-SQLite");
+            hikariConfig.setPoolName(config.sqlPoolPrefix() + "-SQLite");
             hikariConfig.setDriverClassName("org.sqlite.JDBC");
             hikariConfig.setJdbcUrl("jdbc:sqlite:" + storage.getPath());
 
             this.hikariDataSource = new HikariDataSource(hikariConfig);
             this.initialized = true;
-            plugin.logger().debug("Successfully loaded SQLite storage!");
+            config.logger().debug("Successfully loaded SQLite storage!");
         } else if (type.equals(DatabaseType.MYSQL)) {
-            this.hikariDataSource = new HikariDataSource(setupHikariConfig());
+            this.hikariDataSource = new HikariDataSource(setupRemoteSQL());
             this.initialized = true;
-            plugin.logger().debug("Successfully loaded MySQL storage");
+            config.logger().debug("Successfully loaded MySQL storage");
         }
     }
 
     @NotNull
-    private HikariConfig setupHikariConfig() {
+    private HikariConfig setupRemoteSQL() {
+        final DatabaseType type = config.databaseType();
         final HikariConfig hikariConfig = new HikariConfig();
 
-        hikariConfig.setPoolName(plugin.name() + "-MySQL");
+        hikariConfig.setPoolName(config.sqlPoolPrefix() + "-MySQL");
         hikariConfig.setDriverClassName("com.mysql.cj.jdbc.Driver");
         hikariConfig.setJdbcUrl("jdbc:mysql://" + config.address() + ":" + config.port() + "/" + config.database());
         hikariConfig.setUsername(config.username());
@@ -146,9 +144,9 @@ public class DatabaseConnector {
      */
     public void connect(@NotNull final ConnectionCallback callback) {
         try (final Connection connection = getConnection()) {
-            callback.accept(connection, getStorageType());
+            callback.accept(connection, config.databaseType());
         } catch (SQLException ex) {
-            plugin.logger().error("An error occured executing a SQL query", ex);
+            config.logger().error("An error occured executing a SQL query", ex);
         }
     }
 
@@ -158,7 +156,7 @@ public class DatabaseConnector {
      * @return database type
      */
     @NotNull
-    public DatabaseType getStorageType() {
+    public DatabaseType getDatabaseType() {
         return config.databaseType();
     }
 

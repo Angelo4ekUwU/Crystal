@@ -8,7 +8,9 @@
 package io.sapphiremc.crystal.data;
 
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,16 +20,51 @@ import java.util.Map;
 public abstract class AbstractDatabaseConfig {
 
     /**
+     * {@link org.slf4j.Logger} impl from your plugin
+     */
+    public abstract Logger logger();
+
+    /**
+     * You must implement this using same method on your platform
+     *
+     * @param task task
+     */
+    public abstract void runSyncTask(@NotNull final Runnable task);
+
+    /**
      * Database type
+     * <p>
+     * If database type is SQLite, be sure to override {@link #sqliteStorageFile()} method
      * <p>
      * If database type is MySQL, be sure to override the following methods:
      * <p>
-     * {@link AbstractDatabaseConfig#address()}, {@link AbstractDatabaseConfig#database()},
-     * {@link AbstractDatabaseConfig#username()}, {@link AbstractDatabaseConfig#password()}
+     * {@link #address()}, {@link #database()},
+     * {@link #username()}, {@link #password()}
      *
      * @see DatabaseType
      */
     public abstract @NotNull DatabaseType databaseType();
+
+    /**
+     * Prefix for pool names in hikari.
+     * <p>
+     * Unique prefix will allow you to distinguish
+     * hikari logs from this plugin from hikari logs of other plugins.
+     * <p>
+     * <u>It's best to use your plugin name as pool name prefix.
+     */
+    public String sqlPoolPrefix() {
+        return "Crystal";
+    }
+
+    /**
+     * File for SQLite database
+     * <p>
+     * <u>Must be implemented only if database type is SQLite.
+     */
+    public File sqliteStorageFile() {
+        return new File("storage.db");
+    }
 
     /**
      * The IP or address of the database.

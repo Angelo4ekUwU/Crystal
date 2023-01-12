@@ -6,7 +6,7 @@ plugins {
 
 allprojects {
     group = "io.sapphiremc"
-    version = "1.2.3" + versionMetadata()
+    version = "1.2.4" + versionMetadata()
 }
 
 publishing {

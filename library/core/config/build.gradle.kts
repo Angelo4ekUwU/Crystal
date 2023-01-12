@@ -6,6 +6,6 @@ crystalModule {
 }
 
 dependencies {
-    api(projects.core.base)
+    compileOnlyApi(libs.annotations)
     api(libs.bundles.configurate)
 }

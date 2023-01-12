@@ -7,7 +7,6 @@
  */
 package io.sapphiremc.crystal.gui;
 
-import io.sapphiremc.crystal.CrystalPlugin;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -56,7 +55,7 @@ public final class InventoryListener implements Listener {
                 }
             }
 
-            CrystalPlugin.instance().runSyncTask(() -> menu.click(event));
+            menu.click(event);
         }
     }
 
@@ -65,7 +64,7 @@ public final class InventoryListener implements Listener {
             final Menu menu = (Menu) event.getInventory().getHolder();
             if (menu == null) return;
 
-            CrystalPlugin.instance().runSyncTask(() -> menu.close(event));
+            menu.close(event);
         }
     }
 }

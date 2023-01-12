@@ -7,7 +7,6 @@
  */
 package io.sapphiremc.crystal.data;
 
-import io.sapphiremc.crystal.CrystalPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,14 +20,14 @@ import java.util.function.Consumer;
 
 @SuppressWarnings("unused")
 public abstract class AbstractDataManager {
-    private CrystalPlugin plugin;
+    private AbstractDatabaseConfig config;
     protected DatabaseConnector databaseConnector;
 
     protected final ExecutorService asyncPool = Executors.newSingleThreadExecutor();
 
-    public void loadDatabase(@NotNull final CrystalPlugin plugin, @NotNull final AbstractDatabaseConfig databaseConfig) {
-        this.plugin = plugin;
-        this.databaseConnector = new DatabaseConnector(plugin, databaseConfig);
+    public void loadDatabase(@NotNull AbstractDatabaseConfig config) {
+        this.config = config;
+        this.databaseConnector = new DatabaseConnector(config);
         onDatabaseLoad();
     }
 
@@ -58,7 +57,7 @@ public abstract class AbstractDataManager {
      * @param runnable task to run on the next server tick
      */
     public void sync(@NotNull final Runnable runnable) {
-        plugin.runSyncTask(runnable);
+        config.runSyncTask(runnable);
     }
 
     /**

@@ -29,11 +29,10 @@ public enum LoaderType {
     }
 
     public ConfigurationLoader<? extends ConfigurationNode> getLoader(final Path path) {
-        switch (this) {
-            case HOCON: return CrystalConfig.hoconLoader(path);
-            case YAML: return CrystalConfig.yamlLoader(path);
-            case JSON: return CrystalConfig.gsonLoader(path);
-            default: return null;
-        }
+        return switch (this) {
+            case HOCON -> CrystalConfig.hoconLoader(path);
+            case YAML -> CrystalConfig.yamlLoader(path);
+            case JSON -> CrystalConfig.gsonLoader(path);
+        };
     }
 }

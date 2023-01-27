@@ -29,7 +29,7 @@ public class JarUtils {
         final byte[] buffer = new byte[1024];
 
         File fullPath = null;
-        String path = JarUtils.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+        var path = JarUtils.class.getProtectionDomain().getCodeSource().getLocation().getPath();
         try {
             if (!path.startsWith("file"))
                 path = "file://" + path;
@@ -38,14 +38,14 @@ public class JarUtils {
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
-        final ZipInputStream zis = new ZipInputStream(Files.newInputStream(Objects.requireNonNull(fullPath).toPath()));
+        final var zis = new ZipInputStream(Files.newInputStream(Objects.requireNonNull(fullPath).toPath()));
 
         ZipEntry entry;
         while ((entry = zis.getNextEntry()) != null) {
             if (!entry.getName().startsWith(folderName + JAR_SEPARATOR))
                 continue;
 
-            final String fileName = entry.getName();
+            final var fileName = entry.getName();
 
             if (fileName.charAt(fileName.length() - 1) == JAR_SEPARATOR) {
                 File file = new File(destFolder + File.separator + fileName);
@@ -65,7 +65,7 @@ public class JarUtils {
 
             if (!file.exists())
                 file.createNewFile();
-            final FileOutputStream fos = new FileOutputStream(file);
+            final var fos = new FileOutputStream(file);
 
             int len;
             while ((len = zis.read(buffer)) > 0) {

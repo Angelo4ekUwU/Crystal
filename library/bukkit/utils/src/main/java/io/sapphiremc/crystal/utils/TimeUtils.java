@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 public final class TimeUtils {
 
     public static String timeToStr(final long time, final TimeUnit unit, final String day, final String hour, final String minute, final String second) {
-        long millis = unit.toMillis(time);
+        final long millis = unit.toMillis(time);
         return toString(millis, day, hour, minute, second);
     }
 
@@ -21,7 +21,7 @@ public final class TimeUtils {
     }
 
     private static String toString(final long millis, final String day, final String hour, final String minute, final String second) {
-        final StringBuilder builder = new StringBuilder();
+        final var builder = new StringBuilder();
 
         final long days = TimeUnit.MILLISECONDS.toDays(millis);
         final long hours = TimeUnit.MILLISECONDS.toHours(millis) - TimeUnit.DAYS.toHours(TimeUnit.MILLISECONDS.toDays(millis));

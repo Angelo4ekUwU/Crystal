@@ -7,13 +7,10 @@
  */
 package io.sapphiremc.crystal.gui;
 
-import io.sapphiremc.crystal.compatibility.ServerVersion;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.List;
@@ -116,9 +113,6 @@ public class Item {
             return this;
         }
 
-        /**
-         * @since Minecraft 1.14
-         */
         public Builder customModelData(Integer customModelData) {
             this.customModelData = customModelData;
             return this;
@@ -126,8 +120,8 @@ public class Item {
 
         @SuppressWarnings("deprecation")
         public Item build() {
-            final ItemStack item = new ItemStack(type, Math.max(Math.min(amount, 64), 1));
-            final ItemMeta meta = item.getItemMeta();
+            final var item = new ItemStack(type, Math.max(Math.min(amount, 64), 1));
+            final var meta = item.getItemMeta();
 
             if (durability > 0)
                 item.setDurability(durability);
@@ -147,7 +141,7 @@ public class Item {
             if (itemFlags != null)
                 item.addItemFlags(itemFlags);
 
-            if (ServerVersion.isServerVersionAtLeast(ServerVersion.v1_14_R1) && customModelData != null)
+            if (customModelData != null)
                 meta.setCustomModelData(customModelData);
 
             meta.setUnbreakable(unbreakable);

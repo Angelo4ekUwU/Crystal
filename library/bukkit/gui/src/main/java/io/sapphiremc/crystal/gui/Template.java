@@ -76,16 +76,16 @@ public final class Template {
         }
 
         public Builder item(ItemStack item, int... slots) {
-            for (int slot : slots) {
+            for (final int slot : slots) {
                 items.put(slot, item);
             }
             return this;
         }
 
         public Builder item(Item item) {
-            final ItemStack stack = item.getItem();
+            final var stack = item.getItem();
             final int[] slots = item.getSlots();
-            for (int slot : slots) {
+            for (final int slot : slots) {
                 items.put(slot, stack);
             }
             return this;

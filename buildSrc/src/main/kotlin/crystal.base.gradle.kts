@@ -7,6 +7,7 @@ plugins {
 tasks {
     compileJava {
         options.encoding = Charsets.UTF_8.name()
+        options.release.set(17)
         options.compilerArgs.addAll(
             listOf(
                 "-parameters",
@@ -32,7 +33,7 @@ tasks {
 }
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(8))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
 }
 
 val env: Map<String, String> = System.getenv()

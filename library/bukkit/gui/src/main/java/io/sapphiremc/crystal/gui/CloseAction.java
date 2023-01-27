@@ -9,6 +9,7 @@ package io.sapphiremc.crystal.gui;
 
 import org.bukkit.event.inventory.InventoryCloseEvent;
 
+@FunctionalInterface
 public interface CloseAction {
     void close(InventoryCloseEvent event);
 }

@@ -16,13 +16,12 @@ import java.util.stream.Collectors;
 public final class PermissionUtils {
 
     public static int getNumberFromPermission(final Player player, final String permission) {
-        Logger.getLogger("");
-        final List<Integer> values = player.getEffectivePermissions().stream()
+        final var values = player.getEffectivePermissions().stream()
             .filter(info -> info.getPermission().startsWith(permission))
             .map(info -> info.getPermission().substring(permission.length()))
             .map(Integer::parseInt)
             .sorted()
-            .collect(Collectors.toList());
+            .toList();
         return values.get(values.size() - 1);
     }
 }

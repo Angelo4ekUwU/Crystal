@@ -38,14 +38,14 @@ class JarUtils {
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
-        final ZipInputStream zis = new ZipInputStream(Files.newInputStream(Objects.requireNonNull(fullPath).toPath()));
+        final var zis = new ZipInputStream(Files.newInputStream(Objects.requireNonNull(fullPath).toPath()));
 
         ZipEntry entry;
         while ((entry = zis.getNextEntry()) != null) {
             if (!entry.getName().startsWith(folderName + JAR_SEPARATOR))
                 continue;
 
-            final String fileName = entry.getName();
+            final var fileName = entry.getName();
 
             if (fileName.charAt(fileName.length() - 1) == JAR_SEPARATOR) {
                 File file = new File(destFolder + File.separator + fileName);

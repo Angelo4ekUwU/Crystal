@@ -12,7 +12,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.ConfigurationNode;
-import org.spongepowered.configurate.loader.ConfigurationLoader;
 import org.spongepowered.configurate.serialize.SerializationException;
 
 import java.io.File;
@@ -20,7 +19,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -75,7 +73,7 @@ public final class LocaleManager {
                 continue;
             }
 
-            final ConfigurationLoader<? extends ConfigurationNode> loader = loaderType.getLoader(file.toPath());
+            final var loader = loaderType.getLoader(file.toPath());
 
             try {
                 locales.put(file.getName().replace(loaderType.getExtension(), ""), loader.load());
@@ -101,16 +99,15 @@ public final class LocaleManager {
         try {
             final Object[] finalPath = path.length == 1 ? path[0].split("\\.") : path;
             if (getDefaultLocale().node(finalPath).isList()) {
-                final List<String> listMsg;
-                listMsg = getLocale(locale).node(finalPath).getList(String.class, Collections.emptyList());
-                if (listMsg.isEmpty()) {
-                    listMsg.addAll(getDefaultLocale().node(finalPath).getList(String.class, Collections.singletonList("<missing path: " + Arrays.toString(finalPath) + ">")));
+                final var msg = getLocale(locale).node(finalPath).getList(String.class, Collections.emptyList());
+                if (msg.isEmpty()) {
+                    msg.addAll(getDefaultLocale().node(finalPath).getList(String.class, Collections.singletonList("<missing path: " + Arrays.toString(finalPath) + ">")));
                 }
 
-                return new Message(sender, listMsg);
+                return new Message(sender, msg);
             } else {
-                String stringMsg = getLocale(locale).node(finalPath).getString(getDefaultLocale().node(finalPath).getString("<missing path: " + Arrays.toString(finalPath) + ">"));
-                return new Message(sender, stringMsg);
+                final var msg = getLocale(locale).node(finalPath).getString(getDefaultLocale().node(finalPath).getString("<missing path: " + Arrays.toString(finalPath) + ">"));
+                return new Message(sender, msg);
             }
         } catch (SerializationException ex) {
             throw new RuntimeException("Failed to get message", ex);

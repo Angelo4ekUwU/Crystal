@@ -7,14 +7,12 @@
  */
 package io.sapphiremc.crystal.utils;
 
-import io.sapphiremc.crystal.compatibility.ServerVersion;
 import net.md_5.bungee.api.ChatColor;
 
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -55,7 +53,7 @@ public final class TextUtils {
 
     /**
      * Finds simple and gradient hex patterns in string and converts it to Spigot format
-     *
+     * <p>
      * Supported hex formats:<p>
      * Single color: {#FFFFFF}text<p>
      * Gradient: {#FFFFFF:#999999:#000000 text}
@@ -68,32 +66,28 @@ public final class TextUtils {
             return null;
         }
 
-        if (ServerVersion.isServerVersionBelow(ServerVersion.v1_16_R1)) {
-            return ChatColor.translateAlternateColorCodes('&', text);
-        }
+        var matcher = HEX_GRADIENT_PATTERN.matcher(text);
 
-        Matcher matcher = HEX_GRADIENT_PATTERN.matcher(text);
-
-        StringBuffer builder = new StringBuffer();
+        var builder = new StringBuilder();
 
         while (matcher.find()) {
-            final String gradient = matcher.group();
+            final var gradient = matcher.group();
 
             int groups = 0;
             for (int i = 1; gradient.charAt(i) == '#'; i += 8) {
                 groups++;
             }
 
-            Color[] colors = new Color[groups];
+            var colors = new Color[groups];
             for (int i = 0; i < groups; i++) {
                 colors[i] = ChatColor.of(gradient.substring((8 * i) + 1, (8 * i) + 8)).getColor();
             }
 
-            final String substring = gradient.substring((groups - 1) * 8 + 9, gradient.length() - 1);
+            final var substring = gradient.substring((groups - 1) * 8 + 9, gradient.length() - 1);
 
             final char[] chars = substring.toCharArray();
 
-            final StringBuilder gradientBuilder = new StringBuilder();
+            final var gradientBuilder = new StringBuilder();
 
             int colorLength = chars.length / (colors.length - 1);
             int lastColorLength;
@@ -105,12 +99,12 @@ public final class TextUtils {
                 lastColorLength = chars.length % (colorLength * (colors.length - 1)) + colorLength;
             }
 
-            final List<ChatColor> currentStyles = new ArrayList<>();
+            final var currentStyles = new ArrayList<ChatColor>();
             for (int i = 0; i < (colors.length - 1); i++) {
                 final int currentColorLength = ((i == colors.length - 2) ? lastColorLength : colorLength);
                 for (int j = 0; j < currentColorLength; j++) {
-                    final Color color = calculateGradientColor(j + 1, currentColorLength, colors[i], colors[i + 1]);
-                    final ChatColor chatColor = ChatColor.of(color);
+                    final var color = calculateGradientColor(j + 1, currentColorLength, colors[i], colors[i + 1]);
+                    final var chatColor = ChatColor.of(color);
 
                     final int charIndex = colorLength * i + j;
                     if (charIndex + 1 < chars.length) {
@@ -121,7 +115,7 @@ public final class TextUtils {
                                 continue;
                             }
 
-                            final ChatColor style = ChatColor.getByChar(chars[charIndex + 1]);
+                            final var style = ChatColor.getByChar(chars[charIndex + 1]);
                             if (style != null) {
                                 currentStyles.add(style);
                                 j++;
@@ -130,9 +124,9 @@ public final class TextUtils {
                         }
                     }
 
-                    final StringBuilder colorBuilder = gradientBuilder.append(chatColor.toString());
+                    final var colorBuilder = gradientBuilder.append(chatColor.toString());
 
-                    for (final ChatColor currentStyle : currentStyles) {
+                    for (final var currentStyle : currentStyles) {
                         colorBuilder.append(currentStyle.toString());
                     }
 
@@ -147,10 +141,10 @@ public final class TextUtils {
         text = builder.toString();
 
         matcher = HEX_COLORS_PATTERN.matcher(text);
-        builder = new StringBuffer();
+        builder = new StringBuilder();
 
         while (matcher.find()) {
-            final String hexColorString = matcher.group();
+            final var hexColorString = matcher.group();
             matcher.appendReplacement(builder, ChatColor.of(hexColorString.substring(1, hexColorString.length() - 1)).toString());
         }
 
@@ -170,7 +164,7 @@ public final class TextUtils {
     }
 
     private static Color calculateGradientColor(int x, int parts, Color from, Color to) {
-        double p = (double) (parts - x + 1) / (double) parts;
+        final double p = (double) (parts - x + 1) / (double) parts;
 
         return new Color(
             (int) (from.getRed() * p + to.getRed() * (1 - p)),

@@ -31,6 +31,7 @@ public class Menu implements InventoryHolder {
 
     private Player viewer;
 
+    @SuppressWarnings("NullableProblems")
     public Menu(Template template, long clickCooldown, CloseAction closeAction, Map<Integer, ItemStack> dynItems, Map<Integer, ClickAction> dynClicks) {
         this.template = template;
         this.clickCooldown = clickCooldown;
@@ -111,7 +112,7 @@ public class Menu implements InventoryHolder {
     }
 
     void click(InventoryClickEvent event) {
-        final ClickAction action = clicks.get(event.getSlot());
+        final var action = clicks.get(event.getSlot());
 
         if (action != null) {
             action.click(event);
@@ -142,23 +143,23 @@ public class Menu implements InventoryHolder {
         }
 
         public Builder item(@NotNull ItemStack item, int @NotNull ... slots) {
-            for (int slot : slots) {
+            for (final int slot : slots) {
                 dynItems.put(slot, item);
             }
             return this;
         }
 
         public Builder item(@NotNull Item item) {
-            final ItemStack stack = item.getItem();
+            final var stack = item.getItem();
             final int[] slots = item.getSlots();
-            for (int slot : slots) {
+            for (final int slot : slots) {
                 dynItems.put(slot, stack);
             }
             return this;
         }
 
         public Builder item(@NotNull ItemStack item, @NotNull ClickAction action, int @NotNull ... slots) {
-            for (int slot : slots) {
+            for (final int slot : slots) {
                 dynItems.put(slot, item);
                 dynClicks.put(slot, action);
             }
@@ -166,9 +167,9 @@ public class Menu implements InventoryHolder {
         }
 
         public Builder item(@NotNull Item item, @NotNull ClickAction action) {
-            final ItemStack stack = item.getItem();
+            final var stack = item.getItem();
             final int[] slots = item.getSlots();
-            for (int slot : slots) {
+            for (final int slot : slots) {
                 dynItems.put(slot, stack);
                 dynClicks.put(slot, action);
             }
@@ -191,8 +192,7 @@ public class Menu implements InventoryHolder {
         }
 
         public Menu build() {
-            final Menu menu = new Menu(template, clickCooldown, closeAction, dynItems, dynClicks);
-            return menu;
+            return new Menu(template, clickCooldown, closeAction, dynItems, dynClicks);
         }
     }
 }

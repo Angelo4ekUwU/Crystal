@@ -1,12 +1,11 @@
 plugins {
     `java-library`
     `maven-publish`
-    id("org.ajoberstar.grgit") version "5.0.0"
 }
 
 allprojects {
     group = "io.sapphiremc"
-    version = "1.2.4" + versionMetadata()
+    version = "2.0.0-SNAPSHOT"
 }
 
 publishing {
@@ -25,29 +24,4 @@ publishing {
             }
         }
     }
-}
-
-fun versionMetadata(): String {
-    if (System.getenv("release") != null) return ""
-
-    val ghNumber = System.getenv("GITHUB_RUN_NUMBER")
-
-    // CI builds only
-    if (ghNumber != null) {
-        return "+build.$ghNumber"
-    }
-
-    if (grgit != null) {
-        val head = grgit.head()
-        var id = head.abbreviatedId
-
-        // Flag the build if the build tree is not clean
-        if (!grgit.status().isClean) {
-            id += "-dirty"
-        }
-
-        return "+rev.$id"
-    }
-
-    return "+unknown"
 }

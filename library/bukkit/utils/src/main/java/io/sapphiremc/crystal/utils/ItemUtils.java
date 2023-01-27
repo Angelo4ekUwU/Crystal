@@ -42,8 +42,8 @@ public final class ItemUtils {
                                         @Nullable String displayname, @Nullable final List<String> lore,
                                         @Nullable final Map<Enchantment, Integer> enchantments, @Nullable final ItemFlag[] itemFlags,
                                         final boolean unbreakable, @Nullable final Integer customModelData) {
-        final ItemStack item = new ItemStack(type, Math.max(Math.min(amount, 64), 1));
-        final ItemMeta meta = item.getItemMeta();
+        final var item = new ItemStack(type, Math.max(Math.min(amount, 64), 1));
+        final var meta = item.getItemMeta();
 
         if (durability > 0)
             item.setDurability(durability);
@@ -63,7 +63,7 @@ public final class ItemUtils {
         if (itemFlags != null)
             item.addItemFlags(itemFlags);
 
-        if (ServerVersion.isServerVersionAtLeast(ServerVersion.v1_14_R1) && customModelData != null)
+        if (customModelData != null)
             meta.setCustomModelData(customModelData);
 
         meta.setUnbreakable(unbreakable);
@@ -78,12 +78,12 @@ public final class ItemUtils {
 
     @NotNull
     public static ItemStack getCustomHead(final String signature, final String texture) {
-        final ItemStack head = new ItemStack(ServerVersion.isServerVersionAtLeast(ServerVersion.v1_13_R1) ? Material.PLAYER_HEAD : Material.getMaterial("SKULL"));
+        final var head = new ItemStack(Material.PLAYER_HEAD);
         if (texture == null)
             return head;
 
-        final SkullMeta skullMeta = (SkullMeta) head.getItemMeta();
-        GameProfile profile = new GameProfile(UUID.nameUUIDFromBytes(texture.getBytes()), "CrystalCustomHead");
+        final var skullMeta = (SkullMeta) head.getItemMeta();
+        final var profile = new GameProfile(UUID.nameUUIDFromBytes(texture.getBytes()), "CrystalCustomHead");
 
         if (texture.endsWith("=")) {
             if (signature == null) {
@@ -97,7 +97,7 @@ public final class ItemUtils {
         }
 
         try {
-            final Field profileField = skullMeta.getClass().getDeclaredField("profile");
+            final var profileField = skullMeta.getClass().getDeclaredField("profile");
             profileField.setAccessible(true);
             profileField.set(skullMeta, profile);
             head.setItemMeta(skullMeta);
@@ -173,9 +173,6 @@ public final class ItemUtils {
             return this;
         }
 
-        /**
-         * @since Minecraft 1.14
-         */
         public ItemBuilder customModelData(Integer customModelData) {
             this.customModelData = customModelData;
             return this;

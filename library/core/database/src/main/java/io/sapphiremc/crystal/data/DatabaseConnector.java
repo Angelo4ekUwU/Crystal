@@ -26,7 +26,7 @@ public class DatabaseConnector {
     DatabaseConnector(@NotNull final AbstractDatabaseConfig config) {
         this.config = config;
 
-        final DatabaseType type = config.databaseType();
+        final var type = config.databaseType();
         if (type.equals(DatabaseType.SQLITE)) {
             final File storage = config.sqliteStorageFile();
             if (!storage.exists()) {
@@ -37,7 +37,7 @@ public class DatabaseConnector {
                 }
             }
 
-            final HikariConfig hikariConfig = new HikariConfig();
+            final var hikariConfig = new HikariConfig();
 
             hikariConfig.setPoolName(config.sqlPoolPrefix() + "-SQLite");
             hikariConfig.setDriverClassName("org.sqlite.JDBC");
@@ -55,8 +55,7 @@ public class DatabaseConnector {
 
     @NotNull
     private HikariConfig setupRemoteSQL() {
-        final DatabaseType type = config.databaseType();
-        final HikariConfig hikariConfig = new HikariConfig();
+        final var hikariConfig = new HikariConfig();
 
         hikariConfig.setPoolName(config.sqlPoolPrefix() + "-MySQL");
         hikariConfig.setDriverClassName("com.mysql.cj.jdbc.Driver");

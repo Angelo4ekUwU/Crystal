@@ -16,10 +16,10 @@ public class NumberUtils {
     }
 
     public static String formatNumber(double number) {
-        DecimalFormat decimalFormatter = new DecimalFormat(number == Math.ceil(number) ? "#,###" : "#,###.00");
+        final var decimalFormatter = new DecimalFormat(number == Math.ceil(number) ? "#,###" : "#,###.00");
 
         // This is done to specifically prevent the NBSP character from printing in foreign languages.
-        DecimalFormatSymbols symbols = decimalFormatter.getDecimalFormatSymbols();
+        final var symbols = decimalFormatter.getDecimalFormatSymbols();
         symbols.setGroupingSeparator(',');
         symbols.setDecimalSeparator('.');
 
@@ -33,7 +33,7 @@ public class NumberUtils {
             return String.valueOf(count);
         }
 
-        int exp = (int) (Math.log(count) / Math.log(1000));
+        final int exp = (int) (Math.log(count) / Math.log(1000));
 
         return String.format("%.1f%c", count / Math.pow(1000, exp),
             "kMBTPE".charAt(exp - 1)).replace(".0", "");

@@ -148,7 +148,7 @@ public abstract class AbstractDatabaseConfig {
      * ...and any other MySQL properties</pre>
      */
     public Map<String, String> properties() {
-        Map<String, String> map = new HashMap<>();
+        final var map = new HashMap<String, String>();
         map.put("useUnicode", "true");
         map.put("characterEncoding", "utf8");
         return map;

@@ -19,7 +19,8 @@ public class CrystalLibraryExtension extends CrystalExtension {
 
     @Inject
     public CrystalLibraryExtension(ObjectFactory factory, Project project) {
-        super(project);this.libraryName = factory.property(String.class);
+        super(project);
+        this.libraryName = factory.property(String.class);
         this.libraryName.finalizeValueOnRead();
     }
 

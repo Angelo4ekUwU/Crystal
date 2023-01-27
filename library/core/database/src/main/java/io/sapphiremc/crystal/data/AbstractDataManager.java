@@ -18,7 +18,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-@SuppressWarnings("unused")
 public abstract class AbstractDataManager {
     private AbstractDatabaseConfig config;
     protected DatabaseConnector databaseConnector;
@@ -108,8 +107,8 @@ public abstract class AbstractDataManager {
     }
 
     public long getTaskQueueSize() {
-        if (this.asyncPool instanceof ThreadPoolExecutor) {
-            return ((ThreadPoolExecutor) this.asyncPool).getTaskCount();
+        if (this.asyncPool instanceof final ThreadPoolExecutor executor) {
+            return executor.getTaskCount();
         }
 
         return -1;
@@ -118,7 +117,7 @@ public abstract class AbstractDataManager {
     /**
      * @see ExecutorService#awaitTermination(long, TimeUnit)
      */
-    public boolean waitForShutdown(final long timeout, @NotNull final TimeUnit unit) throws InterruptedException {
+    public boolean waitForShutdown(long timeout, @NotNull TimeUnit unit) throws InterruptedException {
         return this.asyncPool.awaitTermination(timeout, unit);
     }
 }

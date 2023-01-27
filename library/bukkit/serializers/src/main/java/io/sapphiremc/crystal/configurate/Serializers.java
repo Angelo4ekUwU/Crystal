@@ -15,7 +15,6 @@ import org.spongepowered.configurate.serialize.TypeSerializer;
 
 import java.util.HashMap;
 
-@SuppressWarnings("unused")
 public final class Serializers {
 
     /**
@@ -23,8 +22,9 @@ public final class Serializers {
      *
      * @return {@link HashMap}
      */
+    @SuppressWarnings("rawtypes")
     public static HashMap<Class, TypeSerializer> get() {
-        HashMap<Class, TypeSerializer> serializers = new HashMap<>();
+        final var serializers = new HashMap<Class, TypeSerializer>();
         serializers.put(ItemStack.class, new ItemStackSerializer());
         serializers.put(Location.class, new LocationSerializer());
         return serializers;

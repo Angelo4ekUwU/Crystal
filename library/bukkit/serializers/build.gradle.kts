@@ -1,7 +1,7 @@
 crystalModule {
     name.set("Crystal Serializers")
-    moduleName.set("configserializers")
-    description.set("Configurate serializers for bukkit objects")
+    moduleName.set("serializers")
+    description.set("Configurate serializers for some bukkit objects")
     library.set("bukkit")
 }
 

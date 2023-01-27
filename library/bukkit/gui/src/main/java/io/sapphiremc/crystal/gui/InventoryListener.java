@@ -31,18 +31,16 @@ public final class InventoryListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onLateInventoryClick(InventoryClickEvent event) {
-        if (event.getInventory().getHolder() instanceof Menu && event.getCurrentItem() != null && event.getWhoClicked() instanceof Player) {
+        if (event.getInventory().getHolder() instanceof final Menu menu
+            && event.getCurrentItem() != null && event.getWhoClicked() instanceof final Player player) {
             // Cancel the event again just in case a plugin un-cancels it
             event.setCancelled(true);
-
-            final Menu menu = (Menu) event.getInventory().getHolder();
-            if (menu == null) return;
 
             final int slot = event.getSlot();
 
             if (!menu.hasItem(slot)) return;
 
-            final UUID uuid = event.getWhoClicked().getUniqueId();
+            final UUID uuid = player.getUniqueId();
             final Long cooldownUntil = activeCooldowns.get(uuid);
             final long now = System.currentTimeMillis();
             final long cooldown = menu.getClickCooldown();
@@ -60,10 +58,7 @@ public final class InventoryListener implements Listener {
     }
 
     public void onInvClose(InventoryCloseEvent event) {
-        if (event.getInventory().getHolder() instanceof Menu && event.getPlayer() instanceof Player) {
-            final Menu menu = (Menu) event.getInventory().getHolder();
-            if (menu == null) return;
-
+        if (event.getInventory().getHolder() instanceof final Menu menu && event.getPlayer() instanceof Player) {
             menu.close(event);
         }
     }

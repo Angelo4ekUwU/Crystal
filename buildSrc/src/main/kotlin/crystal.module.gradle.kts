@@ -8,7 +8,7 @@ plugins {
 val extension = project.extensions.create("crystalModule", CrystalModuleExtension::class, project)
 
 afterEvaluate {
-    group = "io.sapphiremc.crystal.${extension.library.get()}"
+    group = "me.denarydev.crystal.${extension.library.get()}"
 
     java {
         withSourcesJar()

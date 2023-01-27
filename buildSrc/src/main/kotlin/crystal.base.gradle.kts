@@ -19,13 +19,16 @@ tasks {
         )
         options.isFork = true
     }
+
     javadoc {
         options.encoding = Charsets.UTF_8.name()
         (options as StandardJavadocDocletOptions).addStringOption("Xdoclint:none", "-quiet")
     }
+
     build {
         dependsOn(shadowJar)
     }
+
     shadowJar {
         archiveClassifier.set("")
         duplicatesStrategy = DuplicatesStrategy.INCLUDE

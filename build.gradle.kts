@@ -4,7 +4,7 @@ plugins {
 }
 
 allprojects {
-    group = "io.sapphiremc"
+    group = "me.denarydev"
     version = "2.0.0-SNAPSHOT"
 }
 

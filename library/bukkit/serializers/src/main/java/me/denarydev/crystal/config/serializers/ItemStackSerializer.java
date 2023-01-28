@@ -7,7 +7,7 @@
  */
 package me.denarydev.crystal.config.serializers;
 
-import me.denarydev.crystal.utils.TextUtils;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
@@ -24,10 +24,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
-@SuppressWarnings("deprecation")
 public class ItemStackSerializer implements TypeSerializer<ItemStack> {
+
+    private static final MiniMessage MINI_MESSAGE = MiniMessage.miniMessage();
 
     @Override
     public ItemStack deserialize(Type type, ConfigurationNode node) throws SerializationException {
@@ -40,9 +40,9 @@ public class ItemStackSerializer implements TypeSerializer<ItemStack> {
         final var meta = stack.getItemMeta();
 
         if (node.hasChild("name"))
-            meta.setDisplayName(TextUtils.stylish(node.node("name").getString("empty")));
+            meta.displayName(MINI_MESSAGE.deserialize(node.node("name").getString("empty")));
         if (node.hasChild("lore"))
-            meta.setLore(TextUtils.stylish(node.node("lore").getList(String.class, Collections.emptyList())));
+            meta.lore(node.node("lore").getList(String.class, Collections.emptyList()).stream().map(MINI_MESSAGE::deserialize).toList());
 
         meta.setUnbreakable(node.node("unbreakable").getBoolean(false));
         if (node.hasChild("flags"))
@@ -78,6 +78,7 @@ public class ItemStackSerializer implements TypeSerializer<ItemStack> {
     }
 
     @Override
+    @SuppressWarnings("DataFlowIssue")
     public void serialize(Type type, @Nullable ItemStack stack, ConfigurationNode node) throws SerializationException {
         if (stack != null) {
             node.node("material").set(stack.getType());
@@ -86,9 +87,9 @@ public class ItemStackSerializer implements TypeSerializer<ItemStack> {
             if (stack.hasItemMeta()) {
                 final var meta = stack.getItemMeta();
 
-                if (meta.hasDisplayName()) node.node("name").set(meta.getDisplayName().replaceAll("§", "&"));
+                if (meta.hasDisplayName()) node.node("name").set(MINI_MESSAGE.serialize(meta.displayName()));
                 if (meta.hasLore())
-                    node.node("lore").setList(String.class, meta.getLore().stream().map(s -> s.replaceAll("§", "&")).collect(Collectors.toList()));
+                    node.node("lore").setList(String.class, meta.lore().stream().map(MINI_MESSAGE::serialize).toList());
 
                 if (meta.isUnbreakable()) node.node("unbreakable").set(true);
                 if (meta.hasCustomModelData()) node.node("custom-model-data").set(meta.getCustomModelData());

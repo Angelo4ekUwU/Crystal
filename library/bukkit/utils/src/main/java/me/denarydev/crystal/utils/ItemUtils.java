@@ -9,14 +9,19 @@ package me.denarydev.crystal.utils;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
@@ -31,41 +36,6 @@ public final class ItemUtils {
      */
     public static ItemBuilder itemBuilder() {
         return new ItemBuilder();
-    }
-
-    @NotNull
-    @SuppressWarnings("deprecation")
-    private static ItemStack createItem(@NotNull final Material type, final int amount, final short durability,
-                                        @Nullable String displayname, @Nullable final List<String> lore,
-                                        @Nullable final Map<Enchantment, Integer> enchantments, @Nullable final ItemFlag[] itemFlags,
-                                        final boolean unbreakable, @Nullable final Integer customModelData) {
-        final var item = new ItemStack(type, Math.max(Math.min(amount, 64), 1));
-        final var meta = item.getItemMeta();
-
-        if (durability > 0)
-            item.setDurability(durability);
-
-        if (displayname != null)
-            meta.setDisplayName(displayname);
-        if (lore != null)
-            meta.setLore(lore);
-
-        if (enchantments != null) {
-            for (final Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
-                if (entry != null)
-                    meta.addEnchant(entry.getKey(), entry.getValue(), true);
-            }
-        }
-
-        if (itemFlags != null)
-            item.addItemFlags(itemFlags);
-
-        if (customModelData != null)
-            meta.setCustomModelData(customModelData);
-
-        meta.setUnbreakable(unbreakable);
-        item.setItemMeta(meta);
-        return item;
     }
 
     @NotNull
@@ -110,13 +80,13 @@ public final class ItemUtils {
     public static class ItemBuilder {
         private Material type;
         private int amount;
-        private short durability;
-        private String displayname;
-        private List<String> lore;
+        private Component displayname;
+        private List<Component> lore;
         private Map<Enchantment, Integer> enchantments = new HashMap<>();
         private ItemFlag[] itemFlags;
         private boolean unbreakable;
         private Integer customModelData;
+        private int damage;
 
         public ItemBuilder type(Material type) {
             this.type = type;
@@ -128,18 +98,35 @@ public final class ItemUtils {
             return this;
         }
 
-        public ItemBuilder durability(short durability) {
-            this.durability = durability;
-            return this;
-        }
-
-        public ItemBuilder displayname(String displayname) {
+        public ItemBuilder displayname(Component displayname) {
             this.displayname = displayname;
             return this;
         }
 
-        public ItemBuilder lore(List<String> lore) {
+        public ItemBuilder displayname(String displayname, TagResolver... tags) {
+            this.displayname = MiniMessage.miniMessage().deserialize(displayname, tags);
+            return this;
+        }
+
+        @Deprecated
+        public ItemBuilder displaynameLegacy(String displayname) {
+            this.displayname = LegacyComponentSerializer.legacyAmpersand().deserialize(displayname);
+            return this;
+        }
+
+        public ItemBuilder lore(List<Component> lore) {
             this.lore = lore;
+            return this;
+        }
+
+        public ItemBuilder lore(List<String> lore, TagResolver... tags) {
+            this.lore = lore.stream().map(s -> MiniMessage.miniMessage().deserialize(s, tags)).toList();
+            return this;
+        }
+
+        @Deprecated
+        public ItemBuilder loreLegacy(List<String> lore) {
+            this.lore = new ArrayList<>(lore.stream().map(s -> LegacyComponentSerializer.legacyAmpersand().deserialize(s)).toList());
             return this;
         }
 
@@ -175,8 +162,39 @@ public final class ItemUtils {
             return this;
         }
 
+        public ItemBuilder damage(int damage) {
+            this.damage = damage;
+            return this;
+        }
+
         public ItemStack build() {
-            return createItem(type, amount, durability, displayname, lore, enchantments, itemFlags, unbreakable, customModelData);
+            final var item = new ItemStack(type, Math.max(Math.min(amount, 64), 1));
+            final var meta = item.getItemMeta();
+
+            if (displayname != null)
+                meta.displayName(displayname);
+            if (lore != null)
+                meta.lore(lore);
+
+            if (enchantments != null) {
+                for (final Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
+                    if (entry != null)
+                        meta.addEnchant(entry.getKey(), entry.getValue(), true);
+                }
+            }
+
+            if (itemFlags != null)
+                item.addItemFlags(itemFlags);
+
+            if (customModelData != null)
+                meta.setCustomModelData(customModelData);
+
+            if (damage > 0 && meta instanceof Damageable damageable)
+                damageable.setDamage(damage);
+
+            meta.setUnbreakable(unbreakable);
+            item.setItemMeta(meta);
+            return item;
         }
     }
 }

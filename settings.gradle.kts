@@ -20,7 +20,7 @@ dependencyResolutionManagement {
 
     versionCatalogs {
         create("libs") {
-            library("bukkit", "com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT")
+            library("bukkit", "io.sapphiremc.sapphire:sapphire-api:1.19.3-R0.1-SNAPSHOT")
 
             library("slf4j", "org.slf4j:slf4j-api:2.0.3")
             library("annotations", "org.jetbrains:annotations:23.0.0")
@@ -46,7 +46,7 @@ dependencyResolutionManagement {
 
 rootProject.name = "crystal"
 
-library("core")
+library("shared")
 library("bukkit")
 
 fun library(library: String) {

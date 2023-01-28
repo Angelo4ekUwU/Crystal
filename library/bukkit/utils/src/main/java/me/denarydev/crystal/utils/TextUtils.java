@@ -7,6 +7,7 @@
  */
 package me.denarydev.crystal.utils;
 
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.md_5.bungee.api.ChatColor;
 
 import java.awt.Color;
@@ -16,6 +17,10 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+/**
+ * @deprecated Use {@link MiniMessage} api instead
+ */
+@Deprecated
 public final class TextUtils {
 
     private static final Pattern HEX_COLORS_PATTERN = Pattern.compile("\\{#([a-fA-F0-9]{6})}");

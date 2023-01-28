@@ -7,6 +7,6 @@ crystalModule {
 
 dependencies {
     compileOnly(libs.bukkit)
-    compileOnly(projects.core.config)
+    compileOnly(projects.shared.config)
     api(projects.bukkit.utils)
 }

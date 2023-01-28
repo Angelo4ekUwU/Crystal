@@ -7,11 +7,17 @@
  */
 package me.denarydev.crystal.gui;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,13 +49,13 @@ public class Item {
 
         private Material type;
         private int amount;
-        private short durability;
-        private String displayname;
-        private List<String> lore;
+        private Component displayname;
+        private List<Component> lore;
         private Map<Enchantment, Integer> enchantments = new HashMap<>();
         private ItemFlag[] itemFlags;
         private boolean unbreakable;
         private Integer customModelData;
+        private int damage;
 
         public Builder type(Material type) {
             this.type = type;
@@ -71,18 +77,35 @@ public class Item {
             return this;
         }
 
-        public Builder durability(short durability) {
-            this.durability = durability;
-            return this;
-        }
-
-        public Builder displayname(String displayname) {
+        public Builder displayname(Component displayname) {
             this.displayname = displayname;
             return this;
         }
 
-        public Builder lore(List<String> lore) {
+        public Builder displayname(String displayname, TagResolver... tags) {
+            this.displayname = MiniMessage.miniMessage().deserialize(displayname, tags);
+            return this;
+        }
+
+        @Deprecated
+        public Builder displaynameLegacy(String displayname) {
+            this.displayname = LegacyComponentSerializer.legacyAmpersand().deserialize(displayname);
+            return this;
+        }
+
+        public Builder lore(List<Component> lore) {
             this.lore = lore;
+            return this;
+        }
+
+        public Builder lore(List<String> lore, TagResolver... tags) {
+            this.lore = lore.stream().map(s -> MiniMessage.miniMessage().deserialize(s, tags)).toList();
+            return this;
+        }
+
+        @Deprecated
+        public Builder loreLegacy(List<String> lore) {
+            this.lore = new ArrayList<>(lore.stream().map(s -> LegacyComponentSerializer.legacyAmpersand().deserialize(s)).toList());
             return this;
         }
 
@@ -118,18 +141,19 @@ public class Item {
             return this;
         }
 
-        @SuppressWarnings("deprecation")
+        public Builder damage(int damage) {
+            this.damage = damage;
+            return this;
+        }
+
         public Item build() {
             final var item = new ItemStack(type, Math.max(Math.min(amount, 64), 1));
             final var meta = item.getItemMeta();
 
-            if (durability > 0)
-                item.setDurability(durability);
-
             if (displayname != null)
-                meta.setDisplayName(displayname);
+                meta.displayName(displayname);
             if (lore != null)
-                meta.setLore(lore);
+                meta.lore(lore);
 
             if (enchantments != null) {
                 for (final Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
@@ -143,6 +167,9 @@ public class Item {
 
             if (customModelData != null)
                 meta.setCustomModelData(customModelData);
+
+            if (damage > 0 && meta instanceof Damageable damageable)
+                damageable.setDamage(damage);
 
             meta.setUnbreakable(unbreakable);
             item.setItemMeta(meta);

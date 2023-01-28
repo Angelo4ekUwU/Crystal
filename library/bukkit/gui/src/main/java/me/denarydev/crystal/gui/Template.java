@@ -7,6 +7,10 @@
  */
 package me.denarydev.crystal.gui;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 
@@ -15,12 +19,12 @@ import java.util.Map;
 
 public final class Template {
 
-    private final String title;
+    private final Component title;
     private final int size;
     private final InventoryType type;
     private final Map<Integer, ItemStack> items;
 
-    private Template(String title, int size, InventoryType type, Map<Integer, ItemStack> items) {
+    private Template(Component title, int size, InventoryType type, Map<Integer, ItemStack> items) {
         this.title = title;
         this.size = size;
         this.type = type;
@@ -31,7 +35,7 @@ public final class Template {
         return new Builder();
     }
 
-    public String getTitle() {
+    public Component getTitle() {
         return title;
     }
 
@@ -49,13 +53,24 @@ public final class Template {
 
     public static class Builder {
 
-        private String title;
+        private Component title;
         private int size;
         private InventoryType type;
         private final Map<Integer, ItemStack> items = new HashMap<>();
 
-        public Builder title(String title) {
+        public Builder title(Component title) {
             this.title = title;
+            return this;
+        }
+
+        public Builder title(String title, TagResolver... tags) {
+            this.title = MiniMessage.miniMessage().deserialize(title, tags);
+            return this;
+        }
+
+        @Deprecated
+        public Builder titleLegacy(String title) {
+            this.title = LegacyComponentSerializer.legacyAmpersand().deserialize(title);
             return this;
         }
 

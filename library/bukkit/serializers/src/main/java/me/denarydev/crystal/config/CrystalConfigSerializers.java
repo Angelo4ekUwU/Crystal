@@ -7,8 +7,10 @@
  */
 package me.denarydev.crystal.config;
 
+import me.denarydev.crystal.config.serializers.ComponentSerializer;
 import me.denarydev.crystal.config.serializers.ItemStackSerializer;
 import me.denarydev.crystal.config.serializers.LocationSerializer;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 import org.spongepowered.configurate.serialize.TypeSerializer;
@@ -27,6 +29,7 @@ public final class CrystalConfigSerializers {
         final var serializers = new HashMap<Class, TypeSerializer>();
         serializers.put(ItemStack.class, new ItemStackSerializer());
         serializers.put(Location.class, new LocationSerializer());
+        serializers.put(Component.class, new ComponentSerializer());
         return serializers;
     }
 }

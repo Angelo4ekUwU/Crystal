@@ -19,8 +19,8 @@ import java.util.Map;
 
 public final class Template {
 
-    private final Component title;
-    private final int size;
+    private Component title;
+    private int size;
     private final InventoryType type;
     private final Map<Integer, ItemStack> items;
 
@@ -49,6 +49,14 @@ public final class Template {
 
     public Map<Integer, ItemStack> getItems() {
         return items;
+    }
+
+    void setTitle(Component title) {
+        this.title = title;
+    }
+
+    void setSize(int size) {
+        this.size = size;
     }
 
     public static class Builder {

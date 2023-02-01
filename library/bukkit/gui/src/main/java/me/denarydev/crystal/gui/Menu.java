@@ -7,6 +7,7 @@
  */
 package me.denarydev.crystal.gui;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -140,6 +141,21 @@ public class Menu implements InventoryHolder {
 
         public Builder(@NotNull Template template) {
             this.template = template;
+        }
+
+        public Builder title(Component title) {
+            this.template.setTitle(title);
+            return this;
+        }
+
+        public Builder size(int size) {
+            this.template.setSize(size);
+            return this;
+        }
+
+        public Builder rows(int rows) {
+            this.template.setSize(rows * 9);
+            return this;
         }
 
         public Builder item(@NotNull ItemStack item, int @NotNull ... slots) {

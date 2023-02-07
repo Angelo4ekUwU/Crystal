@@ -104,9 +104,9 @@ public final class Template {
             return this;
         }
 
-        public Builder item(Item item) {
-            final var stack = item.getItem();
-            final int[] slots = item.getSlots();
+        public Builder item(Button button) {
+            final var stack = button.getItem();
+            final int[] slots = button.getSlots();
             for (final int slot : slots) {
                 items.put(slot, stack);
             }

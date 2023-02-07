@@ -28,7 +28,7 @@ public class Menu implements InventoryHolder {
     private final Inventory inventory;
     @Nullable
     private final CloseAction closeAction;
-    private final Map<Integer, ClickAction> clicks = new HashMap<>();
+    private final Map<Integer, ClickAction> clickActions = new HashMap<>();
 
     private Player viewer;
 
@@ -75,12 +75,14 @@ public class Menu implements InventoryHolder {
         setItem(item, update, slots);
     }
 
-    public void item(@NotNull Item item) {
-        setItem(item.getItem(), false, item.getSlots());
+    public void button(@NotNull Button button) {
+        setItem(button.item(), false, button.slots());
+        if (button.action() != null) setAction(button.action(), button.slots());
     }
 
-    public void item(@NotNull Item item, boolean update) {
-        setItem(item.getItem(), update, item.getSlots());
+    public void button(@NotNull Button button, boolean update) {
+        setItem(button.item(), update, button.slots());
+        if (button.action() != null) setAction(button.action(), button.slots());
     }
 
     public void action(@NotNull ClickAction action, int @NotNull ... slots) {
@@ -108,12 +110,12 @@ public class Menu implements InventoryHolder {
 
     void setAction(ClickAction action, int... slots) {
         for (final int slot : slots) {
-            clicks.put(slot, action);
+            clickActions.put(slot, action);
         }
     }
 
     void click(InventoryClickEvent event) {
-        final var action = clicks.get(event.getSlot());
+        final var action = clickActions.get(event.getSlot());
 
         if (action != null) {
             action.click(event);
@@ -135,7 +137,7 @@ public class Menu implements InventoryHolder {
 
         private final Template template;
         private final Map<Integer, ItemStack> dynItems = new HashMap<>();
-        private final Map<Integer, ClickAction> dynClicks = new HashMap<>();
+        private final Map<Integer, ClickAction> dynActions = new HashMap<>();
         private long clickCooldown;
         private CloseAction closeAction;
 
@@ -165,35 +167,28 @@ public class Menu implements InventoryHolder {
             return this;
         }
 
-        public Builder item(@NotNull Item item) {
-            final var stack = item.getItem();
-            final int[] slots = item.getSlots();
-            for (final int slot : slots) {
-                dynItems.put(slot, stack);
-            }
-            return this;
-        }
-
         public Builder item(@NotNull ItemStack item, @NotNull ClickAction action, int @NotNull ... slots) {
             for (final int slot : slots) {
                 dynItems.put(slot, item);
-                dynClicks.put(slot, action);
+                dynActions.put(slot, action);
             }
             return this;
         }
 
-        public Builder item(@NotNull Item item, @NotNull ClickAction action) {
-            final var stack = item.getItem();
-            final int[] slots = item.getSlots();
+        public Builder button(@NotNull Button button) {
+            final var stack = button.item();
+            final int[] slots = button.slots();
+            final var hasAction = button.action() != null;
+            final var action = button.action();
             for (final int slot : slots) {
                 dynItems.put(slot, stack);
-                dynClicks.put(slot, action);
+                if (hasAction) dynActions.put(slot, action);
             }
             return this;
         }
 
-        public Builder click(@NotNull ClickAction action, int slot) {
-            dynClicks.put(slot, action);
+        public Builder clickAction(@NotNull ClickAction action, int slot) {
+            dynActions.put(slot, action);
             return this;
         }
 
@@ -208,7 +203,7 @@ public class Menu implements InventoryHolder {
         }
 
         public Menu build() {
-            return new Menu(template, clickCooldown, closeAction, dynItems, dynClicks);
+            return new Menu(template, clickCooldown, closeAction, dynItems, dynActions);
         }
     }
 }

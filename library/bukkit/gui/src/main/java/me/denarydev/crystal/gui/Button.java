@@ -16,36 +16,24 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Item {
-
-    private final ItemStack item;
-    private final int[] slots;
-
-    public Item(ItemStack item, int[] slots) {
-        this.item = item;
-        this.slots = slots;
-    }
+public record Button(ItemStack item, int[] slots, @Nullable ClickAction action) {
 
     public static Builder builder() {
         return new Builder();
     }
 
-    ItemStack getItem() {
-        return item;
-    }
-
-    int[] getSlots() {
-        return slots;
-    }
-
     public static class Builder {
+        private ItemStack item;
+
         private int[] slots;
+        private ClickAction action;
 
         private Material type;
         private int amount;
@@ -69,6 +57,16 @@ public class Item {
 
         public Builder slots(int... slots) {
             this.slots = slots;
+            return this;
+        }
+
+        public Builder action(ClickAction action) {
+            this.action = action;
+            return this;
+        }
+
+        public Builder itemStack(ItemStack item) {
+            this.item = item;
             return this;
         }
 
@@ -146,8 +144,8 @@ public class Item {
             return this;
         }
 
-        public Item build() {
-            final var item = new ItemStack(type, Math.max(Math.min(amount, 64), 1));
+        public Button build() {
+            if (item == null) item = new ItemStack(type, Math.max(Math.min(amount, 64), 1));
             final var meta = item.getItemMeta();
 
             if (displayname != null)
@@ -174,7 +172,7 @@ public class Item {
             meta.setUnbreakable(unbreakable);
             item.setItemMeta(meta);
 
-            return new Item(item, slots);
+            return new Button(item, slots, action);
         }
     }
 }

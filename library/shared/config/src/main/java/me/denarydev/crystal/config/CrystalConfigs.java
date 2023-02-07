@@ -131,9 +131,9 @@ public final class CrystalConfigs {
      * @return Configuration class instance with values
      * @throws ConfigurateException if configuration loading failed
      */
-    public static <T> T loadConfig(@NotNull final Path path, @NotNull final Class<T> clazz,
-                                   final boolean refreshNode) throws ConfigurateException {
-        return loadConfig(hoconLoader(path), null, clazz, refreshNode);
+    public static <T> T loadConfig(@NotNull final Path path,
+                                   @NotNull final Class<T> clazz, final boolean refreshNode) throws ConfigurateException {
+        return loadConfig(hoconLoader(path), clazz, refreshNode);
     }
 
     /**
@@ -146,9 +146,9 @@ public final class CrystalConfigs {
      * @return Configuration class instance with values
      * @throws ConfigurateException if configuration loading failed
      */
-    public static <T> T loadConfig(@NotNull final Path path, @Nullable Map<Class, TypeSerializer> serializers, @NotNull final Class<T> clazz,
-                                   final boolean refreshNode) throws ConfigurateException {
-        return loadConfig(hoconLoader(path), serializers, clazz, refreshNode);
+    public static <T> T loadConfig(@NotNull final Path path, @Nullable Map<Class, TypeSerializer> serializers,
+                                   @NotNull final Class<T> clazz, final boolean refreshNode) throws ConfigurateException {
+        return loadConfig(hoconLoader(path, serializers), clazz, refreshNode);
     }
 
     /**
@@ -160,22 +160,7 @@ public final class CrystalConfigs {
      * @return Configuration class instance with values
      * @throws ConfigurateException if configuration loading failed
      */
-    public static <T> T loadConfig(@NotNull final ConfigurationLoader<? extends ConfigurationNode> loader, @NotNull final Class<T> clazz,
-                                   final boolean refreshNode) throws ConfigurateException {
-        return loadConfig(loader, null, clazz, refreshNode);
-    }
-
-    /**
-     * Load configuration from file using specified loader.
-     *
-     * @param loader      Configuration loader
-     * @param serializers Custom serializers
-     * @param clazz       Configuration class type
-     * @param refreshNode refresh node or not
-     * @return Configuration class instance with values
-     * @throws ConfigurateException if configuration loading failed
-     */
-    public static <T> T loadConfig(@NotNull final ConfigurationLoader<? extends ConfigurationNode> loader, @Nullable Map<Class, TypeSerializer> serializers,
+    public static <T> T loadConfig(@NotNull final ConfigurationLoader<? extends ConfigurationNode> loader,
                                    @NotNull final Class<T> clazz, final boolean refreshNode) throws ConfigurateException {
         final var creator = creator(clazz, refreshNode);
 

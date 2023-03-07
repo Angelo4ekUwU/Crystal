@@ -5,7 +5,7 @@ plugins {
 
 allprojects {
     group = "me.denarydev"
-    version = "2.0.0-local"
+    version = "2.0.0" + getVersionInfo()
 }
 
 publishing {
@@ -24,4 +24,16 @@ publishing {
             }
         }
     }
+}
+
+fun getVersionInfo(): String {
+    if (!System.getenv("CI").isNullOrEmpty()) {
+        return "-SNAPSHOT"
+    }
+
+    if (!System.getenv("RELEASE").isNullOrEmpty()) {
+        return ""
+    }
+
+    return "-local"
 }

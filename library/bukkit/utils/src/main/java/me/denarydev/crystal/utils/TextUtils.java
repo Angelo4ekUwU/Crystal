@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 /**
  * @deprecated Use {@link MiniMessage} api instead
  */
-@Deprecated
+@Deprecated(forRemoval = true)
 public final class TextUtils {
 
     private static final Pattern HEX_COLORS_PATTERN = Pattern.compile("\\{#([a-fA-F0-9]{6})}");

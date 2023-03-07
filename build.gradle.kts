@@ -5,7 +5,7 @@ plugins {
 
 allprojects {
     group = "me.denarydev"
-    version = "2.0.0-SNAPSHOT"
+    version = "2.0.0-local"
 }
 
 publishing {

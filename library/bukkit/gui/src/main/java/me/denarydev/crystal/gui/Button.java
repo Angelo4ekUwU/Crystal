@@ -154,10 +154,9 @@ public record Button(ItemStack item, int[] slots, @Nullable ClickAction action) 
                 meta.lore(lore);
 
             if (enchantments != null) {
-                for (final Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
-                    if (entry != null)
-                        meta.addEnchant(entry.getKey(), entry.getValue(), true);
-                }
+                enchantments.forEach((ench, lvl) -> {
+                    if (ench != null && lvl > 0) meta.addEnchant(ench, lvl, true);
+                });
             }
 
             if (itemFlags != null)

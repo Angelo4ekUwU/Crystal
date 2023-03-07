@@ -12,20 +12,19 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.ConfigurationNode;
+import org.spongepowered.configurate.ConfigurationOptions;
 import org.spongepowered.configurate.gson.GsonConfigurationLoader;
 import org.spongepowered.configurate.hocon.HoconConfigurationLoader;
 import org.spongepowered.configurate.loader.ConfigurationLoader;
 import org.spongepowered.configurate.serialize.SerializationException;
-import org.spongepowered.configurate.serialize.TypeSerializer;
 import org.spongepowered.configurate.serialize.TypeSerializerCollection;
 import org.spongepowered.configurate.util.CheckedFunction;
 import org.spongepowered.configurate.yaml.NodeStyle;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 import java.nio.file.Path;
-import java.util.Map;
 
-@SuppressWarnings({"unused", "rawtypes"})
+@SuppressWarnings({"unused"})
 public final class CrystalConfigs {
 
     /**
@@ -35,7 +34,7 @@ public final class CrystalConfigs {
      * @return {@link HoconConfigurationLoader}
      */
     public static HoconConfigurationLoader hoconLoader(@NotNull final Path path) {
-        return hoconLoader(path, null);
+        return hoconLoader(path, TypeSerializerCollection.defaults());
     }
 
     /**
@@ -45,18 +44,31 @@ public final class CrystalConfigs {
      * @param serializers custom serializers
      * @return {@link HoconConfigurationLoader}
      */
-    public static HoconConfigurationLoader hoconLoader(@NotNull final Path path, @Nullable Map<Class, TypeSerializer> serializers) {
+    public static HoconConfigurationLoader hoconLoader(@NotNull final Path path, @Nullable TypeSerializerCollection serializers) {
         final var builder = HoconConfigurationLoader.builder()
             .path(path)
             .emitJsonCompatible(false);
 
         if (serializers != null) {
-            final var collectionBuilder = TypeSerializerCollection.builder();
-            serializers.forEach(collectionBuilder::register);
-            return builder.defaultOptions(options -> options.serializers(collectionBuilder.build())).build();
+            return builder.defaultOptions(options -> options.serializers(b -> b.registerAll(serializers))).build();
         } else {
             return builder.build();
         }
+    }
+
+    /**
+     * Returns json configuration loader with custom serializers.
+     *
+     * @param path        Path to configuration file
+     * @param options     Configuration options
+     * @return {@link HoconConfigurationLoader}
+     */
+    public static HoconConfigurationLoader hoconLoader(@NotNull final Path path, @NotNull ConfigurationOptions options) {
+        return HoconConfigurationLoader.builder()
+            .defaultOptions(options)
+            .path(path)
+            .emitJsonCompatible(false)
+            .build();
     }
 
     /**
@@ -66,7 +78,7 @@ public final class CrystalConfigs {
      * @return {@link YamlConfigurationLoader}
      */
     public static YamlConfigurationLoader yamlLoader(@NotNull final Path path) {
-        return yamlLoader(path, null);
+        return yamlLoader(path, TypeSerializerCollection.defaults());
     }
 
     /**
@@ -76,19 +88,33 @@ public final class CrystalConfigs {
      * @param serializers custom serializers
      * @return {@link YamlConfigurationLoader}
      */
-    public static YamlConfigurationLoader yamlLoader(@NotNull final Path path, @Nullable Map<Class, TypeSerializer> serializers) {
+    public static YamlConfigurationLoader yamlLoader(@NotNull final Path path, @Nullable TypeSerializerCollection serializers) {
         final var builder = YamlConfigurationLoader.builder()
             .path(path)
             .nodeStyle(NodeStyle.BLOCK)
             .indent(2);
 
         if (serializers != null) {
-            final var collectionBuilder = TypeSerializerCollection.builder();
-            serializers.forEach(collectionBuilder::register);
-            return builder.defaultOptions(options -> options.serializers(collectionBuilder.build())).build();
+            return builder.defaultOptions(options -> options.serializers(b -> b.registerAll(serializers))).build();
         } else {
             return builder.build();
         }
+    }
+
+    /**
+     * Returns yaml configuration loader with custom serializers.
+     *
+     * @param path        Path to configuration file
+     * @param options     Configuration options
+     * @return {@link YamlConfigurationLoader}
+     */
+    public static YamlConfigurationLoader yamlLoader(@NotNull final Path path, @NotNull ConfigurationOptions options) {
+        return YamlConfigurationLoader.builder()
+            .defaultOptions(options)
+            .path(path)
+            .nodeStyle(NodeStyle.BLOCK)
+            .indent(2)
+            .build();
     }
 
     /**
@@ -98,7 +124,7 @@ public final class CrystalConfigs {
      * @return {@link GsonConfigurationLoader}
      */
     public static GsonConfigurationLoader gsonLoader(@NotNull final Path path) {
-        return gsonLoader(path, null);
+        return gsonLoader(path, TypeSerializerCollection.defaults());
     }
 
     /**
@@ -108,18 +134,31 @@ public final class CrystalConfigs {
      * @param serializers custom serializers
      * @return {@link GsonConfigurationLoader}
      */
-    public static GsonConfigurationLoader gsonLoader(@NotNull final Path path, @Nullable Map<Class, TypeSerializer> serializers) {
+    public static GsonConfigurationLoader gsonLoader(@NotNull final Path path, @Nullable TypeSerializerCollection serializers) {
         final var builder = GsonConfigurationLoader.builder()
             .path(path)
             .indent(2);
 
         if (serializers != null) {
-            final var collectionBuilder = TypeSerializerCollection.builder();
-            serializers.forEach(collectionBuilder::register);
-            return builder.defaultOptions(options -> options.serializers(collectionBuilder.build())).build();
+            return builder.defaultOptions(options -> options.serializers(b -> b.registerAll(serializers))).build();
         } else {
             return builder.build();
         }
+    }
+
+    /**
+     * Returns json configuration loader with custom serializers.
+     *
+     * @param path        Path to configuration file
+     * @param options     Configuration options
+     * @return {@link GsonConfigurationLoader}
+     */
+    public static GsonConfigurationLoader gsonLoader(@NotNull final Path path, @NotNull ConfigurationOptions options) {
+        return GsonConfigurationLoader.builder()
+            .defaultOptions(options)
+            .path(path)
+            .indent(2)
+            .build();
     }
 
     /**
@@ -146,9 +185,24 @@ public final class CrystalConfigs {
      * @return Configuration class instance with values
      * @throws ConfigurateException if configuration loading failed
      */
-    public static <T> T loadConfig(@NotNull final Path path, @Nullable Map<Class, TypeSerializer> serializers,
+    public static <T> T loadConfig(@NotNull final Path path, @Nullable TypeSerializerCollection serializers,
                                    @NotNull final Class<T> clazz, final boolean refreshNode) throws ConfigurateException {
         return loadConfig(hoconLoader(path, serializers), clazz, refreshNode);
+    }
+
+    /**
+     * Load configuration from file using hocon loader with custom serializers.
+     *
+     * @param path        Path to configuration file
+     * @param options     Configuration options
+     * @param clazz       Configuration class type
+     * @param refreshNode refresh node or not
+     * @return Configuration class instance with values
+     * @throws ConfigurateException if configuration loading failed
+     */
+    public static <T> T loadConfig(@NotNull final Path path, @NotNull ConfigurationOptions options,
+                                   @NotNull final Class<T> clazz, final boolean refreshNode) throws ConfigurateException {
+        return loadConfig(hoconLoader(path, options), clazz, refreshNode);
     }
 
     /**

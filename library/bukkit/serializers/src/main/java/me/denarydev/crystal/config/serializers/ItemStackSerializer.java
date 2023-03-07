@@ -7,7 +7,8 @@
  */
 package me.denarydev.crystal.config.serializers;
 
-import net.kyori.adventure.text.minimessage.MiniMessage;
+import io.leangen.geantyref.TypeToken;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
@@ -27,58 +28,59 @@ import java.util.Objects;
 
 public class ItemStackSerializer implements TypeSerializer<ItemStack> {
 
-    private static final MiniMessage MINI_MESSAGE = MiniMessage.miniMessage();
+    public static final TypeToken<ItemStack> TYPE = TypeToken.get(ItemStack.class);
 
     @Override
     public ItemStack deserialize(Type type, ConfigurationNode node) throws SerializationException {
-        final var material = Material.matchMaterial(node.node("material").getString("AIR"));
-        if (material == null)
-            throw new SerializationException("Item material cannot be null at " + Arrays.toString(node.path().array()));
-        final int amount = node.node("amount").getInt(1);
-        final var stack = new ItemStack(material, amount);
+        if (node.hasChild("material")) {
+            //noinspection DataFlowIssue
+            final var material = Material.matchMaterial(node.node("material").getString());
+            if (material == null)
+                throw new SerializationException("Item material cannot be null at " + Arrays.toString(node.path().array()));
+            final int amount = node.node("amount").getInt(1);
 
-        final var meta = stack.getItemMeta();
+            final var stack = new ItemStack(material, amount);
+            final var meta = stack.getItemMeta();
 
-        if (node.hasChild("name"))
-            meta.displayName(MINI_MESSAGE.deserialize(node.node("name").getString("empty")));
-        if (node.hasChild("lore"))
-            meta.lore(node.node("lore").getList(String.class, Collections.emptyList()).stream().map(MINI_MESSAGE::deserialize).toList());
+            if (node.hasChild("name"))
+                meta.displayName(node.node("name").get(Component.class));
+            if (node.hasChild("lore"))
+                meta.lore(node.node("lore").getList(Component.class, Collections.emptyList()));
 
-        meta.setUnbreakable(node.node("unbreakable").getBoolean(false));
-        if (node.hasChild("flags"))
-            node.node("flags").getList(String.class, Collections.emptyList()).stream()
-                .map(this::parseFlag)
-                .filter(Objects::nonNull)
-                .forEach(meta::addItemFlags);
+            meta.setUnbreakable(node.node("unbreakable").getBoolean(false));
+            if (node.hasChild("flags"))
+                node.node("flags").getList(String.class, Collections.emptyList()).stream()
+                    .map(s -> {
+                        try {
+                            return ItemFlag.valueOf(s);
+                        } catch (IllegalArgumentException ex) {
+                            return null;
+                        }
+                    })
+                    .filter(Objects::nonNull)
+                    .forEach(meta::addItemFlags);
 
-        if (node.hasChild("custom-model-data"))
-            meta.setCustomModelData(node.node("custom-model-data").getInt(0));
-        if (meta instanceof Damageable damageable) damageable.setDamage(node.node("damage").getInt(0));
+            if (node.hasChild("custom-model-data"))
+                meta.setCustomModelData(node.node("custom-model-data").getInt(0));
+            if (meta instanceof Damageable damageable) damageable.setDamage(node.node("damage").getInt(0));
 
-        if (node.hasChild("enchants")) {
-            node.node("enchants").childrenMap().forEach(((key, value) -> {
-                final var ench = Enchantment.getByKey(NamespacedKey.minecraft(key.toString().toLowerCase()));
-                if (ench == null) return;
-                final int level = value.getInt();
-                meta.addEnchant(ench, level, true);
-            }));
+            if (node.hasChild("enchants")) {
+                node.node("enchants").childrenMap().forEach(((key, value) -> {
+                    final var ench = Enchantment.getByKey(NamespacedKey.minecraft(key.toString().toLowerCase()));
+                    if (ench == null) return;
+                    final int level = value.getInt();
+                    meta.addEnchant(ench, level, true);
+                }));
+            }
+
+            stack.setItemMeta(meta);
+
+            return stack;
         }
-
-        stack.setItemMeta(meta);
-
-        return stack;
-    }
-
-    private ItemFlag parseFlag(String s) {
-        try {
-            return ItemFlag.valueOf(s);
-        } catch (IllegalArgumentException ex) {
-            return null;
-        }
+        return null;
     }
 
     @Override
-    @SuppressWarnings("DataFlowIssue")
     public void serialize(Type type, @Nullable ItemStack stack, ConfigurationNode node) throws SerializationException {
         if (stack != null) {
             node.node("material").set(stack.getType());
@@ -87,23 +89,27 @@ public class ItemStackSerializer implements TypeSerializer<ItemStack> {
             if (stack.hasItemMeta()) {
                 final var meta = stack.getItemMeta();
 
-                if (meta.hasDisplayName()) node.node("name").set(MINI_MESSAGE.serialize(meta.displayName()));
-                if (meta.hasLore())
-                    node.node("lore").setList(String.class, meta.lore().stream().map(MINI_MESSAGE::serialize).toList());
+                if (meta.hasDisplayName()) node.node("name").set(Component.class, meta.displayName());
+                if (meta.hasLore()) node.node("lore").setList(Component.class, meta.lore());
 
                 if (meta.isUnbreakable()) node.node("unbreakable").set(true);
                 if (meta.hasCustomModelData()) node.node("custom-model-data").set(meta.getCustomModelData());
+
                 final var flags = new ArrayList<>(meta.getItemFlags());
                 if (flags.size() > 0) node.node("flags").setList(ItemFlag.class, flags);
+
+                if (meta.hasEnchants()) {
+                    final var enchants = meta.getEnchants();
+                    for (final var entry : enchants.entrySet()) {
+                        node.node("enchants", entry.getKey().getKey().getKey().toLowerCase()).set(entry.getValue());
+                    }
+                }
 
                 if (meta instanceof final Damageable damageable) {
                     if (damageable.hasDamage()) {
                         node.node("damage").set(damageable.getDamage());
                     }
                 }
-
-                if (meta.hasEnchants())
-                    meta.getEnchants().forEach(((enchantment, level) -> node.node("enchants", enchantment.getKey().getKey())));
             }
         }
     }

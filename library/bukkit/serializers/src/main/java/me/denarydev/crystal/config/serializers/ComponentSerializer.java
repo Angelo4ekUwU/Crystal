@@ -9,30 +9,26 @@ package me.denarydev.crystal.config.serializers;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.spongepowered.configurate.ConfigurationNode;
-import org.spongepowered.configurate.serialize.SerializationException;
-import org.spongepowered.configurate.serialize.TypeSerializer;
+import org.spongepowered.configurate.serialize.ScalarSerializer;
 
 import java.lang.reflect.Type;
+import java.util.function.Predicate;
 
-public class ComponentSerializer implements TypeSerializer<Component> {
+public class ComponentSerializer extends ScalarSerializer<Component> {
 
     private static final MiniMessage MINI_MESSAGE = MiniMessage.miniMessage();
 
-    @Override
-    public Component deserialize(Type type, ConfigurationNode node) {
-        final var s = node.getString();
-        if (s != null) {
-            return MINI_MESSAGE.deserialize(s);
-        }
-        return null;
+    public ComponentSerializer() {
+        super(Component.class);
     }
 
     @Override
-    public void serialize(Type type, @Nullable Component obj, ConfigurationNode node) throws SerializationException {
-        if (obj != null) {
-            node.set(MINI_MESSAGE.serialize(obj));
-        }
+    public Component deserialize(Type type, Object obj) {
+        return MINI_MESSAGE.deserialize(obj.toString());
+    }
+
+    @Override
+    protected Object serialize(Component item, Predicate<Class<?>> typeSupported) {
+        return MINI_MESSAGE.serialize(item);
     }
 }

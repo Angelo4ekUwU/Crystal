@@ -27,15 +27,18 @@ public class Menu implements InventoryHolder {
     private final long clickCooldown;
     private final Inventory inventory;
     @Nullable
+    private final ClickAction clickAction;
+    @Nullable
     private final CloseAction closeAction;
     private final Map<Integer, ClickAction> clickActions = new HashMap<>();
 
     private Player viewer;
 
     @SuppressWarnings("NullableProblems")
-    public Menu(Template template, long clickCooldown, CloseAction closeAction, Map<Integer, ItemStack> dynItems, Map<Integer, ClickAction> dynClicks) {
+    public Menu(Template template, long clickCooldown, ClickAction clickAction, CloseAction closeAction, Map<Integer, ItemStack> dynItems, Map<Integer, ClickAction> dynClicks) {
         this.template = template;
         this.clickCooldown = clickCooldown;
+        this.clickAction = clickAction;
         this.closeAction = closeAction;
         this.inventory = template.getType() != null ?
             Bukkit.createInventory(this, template.getType(), template.getTitle()) :
@@ -115,6 +118,7 @@ public class Menu implements InventoryHolder {
     }
 
     void click(InventoryClickEvent event) {
+        if (clickAction != null) clickAction.click(event);
         final var action = clickActions.get(event.getSlot());
 
         if (action != null) {
@@ -139,6 +143,7 @@ public class Menu implements InventoryHolder {
         private final Map<Integer, ItemStack> dynItems = new HashMap<>();
         private final Map<Integer, ClickAction> dynActions = new HashMap<>();
         private long clickCooldown;
+        private ClickAction clickAction;
         private CloseAction closeAction;
 
         public Builder(@NotNull Template template) {
@@ -178,11 +183,10 @@ public class Menu implements InventoryHolder {
         public Builder button(@NotNull Button button) {
             final var stack = button.item();
             final int[] slots = button.slots();
-            final var hasAction = button.action() != null;
             final var action = button.action();
             for (final int slot : slots) {
                 dynItems.put(slot, stack);
-                if (hasAction) dynActions.put(slot, action);
+                if (action != null) dynActions.put(slot, action);
             }
             return this;
         }
@@ -197,13 +201,18 @@ public class Menu implements InventoryHolder {
             return this;
         }
 
+        public Builder clickAction(@Nullable ClickAction clickAction) {
+            this.clickAction = clickAction;
+            return this;
+        }
+
         public Builder closeAction(@Nullable CloseAction closeAction) {
             this.closeAction = closeAction;
             return this;
         }
 
         public Menu build() {
-            return new Menu(template, clickCooldown, closeAction, dynItems, dynActions);
+            return new Menu(template, clickCooldown, clickAction, closeAction, dynItems, dynActions);
         }
     }
 }

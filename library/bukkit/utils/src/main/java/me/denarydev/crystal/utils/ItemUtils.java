@@ -88,6 +88,10 @@ public final class ItemUtils {
         private Integer customModelData;
         private int damage;
 
+        protected ItemBuilder() {
+            // Do nothing
+        }
+
         public ItemBuilder type(Material type) {
             this.type = type;
             return this;
@@ -108,12 +112,6 @@ public final class ItemUtils {
             return this;
         }
 
-        @Deprecated
-        public ItemBuilder displaynameLegacy(String displayname) {
-            this.displayname = LegacyComponentSerializer.legacyAmpersand().deserialize(displayname);
-            return this;
-        }
-
         public ItemBuilder lore(List<Component> lore) {
             this.lore = lore;
             return this;
@@ -121,12 +119,6 @@ public final class ItemUtils {
 
         public ItemBuilder lore(List<String> lore, TagResolver... tags) {
             this.lore = lore.stream().map(s -> MiniMessage.miniMessage().deserialize(s, tags)).toList();
-            return this;
-        }
-
-        @Deprecated
-        public ItemBuilder loreLegacy(List<String> lore) {
-            this.lore = new ArrayList<>(lore.stream().map(s -> LegacyComponentSerializer.legacyAmpersand().deserialize(s)).toList());
             return this;
         }
 
@@ -177,14 +169,13 @@ public final class ItemUtils {
                 meta.lore(lore);
 
             if (enchantments != null) {
-                for (final Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
-                    if (entry != null)
-                        meta.addEnchant(entry.getKey(), entry.getValue(), true);
-                }
+                enchantments.forEach((ench, lvl) -> {
+                    if (ench != null && !meta.hasEnchant(ench) && lvl > 0) meta.addEnchant(ench, lvl, true);
+                });
             }
 
             if (itemFlags != null)
-                item.addItemFlags(itemFlags);
+                meta.addItemFlags(itemFlags);
 
             if (customModelData != null)
                 meta.setCustomModelData(customModelData);

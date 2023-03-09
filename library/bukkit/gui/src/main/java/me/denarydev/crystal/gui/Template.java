@@ -10,7 +10,7 @@ package me.denarydev.crystal.gui;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 
@@ -71,14 +71,13 @@ public final class Template {
             return this;
         }
 
-        public Builder title(String title, TagResolver... tags) {
-            this.title = MiniMessage.miniMessage().deserialize(title, tags);
+        public Builder titleRich(String title, TagResolver... resolvers) {
+            this.title = MiniMessage.miniMessage().deserialize(title, resolvers);
             return this;
         }
 
-        @Deprecated
-        public Builder titleLegacy(String title) {
-            this.title = LegacyComponentSerializer.legacyAmpersand().deserialize(title);
+        public Builder titlePlain(String title) {
+            this.title = PlainTextComponentSerializer.plainText().deserialize(title);
             return this;
         }
 

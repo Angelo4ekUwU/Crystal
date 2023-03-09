@@ -10,7 +10,7 @@ package me.denarydev.crystal.gui;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
@@ -80,14 +80,13 @@ public record Button(ItemStack item, int[] slots, @Nullable ClickAction action) 
             return this;
         }
 
-        public Builder displayname(String displayname, TagResolver... tags) {
+        public Builder displaynameRich(String displayname, TagResolver... tags) {
             this.displayname = MiniMessage.miniMessage().deserialize(displayname, tags);
             return this;
         }
 
-        @Deprecated
-        public Builder displaynameLegacy(String displayname) {
-            this.displayname = LegacyComponentSerializer.legacyAmpersand().deserialize(displayname);
+        public Builder displaynamePlain(String displayname) {
+            this.displayname = PlainTextComponentSerializer.plainText().deserialize(displayname);
             return this;
         }
 
@@ -96,14 +95,13 @@ public record Button(ItemStack item, int[] slots, @Nullable ClickAction action) 
             return this;
         }
 
-        public Builder lore(List<String> lore, TagResolver... tags) {
+        public Builder loreRich(List<String> lore, TagResolver... tags) {
             this.lore = lore.stream().map(s -> MiniMessage.miniMessage().deserialize(s, tags)).toList();
             return this;
         }
 
-        @Deprecated
-        public Builder loreLegacy(List<String> lore) {
-            this.lore = new ArrayList<>(lore.stream().map(s -> LegacyComponentSerializer.legacyAmpersand().deserialize(s)).toList());
+        public Builder lorePlain(List<String> lore) {
+            this.lore = new ArrayList<>(lore.stream().map(s -> PlainTextComponentSerializer.plainText().deserialize(s)).toList());
             return this;
         }
 

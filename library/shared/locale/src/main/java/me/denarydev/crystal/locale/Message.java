@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class Message {
+public class  Message {
     private final MessageSender sender;
     private final boolean isString;
     private final List<Pair> placeholders = new ArrayList<>();

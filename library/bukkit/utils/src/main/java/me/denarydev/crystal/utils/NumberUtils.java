@@ -11,9 +11,6 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 
 public class NumberUtils {
-    public static String formatEconomy(char currencySymbol, double number) {
-        return currencySymbol + formatNumber(number);
-    }
 
     public static String formatNumber(double number) {
         final var decimalFormatter = new DecimalFormat(number == Math.ceil(number) ? "#,###" : "#,###.00");
@@ -40,21 +37,20 @@ public class NumberUtils {
     }
 
     public static boolean isInt(String number) {
-        if (number == null || number.equals("")) {
+        if (number == null || number.isBlank()) {
             return false;
         }
 
         try {
             Integer.parseInt(number);
             return true;
-        } catch (NumberFormatException ignore) {
+        } catch (NumberFormatException ignored) {
+            return false;
         }
-
-        return false;
     }
 
     public static boolean isNumeric(String s) {
-        if (s == null || s.equals("")) {
+        if (s == null || s.isBlank()) {
             return false;
         }
 

@@ -8,6 +8,9 @@
 package me.denarydev.crystal.gui;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -152,6 +155,16 @@ public class Menu implements InventoryHolder {
 
         public Builder title(Component title) {
             this.template.setTitle(title);
+            return this;
+        }
+
+        public Builder titleRich(String title, TagResolver... resolvers) {
+            this.template.setTitle(MiniMessage.miniMessage().deserialize(title, resolvers));
+            return this;
+        }
+
+        public Builder titlePlain(String title) {
+            this.template.setTitle(PlainTextComponentSerializer.plainText().deserialize(title));
             return this;
         }
 

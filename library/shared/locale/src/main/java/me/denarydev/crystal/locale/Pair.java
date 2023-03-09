@@ -15,7 +15,7 @@ public record Pair(String key, Object obj) {
 
     @Override
     public String key() {
-        return "%" + key + "%";
+        return "<" + key + ">";
     }
 
     public String value() {

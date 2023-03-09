@@ -23,6 +23,7 @@ import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
@@ -37,9 +38,9 @@ public final class LocaleManager {
     private final LoaderType loaderType;
     private final MessageSender sender;
     private final Pattern localePattern;
-    private final Map<String, ConfigurationNode> locales = new HashMap<>();
+    private final Map<Locale, ConfigurationNode> locales = new HashMap<>();
 
-    private String defaultLocale;
+    private Locale defaultLocale;
 
     public LocaleManager(Logger logger, File dataFolder, LoaderType loaderType, MessageSender sender) {
         this.logger = logger;
@@ -49,7 +50,7 @@ public final class LocaleManager {
         this.localePattern = Pattern.compile("([a-z]{2})_([a-z]{2})" + loaderType.getExtension());
     }
 
-    public void load(String defaultLocale) {
+    public void load(Locale defaultLocale) {
         this.defaultLocale = defaultLocale;
 
         logger.debug("Loading locale files...");
@@ -83,7 +84,7 @@ public final class LocaleManager {
             final var loader = loaderType.getLoader(file.toPath());
 
             try {
-                locales.put(file.getName().replace(loaderType.getExtension(), ""), loader.load());
+                locales.put(new Locale(file.getName().replace(loaderType.getExtension(), "")), loader.load());
             } catch (ConfigurateException ex) {
                 throw new RuntimeException("Failed to load locale " + file.getName(), ex);
             }
@@ -102,7 +103,7 @@ public final class LocaleManager {
     }
 
     @NotNull
-    public Message getMessage(@Nullable String locale, @NotNull String... path) {
+    public Message getMessage(@Nullable Locale locale, @NotNull String... path) {
         try {
             final Object[] finalPath = path.length == 1 ? path[0].split("\\.") : path;
             if (getDefaultLocale().node(finalPath).isList()) {
@@ -127,8 +128,8 @@ public final class LocaleManager {
     }
 
     @NotNull
-    private ConfigurationNode getLocale(@Nullable final String locale) {
-        String key;
+    private ConfigurationNode getLocale(@Nullable Locale locale) {
+        Locale key;
         if (locale != null && locales.containsKey(locale)) {
             key = locale;
         } else {

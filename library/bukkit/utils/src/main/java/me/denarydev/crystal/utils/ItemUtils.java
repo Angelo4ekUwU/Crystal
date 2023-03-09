@@ -12,7 +12,7 @@ import com.mojang.authlib.properties.Property;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
@@ -102,13 +102,13 @@ public final class ItemUtils {
             return this;
         }
 
-        public ItemBuilder displayname(Component displayname) {
-            this.displayname = displayname;
+        public ItemBuilder displaynameRich(String displayname, TagResolver... tags) {
+            this.displayname = MiniMessage.miniMessage().deserialize(displayname, tags);
             return this;
         }
 
-        public ItemBuilder displayname(String displayname, TagResolver... tags) {
-            this.displayname = MiniMessage.miniMessage().deserialize(displayname, tags);
+        public ItemBuilder displaynamePlain(String displayname) {
+            this.displayname = PlainTextComponentSerializer.plainText().deserialize(displayname);
             return this;
         }
 
@@ -117,8 +117,13 @@ public final class ItemUtils {
             return this;
         }
 
-        public ItemBuilder lore(List<String> lore, TagResolver... tags) {
+        public ItemBuilder loreRich(List<String> lore, TagResolver... tags) {
             this.lore = lore.stream().map(s -> MiniMessage.miniMessage().deserialize(s, tags)).toList();
+            return this;
+        }
+
+        public ItemBuilder lorePlain(List<String> lore) {
+            this.lore = new ArrayList<>(lore.stream().map(s -> PlainTextComponentSerializer.plainText().deserialize(s)).toList());
             return this;
         }
 

@@ -18,6 +18,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public final class ItemUtils {
 
@@ -78,6 +80,8 @@ public final class ItemUtils {
      * Builder for {@link ItemStack}
      */
     public static class ItemBuilder {
+        private ItemStack item;
+
         private Material type;
         private int amount;
         private Component displayname;
@@ -87,6 +91,7 @@ public final class ItemUtils {
         private boolean unbreakable;
         private Integer customModelData;
         private int damage;
+        private Consumer<? super ItemMeta> metaEditor;
 
         protected ItemBuilder() {
             // Do nothing
@@ -94,6 +99,11 @@ public final class ItemUtils {
 
         public ItemBuilder type(Material type) {
             this.type = type;
+            return this;
+        }
+
+        public ItemBuilder itemStack(ItemStack item) {
+            this.item = item;
             return this;
         }
 
@@ -164,8 +174,17 @@ public final class ItemUtils {
             return this;
         }
 
+        public ItemBuilder metaEditor(Consumer<? super ItemMeta> metaEditor) {
+            this.metaEditor = metaEditor;
+            return this;
+        }
+
         public ItemStack build() {
-            final var item = new ItemStack(type, Math.max(Math.min(amount, 64), 1));
+            if (item == null) item = new ItemStack(type, Math.max(Math.min(amount, 64), 1));
+
+            if (metaEditor != null)
+                item.editMeta(metaEditor);
+
             final var meta = item.getItemMeta();
 
             if (displayname != null)

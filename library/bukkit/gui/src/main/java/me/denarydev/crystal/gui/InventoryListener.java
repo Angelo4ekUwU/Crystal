@@ -25,14 +25,14 @@ public final class InventoryListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onEarlyInventoryClick(InventoryClickEvent event) {
-        if (event.getInventory().getHolder() instanceof Menu) {
+        if (event.getClickedInventory() != null && event.getClickedInventory().getHolder() instanceof Menu) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onLateInventoryClick(InventoryClickEvent event) {
-        if (event.getInventory().getHolder() instanceof final Menu menu
+        if (event.getClickedInventory() != null && event.getClickedInventory().getHolder() instanceof final Menu menu
             && event.getCurrentItem() != null && event.getWhoClicked() instanceof final Player player) {
             // Cancel the event again just in case a plugin un-cancels it
             event.setCancelled(true);

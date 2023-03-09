@@ -16,12 +16,14 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public record Button(ItemStack item, int[] slots, @Nullable ClickAction action) {
 
@@ -44,6 +46,7 @@ public record Button(ItemStack item, int[] slots, @Nullable ClickAction action) 
         private boolean unbreakable;
         private Integer customModelData;
         private int damage;
+        private Consumer<? super ItemMeta> metaEditor;
 
         public Builder type(Material type) {
             this.type = type;
@@ -142,8 +145,17 @@ public record Button(ItemStack item, int[] slots, @Nullable ClickAction action) 
             return this;
         }
 
+        public Builder metaEditor(Consumer<? super ItemMeta> metaEditor) {
+            this.metaEditor = metaEditor;
+            return this;
+        }
+
         public Button build() {
             if (item == null) item = new ItemStack(type, Math.max(Math.min(amount, 64), 1));
+
+            if (metaEditor != null)
+                item.editMeta(metaEditor);
+
             final var meta = item.getItemMeta();
 
             if (displayname != null)

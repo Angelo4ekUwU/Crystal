@@ -5,6 +5,10 @@ plugins {
 }
 
 tasks {
+    withType<AbstractPublishToMaven> {
+        dependsOn(jar)
+    }
+
     compileJava {
         options.encoding = Charsets.UTF_8.name()
         options.release.set(17)

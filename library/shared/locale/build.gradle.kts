@@ -9,3 +9,7 @@ dependencies {
     compileOnlyApi(libs.slf4j)
     api(projects.shared.config)
 }
+
+tasks.shadowJar {
+    dependsOn(":shared:config:shadowJar")
+}

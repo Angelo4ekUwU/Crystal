@@ -7,7 +7,7 @@ crystalModule {
 
 dependencies {
     compileOnlyApi(libs.slf4j)
-    api(projects.shared.config)
+    api(project(":shared:config"))
 }
 
 tasks.shadowJar {

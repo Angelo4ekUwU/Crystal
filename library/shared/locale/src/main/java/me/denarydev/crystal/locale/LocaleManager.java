@@ -94,7 +94,7 @@ public final class LocaleManager {
             logger.warn("The locale file " + defaultLocale + loaderType.getExtension() + " does not exist in " + localeDir.getPath() + " folder, try using en_us" + loaderType.getExtension());
         }
 
-        logger.warn("Successfully loaded " + locales.size() + " locales.");
+        logger.info("Successfully loaded " + locales.size() + " locales.");
     }
 
     @NotNull

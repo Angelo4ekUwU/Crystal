@@ -134,6 +134,11 @@ public final class ItemUtils {
             return this;
         }
 
+        public Builder displayname(Component displayname) {
+            this.displayname = displayname;
+            return this;
+        }
+
         public Builder displaynameRich(String displayname, TagResolver... tags) {
             this.displayname = MiniMessage.miniMessage().deserialize(displayname, tags);
             return this;

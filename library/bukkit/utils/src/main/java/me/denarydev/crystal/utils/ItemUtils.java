@@ -14,12 +14,17 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.block.CreatureSpawner;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -33,21 +38,31 @@ import java.util.function.Consumer;
 public final class ItemUtils {
 
     /**
-     * @return new {@link ItemBuilder}, that allows you to create
+     * @return new {@link Builder}, that allows you to create
      * an {@link ItemStack} with custom parameters
      */
-    public static ItemBuilder itemBuilder() {
-        return new ItemBuilder();
+    public static Builder itemBuilder() {
+        return new Builder();
     }
 
     @NotNull
     public static ItemStack getCustomHead(final String texture) {
-        return getCustomHead(null, texture);
+        return getCustomHead(null, texture, 1);
+    }
+
+    @NotNull
+    public static ItemStack getCustomHead(final String texture, final int amount) {
+        return getCustomHead(null, texture, amount);
     }
 
     @NotNull
     public static ItemStack getCustomHead(final String signature, final String texture) {
-        final var head = new ItemStack(Material.PLAYER_HEAD);
+        return getCustomHead(signature, texture, 1);
+    }
+
+    @NotNull
+    public static ItemStack getCustomHead(final String signature, final String texture, final int amount) {
+        final var head = new ItemStack(Material.PLAYER_HEAD, Math.max(Math.min(amount, 64), 1));
         if (texture == null)
             return head;
 
@@ -79,108 +94,126 @@ public final class ItemUtils {
     /**
      * Builder for {@link ItemStack}
      */
-    public static class ItemBuilder {
+    public static class Builder {
         private ItemStack item;
 
         private Material type;
+        private String texture;
         private int amount;
         private Component displayname;
         private List<Component> lore;
-        private Map<Enchantment, Integer> enchantments = new HashMap<>();
+        private final Map<Enchantment, Integer> enchantments = new HashMap<>();
         private ItemFlag[] itemFlags;
         private boolean unbreakable;
         private Integer customModelData;
         private int damage;
         private Consumer<? super ItemMeta> metaEditor;
+        private final Map<NamespacedKey, Object> persistentData = new HashMap<>();
 
-        protected ItemBuilder() {
+        protected Builder() {
             // Do nothing
         }
 
-        public ItemBuilder type(Material type) {
+        public Builder type(Material type) {
             this.type = type;
             return this;
         }
 
-        public ItemBuilder itemStack(ItemStack item) {
+        public Builder texture(String texture) {
+            this.texture = texture;
+            return this;
+        }
+
+        public Builder itemStack(ItemStack item) {
             this.item = item;
             return this;
         }
 
-        public ItemBuilder amount(int amount) {
+        public Builder amount(int amount) {
             this.amount = amount;
             return this;
         }
 
-        public ItemBuilder displaynameRich(String displayname, TagResolver... tags) {
+        public Builder displaynameRich(String displayname, TagResolver... tags) {
             this.displayname = MiniMessage.miniMessage().deserialize(displayname, tags);
             return this;
         }
 
-        public ItemBuilder displaynamePlain(String displayname) {
+        public Builder displaynamePlain(String displayname) {
             this.displayname = PlainTextComponentSerializer.plainText().deserialize(displayname);
             return this;
         }
 
-        public ItemBuilder lore(List<Component> lore) {
+        public Builder lore(List<Component> lore) {
             this.lore = lore;
             return this;
         }
 
-        public ItemBuilder loreRich(List<String> lore, TagResolver... tags) {
+        public Builder loreRich(List<String> lore, TagResolver... tags) {
             this.lore = lore.stream().map(s -> MiniMessage.miniMessage().deserialize(s, tags)).toList();
             return this;
         }
 
-        public ItemBuilder lorePlain(List<String> lore) {
+        public Builder lorePlain(List<String> lore) {
             this.lore = new ArrayList<>(lore.stream().map(s -> PlainTextComponentSerializer.plainText().deserialize(s)).toList());
             return this;
         }
 
-        public ItemBuilder enchantments(Enchantment... enchantments) {
+        public Builder enchantments(Enchantment... enchantments) {
             for (final Enchantment enchantment : enchantments) {
                 this.enchantments.put(enchantment, 1);
             }
             return this;
         }
 
-        public ItemBuilder enchantments(Map<Enchantment, Integer> enchantments) {
-            this.enchantments = enchantments;
+        public Builder enchantments(Map<Enchantment, Integer> enchantments) {
+            this.enchantments.putAll(enchantments);
             return this;
         }
 
-        public ItemBuilder enchantment(Enchantment enchantment, int level) {
+        public Builder enchantment(Enchantment enchantment, int level) {
             this.enchantments.put(enchantment, level);
             return this;
         }
 
-        public ItemBuilder itemFlags(ItemFlag... itemFlags) {
-            this.itemFlags = itemFlags;
+        public Builder itemFlags(ItemFlag... flags) {
+            this.itemFlags = flags;
             return this;
         }
 
-        public ItemBuilder unbreakable(boolean unbreakable) {
+        public Builder unbreakable(boolean unbreakable) {
             this.unbreakable = unbreakable;
             return this;
         }
 
-        public ItemBuilder customModelData(Integer customModelData) {
-            this.customModelData = customModelData;
+        public Builder customModelData(Integer data) {
+            this.customModelData = data;
             return this;
         }
 
-        public ItemBuilder damage(int damage) {
+        public Builder damage(int damage) {
             this.damage = damage;
             return this;
         }
 
-        public ItemBuilder metaEditor(Consumer<? super ItemMeta> metaEditor) {
-            this.metaEditor = metaEditor;
+        public Builder metaEditor(Consumer<? super ItemMeta> editor) {
+            this.metaEditor = editor;
+            return this;
+        }
+
+        public Builder persistentData(NamespacedKey key, Object value) {
+            this.persistentData.put(key, value);
             return this;
         }
 
         public ItemStack build() {
-            if (item == null) item = new ItemStack(type, Math.max(Math.min(amount, 64), 1));
+            if (item == null) {
+                amount = Math.max(Math.min(amount, 64), 1);
+                if (texture != null) {
+                    item = getCustomHead(texture, amount);
+                }
+                item = new ItemStack(type, amount);
+            }
 
             if (metaEditor != null)
                 item.editMeta(metaEditor);
@@ -192,7 +225,7 @@ public final class ItemUtils {
             if (lore != null)
                 meta.lore(lore);
 
-            if (enchantments != null) {
+            if (!enchantments.isEmpty()) {
                 enchantments.forEach((ench, lvl) -> {
                     if (ench != null && !meta.hasEnchant(ench) && lvl > 0) meta.addEnchant(ench, lvl, true);
                 });
@@ -208,6 +241,23 @@ public final class ItemUtils {
                 damageable.setDamage(damage);
 
             meta.setUnbreakable(unbreakable);
+
+            if (!persistentData.isEmpty()) {
+                final var container = meta.getPersistentDataContainer();
+                persistentData.forEach((key, value) -> {
+                    if (value instanceof String s) container.set(key, PersistentDataType.STRING, s);
+                    else if (value instanceof Byte b) container.set(key, PersistentDataType.BYTE, b);
+                    else if (value instanceof Short s) container.set(key, PersistentDataType.SHORT, s);
+                    else if (value instanceof Integer i) container.set(key, PersistentDataType.INTEGER, i);
+                    else if (value instanceof Long l) container.set(key, PersistentDataType.LONG, l);
+                    else if (value instanceof Float f) container.set(key, PersistentDataType.FLOAT, f);
+                    else if (value instanceof Double d) container.set(key, PersistentDataType.DOUBLE, d);
+                    else if (value instanceof byte[] ba) container.set(key, PersistentDataType.BYTE_ARRAY, ba);
+                    else if (value instanceof int[] ia) container.set(key, PersistentDataType.INTEGER_ARRAY, ia);
+                    else if (value instanceof long[] la) container.set(key, PersistentDataType.LONG_ARRAY, la);
+                });
+            }
+
             item.setItemMeta(meta);
             return item;
         }

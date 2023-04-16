@@ -103,15 +103,6 @@ public final class Template {
             return this;
         }
 
-        public Builder button(Button button) {
-            final var stack = button.item();
-            final int[] slots = button.slots();
-            for (final int slot : slots) {
-                items.put(slot, stack);
-            }
-            return this;
-        }
-
         public Template build() {
             return new Template(title, size, type, items);
         }

@@ -37,17 +37,20 @@ public class ItemStackSerializer implements TypeSerializer<ItemStack> {
             final var material = Material.matchMaterial(node.node("material").getString());
             if (material == null)
                 throw new SerializationException("Item material cannot be null at " + Arrays.toString(node.path().array()));
-            final int amount = node.node("amount").getInt(1);
+            int amount = 1;
+            if (node.hasChild("amount"))
+                amount = node.node("amount").getInt();
 
-            final var stack = new ItemStack(material, amount);
-            final var meta = stack.getItemMeta();
+            final var item = new ItemStack(material, amount);
+            final var meta = item.getItemMeta();
 
             if (node.hasChild("name"))
                 meta.displayName(node.node("name").get(Component.class));
             if (node.hasChild("lore"))
                 meta.lore(node.node("lore").getList(Component.class, Collections.emptyList()));
 
-            meta.setUnbreakable(node.node("unbreakable").getBoolean(false));
+            if (node.hasChild("unbreakable"))
+                meta.setUnbreakable(node.node("unbreakable").getBoolean(false));
             if (node.hasChild("flags"))
                 node.node("flags").getList(String.class, Collections.emptyList()).stream()
                     .map(s -> {
@@ -73,21 +76,21 @@ public class ItemStackSerializer implements TypeSerializer<ItemStack> {
                 }));
             }
 
-            stack.setItemMeta(meta);
+            item.setItemMeta(meta);
 
-            return stack;
+            return item;
         }
         return null;
     }
 
     @Override
-    public void serialize(Type type, @Nullable ItemStack stack, ConfigurationNode node) throws SerializationException {
-        if (stack != null) {
-            node.node("material").set(stack.getType());
-            if (stack.getAmount() > 1) node.node("amount").set(stack.getAmount());
+    public void serialize(Type type, @Nullable ItemStack item, ConfigurationNode node) throws SerializationException {
+        if (item != null) {
+            node.node("material").set(item.getType());
+            if (item.getAmount() > 1) node.node("amount").set(item.getAmount());
 
-            if (stack.hasItemMeta()) {
-                final var meta = stack.getItemMeta();
+            if (item.hasItemMeta()) {
+                final var meta = item.getItemMeta();
 
                 if (meta.hasDisplayName()) node.node("name").set(Component.class, meta.displayName());
                 if (meta.hasLore()) node.node("lore").setList(Component.class, meta.lore());

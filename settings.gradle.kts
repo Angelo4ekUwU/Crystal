@@ -11,9 +11,7 @@ dependencyResolutionManagement {
         maven("https://maven.enginehub.org/repo/")
         maven("https://jitpack.io")
         maven("https://libraries.minecraft.net/")
-        maven("http://repo.denaryworld.ru/snapshots") {
-            isAllowInsecureProtocol = true
-        }
+        maven("https://the-planet.fun/repo/snapshots")
     }
 
     versionCatalogs {

@@ -35,18 +35,13 @@ public class CrystalNMS {
 
         final var tag = stack.getOrCreateTag();
         if (tag.contains("BlockEntityTag")) {
-            System.out.println("Has bet");
             final var beTag = tag.getCompound("BlockEntityTag");
             if (beTag.contains("SpawnData")) {
-                System.out.println("Has sd");
                 final var sdTag = beTag.getCompound("SpawnData");
                 if (sdTag.contains("entity")) {
-                    System.out.println("Has ent");
                     final var eTag = sdTag.getCompound("entity");
                     if (eTag.contains("id")) {
-                        System.out.println("Has id");
                         final var s = eTag.getString("id").replace("minecraft:", "");
-                        System.out.println("id = " + s);
                         try {
                             return EntityType.valueOf(s.toUpperCase());
                         } catch (IllegalArgumentException ex) {

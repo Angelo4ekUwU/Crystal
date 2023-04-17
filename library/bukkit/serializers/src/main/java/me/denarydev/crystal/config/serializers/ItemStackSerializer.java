@@ -82,7 +82,6 @@ public class ItemStackSerializer implements TypeSerializer<ItemStack> {
 
             if (material.equals(Material.SPAWNER) && node.hasChild("spawner-entity")) {
                 final var entity = node.node("spawner-entity").get(EntityType.class);
-                System.out.println("Entity = " + entity);
                 if (entity != null) {
                     return CrystalNMS.applySpawnerEntity(item, entity);
                 } else {

@@ -3,9 +3,9 @@ plugins {
 }
 
 crystalModule {
-    name.set("Crystal Serializers")
-    moduleName.set("serializers")
-    description.set("Configurate serializers for some bukkit objects")
+    name.set("Crystal Bukkit NMS")
+    moduleName.set("nms")
+    description.set("")
     library.set("bukkit")
 }
 
@@ -15,9 +15,6 @@ repositories {
 
 dependencies {
     paperweight.devBundle("io.sapphiremc.sapphire", libs.bukkit.get().version)
-    implementation(project(":bukkit:nms"))
-    compileOnly(libs.bukkit)
-    compileOnly(libs.configurate)
 }
 
 tasks {

@@ -17,7 +17,7 @@ afterEvaluate {
 
     publishing {
         publications.create<MavenPublication>("shadow") {
-            artifact(tasks["shadowJar"])
+            if (!setOf(":bukkit:nms", ":bukkit:serializers").contains(project.path)) artifact(tasks["shadowJar"])
             artifact(tasks["sourcesJar"])
             artifact(tasks["javadocJar"])
         }

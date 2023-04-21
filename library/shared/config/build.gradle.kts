@@ -1,5 +1,5 @@
 crystalModule {
-    name.set("Crystal Config")
+    name.set("Crystal Shared Config")
     moduleName.set("config")
     description.set("Configurate-based configuration loaders")
     library.set("shared")

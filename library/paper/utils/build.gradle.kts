@@ -1,12 +1,12 @@
 crystalModule {
-    name.set("Crystal Utils")
+    name.set("Crystal Paper Utils")
     moduleName.set("utils")
-    description.set("")
-    library.set("bukkit")
+    description.set("Some utils for paper plugins")
+    library.set("paper")
 }
 
 dependencies {
-    compileOnly(libs.bukkit)
+    compileOnly(libs.paper)
     compileOnly(libs.lombok)
     compileOnly(libs.authlib)
     annotationProcessor(libs.lombok)

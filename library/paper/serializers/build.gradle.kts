@@ -3,20 +3,15 @@ plugins {
 }
 
 crystalModule {
-    name.set("Crystal Serializers")
+    name.set("Crystal Paper Serializers")
     moduleName.set("serializers")
-    description.set("Configurate serializers for some bukkit objects")
-    library.set("bukkit")
-}
-
-repositories {
-    maven("https://the-planet.fun/repo/snapshots")
+    description.set("Configurate serializers for some paper objects")
+    library.set("paper")
 }
 
 dependencies {
-    paperweight.devBundle("io.sapphiremc.sapphire", libs.bukkit.get().version)
-    implementation(project(":bukkit:nms"))
-    compileOnly(libs.bukkit)
+    paperweight.paperDevBundle(libs.paper.get().version)
+    implementation(project(":paper:nms"))
     compileOnly(libs.configurate)
 }
 

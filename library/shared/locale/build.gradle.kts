@@ -1,7 +1,7 @@
 crystalModule {
-    name.set("Crystal Locale")
+    name.set("Crystal Shared Locale")
     moduleName.set("locale")
-    description.set("Multiplatform locale module for Bukkit, BungeeCord and Velocity.")
+    description.set("Simple locale module for plugins")
     library.set("shared")
 }
 

@@ -5,18 +5,13 @@ import java.nio.file.Files
 dependencyResolutionManagement {
     repositories {
         mavenCentral()
-        maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
         maven("https://papermc.io/repo/repository/maven-public/")
-        maven("https://repo.codemc.org/repository/maven-public/")
-        maven("https://maven.enginehub.org/repo/")
-        maven("https://jitpack.io")
         maven("https://libraries.minecraft.net/")
-        maven("https://the-planet.fun/repo/snapshots")
     }
 
     versionCatalogs {
         create("libs") {
-            library("bukkit", "io.sapphiremc.sapphire:sapphire-api:1.19.4-R0.1-SNAPSHOT")
+            library("paper", "io.papermc.paper:paper-api:1.19.4-R0.1-SNAPSHOT")
 
             library("slf4j", "org.slf4j:slf4j-api:2.0.7")
             library("annotations", "org.jetbrains:annotations:24.0.1")
@@ -43,7 +38,7 @@ dependencyResolutionManagement {
 rootProject.name = "crystal"
 
 library("shared")
-library("bukkit")
+library("paper")
 
 fun library(library: String) {
     include(library)

@@ -3,18 +3,14 @@ plugins {
 }
 
 crystalModule {
-    name.set("Crystal Bukkit NMS")
+    name.set("Crystal Paper NMS")
     moduleName.set("nms")
-    description.set("")
-    library.set("bukkit")
-}
-
-repositories {
-    maven("https://the-planet.fun/repo/snapshots")
+    description.set("Simple NMS api with some methods")
+    library.set("paper")
 }
 
 dependencies {
-    paperweight.devBundle("io.sapphiremc.sapphire", libs.bukkit.get().version)
+    paperweight.paperDevBundle(libs.paper.get().version)
 }
 
 tasks {

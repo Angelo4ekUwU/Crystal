@@ -27,8 +27,10 @@ tasks {
 
 afterEvaluate {
     publishing {
-        publications.create<MavenPublication>("reobf") {
+        publications.create<MavenPublication>("shadow") {
             artifact(tasks.reobfJar.get().outputJar.get())
+            artifact(tasks["sourcesJar"])
+            artifact(tasks["javadocJar"])
         }
     }
 }

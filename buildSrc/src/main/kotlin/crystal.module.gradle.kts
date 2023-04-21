@@ -15,11 +15,13 @@ afterEvaluate {
         withJavadocJar()
     }
 
-    publishing {
-        publications.create<MavenPublication>("shadow") {
-            if (!setOf(":paper:nms", ":paper:serializers").contains(project.path)) artifact(tasks["shadowJar"])
-            artifact(tasks["sourcesJar"])
-            artifact(tasks["javadocJar"])
+    if (!setOf(":paper:nms", ":paper:serializers").contains(project.path)) {
+        publishing {
+            publications.create<MavenPublication>("shadow") {
+                artifact(tasks["shadowJar"])
+                artifact(tasks["sourcesJar"])
+                artifact(tasks["javadocJar"])
+            }
         }
     }
 }

@@ -26,8 +26,8 @@ dependencyResolutionManagement {
             library("gson", "org.spongepowered:configurate-gson:$configurateVersion")
 
             library("hikari", "com.zaxxer:HikariCP:5.0.1")
-            library("mysql-connector", "com.mysql:mysql-connector-j:8.0.32")
-            library("sqlite-jdbc", "org.xerial:sqlite-jdbc:3.41.2.1")
+            library("mysql-connector", "com.mysql:mysql-connector-j:8.0.33")
+            library("sqlite-jdbc", "org.xerial:sqlite-jdbc:3.42.0.0")
 
             bundle("sql", listOf("hikari", "mysql-connector"))
             bundle("configurate", listOf("hocon", "yaml", "gson"))

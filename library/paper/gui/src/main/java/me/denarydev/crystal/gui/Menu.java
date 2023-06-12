@@ -142,12 +142,12 @@ public class Menu implements InventoryHolder {
 
     public static class Builder {
 
-        private final Template template;
-        private final Map<Integer, ItemStack> dynamicItems = new HashMap<>();
-        private final Map<Integer, ClickAction> dynamicActions = new HashMap<>();
-        private long clickCooldown;
-        private ClickAction clickAction;
-        private CloseAction closeAction;
+        protected final Template template;
+        protected final Map<Integer, ItemStack> dynamicItems = new HashMap<>();
+        protected final Map<Integer, ClickAction> dynamicActions = new HashMap<>();
+        protected long clickCooldown;
+        protected ClickAction clickAction;
+        protected CloseAction closeAction;
 
         public Builder(@NotNull Template template) {
             this.template = template;

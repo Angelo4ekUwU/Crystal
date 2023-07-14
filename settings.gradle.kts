@@ -17,7 +17,7 @@ dependencyResolutionManagement {
             library("annotations", "org.jetbrains:annotations:24.0.1")
             library("lombok", "org.projectlombok:lombok:1.18.26")
             library("commons-lang3", "org.apache.commons:commons-lang3:3.12.0")
-            library("authlib", "com.mojang:authlib:3.18.38")
+            library("authlib", "com.mojang:authlib:4.0.43")
 
             val configurateVersion = "4.1.2"
             library("configurate", "org.spongepowered:configurate-core:$configurateVersion")

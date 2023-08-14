@@ -31,11 +31,11 @@ public class LocationSerializer implements TypeSerializer<Location> {
                     Double.parseDouble(loc[0]), Double.parseDouble(loc[1]), Double.parseDouble(loc[2]));
             } else if (loc.length == 4) { // WORLD;X;Y;Z
                 return new Location(Bukkit.getWorld(loc[0]),
-                    Double.parseDouble(loc[0]), Double.parseDouble(loc[1]), Double.parseDouble(loc[2]));
-            } else if (loc.length == 6) { // WORLD;X;Y;Z;PITCH;YAW
+                    Double.parseDouble(loc[1]), Double.parseDouble(loc[2]), Double.parseDouble(loc[3]));
+            } else if (loc.length == 6) { // WORLD;X;Y;Z;YAW;PITCH
                 return new Location(Bukkit.getWorld(loc[0]),
-                    Double.parseDouble(loc[0]), Double.parseDouble(loc[1]), Double.parseDouble(loc[2]),
-                    Float.parseFloat(loc[3]), Float.parseFloat(loc[4]));
+                    Double.parseDouble(loc[1]), Double.parseDouble(loc[2]), Double.parseDouble(loc[3]),
+                    Float.parseFloat(loc[4]), Float.parseFloat(loc[5]));
             } else {
                 throw new SerializationException("Invalid location format!");
             }
@@ -53,10 +53,12 @@ public class LocationSerializer implements TypeSerializer<Location> {
 
             builder.append(loc.getX()).append(";"); // X
             builder.append(loc.getY()).append(";"); // Y
-            builder.append(loc.getZ()).append(";"); // Z
+            builder.append(loc.getZ()); // Z
 
-            if (loc.getYaw() > 0) builder.append(loc.getPitch()).append(";"); // Pitch
-            if (loc.getPitch() > 0) builder.append(loc.getYaw()); // Yaw
+            if (loc.getYaw() > 0 || loc.getPitch() > 0) {
+                builder.append(";").append(loc.getYaw()); // Yaw
+                builder.append(";").append(loc.getPitch()); // Pitch
+            }
 
             node.set(builder.toString());
         }

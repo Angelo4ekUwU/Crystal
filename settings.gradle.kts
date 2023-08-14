@@ -11,7 +11,7 @@ dependencyResolutionManagement {
 
     versionCatalogs {
         create("libs") {
-            library("paper", "io.papermc.paper:paper-api:1.19.4-R0.1-SNAPSHOT")
+            library("paper", "io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT")
 
             library("slf4j", "org.slf4j:slf4j-api:2.0.7")
             library("annotations", "org.jetbrains:annotations:24.0.1")

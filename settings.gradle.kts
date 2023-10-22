@@ -29,7 +29,7 @@ dependencyResolutionManagement {
             library("mysql-connector", "com.mysql:mysql-connector-j:8.0.33")
             library("sqlite-jdbc", "org.xerial:sqlite-jdbc:3.42.0.0")
 
-            bundle("sql", listOf("hikari", "mysql-connector"))
+            bundle("sql", listOf("hikari", "mysql-connector", "sqlite-jdbc"))
             bundle("configurate", listOf("hocon", "yaml", "gson"))
         }
     }

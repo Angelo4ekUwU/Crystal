@@ -24,4 +24,8 @@ afterEvaluate {
             }
         }
     }
+
+    tasks.test {
+        useJUnitPlatform()
+    }
 }

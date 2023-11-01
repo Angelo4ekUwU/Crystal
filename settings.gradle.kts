@@ -7,6 +7,7 @@ dependencyResolutionManagement {
         mavenCentral()
         maven("https://papermc.io/repo/repository/maven-public/")
         maven("https://libraries.minecraft.net/")
+        maven("https://jitpack.io")
     }
 
     versionCatalogs {
@@ -28,6 +29,10 @@ dependencyResolutionManagement {
             library("hikari", "com.zaxxer:HikariCP:5.0.1")
             library("mysql-connector", "com.mysql:mysql-connector-j:8.0.33")
             library("sqlite-jdbc", "org.xerial:sqlite-jdbc:3.42.0.0")
+
+            library("junit-bom", "org.junit:junit-bom:5.10.0")
+            library("mockito", "org.mockito:mockito-core:5.6.0")
+            library("mockbukkit", "com.github.seeseemelk:MockBukkit-v1.20:3.44.0")
 
             bundle("sql", listOf("hikari", "mysql-connector", "sqlite-jdbc"))
             bundle("configurate", listOf("hocon", "yaml", "gson"))

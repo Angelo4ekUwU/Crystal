@@ -27,20 +27,39 @@ public class LocationSerializer implements TypeSerializer<Location> {
         if (s != null) {
             final String[] loc = s.split(";");
             if (loc.length == 3) { // X;Y;Z
-                return new Location(null,
-                    Double.parseDouble(loc[0]), Double.parseDouble(loc[1]), Double.parseDouble(loc[2]));
+                final var x = parseDouble(loc[0]);
+                final var y = parseDouble(loc[1]);
+                final var z = parseDouble(loc[2]);
+                return new Location(null, x, y, z);
             } else if (loc.length == 4) { // WORLD;X;Y;Z
-                return new Location(Bukkit.getWorld(loc[0]),
-                    Double.parseDouble(loc[1]), Double.parseDouble(loc[2]), Double.parseDouble(loc[3]));
+                return locationWithWorld(loc);
             } else if (loc.length == 6) { // WORLD;X;Y;Z;YAW;PITCH
-                return new Location(Bukkit.getWorld(loc[0]),
-                    Double.parseDouble(loc[1]), Double.parseDouble(loc[2]), Double.parseDouble(loc[3]),
-                    Float.parseFloat(loc[4]), Float.parseFloat(loc[5]));
+                final var location = locationWithWorld(loc);
+                location.setYaw((float) parseDouble(loc[4]));
+                location.setPitch((float) parseDouble(loc[5]));
+                return location;
             } else {
                 throw new SerializationException("Invalid location format!");
             }
         } else {
             throw new SerializationException("Location string is null!");
+        }
+    }
+
+    private Location locationWithWorld(String[] loc) throws SerializationException {
+        final var world = Bukkit.getWorld(loc[0]);
+        if (world == null) throw new SerializationException("Unknown world!");
+        final var x = parseDouble(loc[1]);
+        final var y = parseDouble(loc[2]);
+        final var z = parseDouble(loc[3]);
+        return new Location(world, x, y, z);
+    }
+
+    private double parseDouble(final String s) throws SerializationException {
+        try {
+            return Double.parseDouble(s);
+        } catch (NumberFormatException ex) {
+            throw new SerializationException(Double.TYPE, ex);
         }
     }
 

@@ -13,6 +13,11 @@ dependencies {
     paperweight.paperDevBundle(libs.paper.get().version)
     implementation(project(":paper:nms"))
     compileOnly(libs.configurate)
+
+    testImplementation(platform(libs.junit.bom))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    //testImplementation(libs.mockito)
+    testImplementation(libs.mockbukkit)
 }
 
 tasks {

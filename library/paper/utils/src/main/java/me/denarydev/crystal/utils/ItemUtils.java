@@ -67,28 +67,22 @@ public final class ItemUtils {
             return head;
 
         final var skullMeta = (SkullMeta) head.getItemMeta();
-        final var profile = new GameProfile(UUID.nameUUIDFromBytes(texture.getBytes()), "CrystalCustomHead");
+        final var profile = Bukkit.createProfile(UUID.nameUUIDFromBytes(texture.getBytes()), "CrystalCustomHead");
 
         if (texture.endsWith("=")) {
             if (signature == null) {
-                profile.getProperties().put("textures", new Property("texture", texture.replaceAll("=", "")));
+                profile.setProperty(new ProfileProperty("textures", texture.replaceAll("=", "")));
             } else {
-                profile.getProperties().put("textures", new Property("textures", texture, signature));
+                profile.setProperty(new ProfileProperty("textures", texture, signature));
             }
         } else {
             final byte[] encodedData = Base64.getEncoder().encode(String.format("{textures:{SKIN:{url:\"https://textures.minecraft.net/texture/%s\"}}}", texture).getBytes());
-            profile.getProperties().put("textures", new Property("textures", new String(encodedData)));
+            profile.setProperty(new ProfileProperty("textures", new String(encodedData)));
         }
 
-        try {
-            final var profileField = skullMeta.getClass().getDeclaredField("profile");
-            profileField.setAccessible(true);
-            profileField.set(skullMeta, profile);
-            head.setItemMeta(skullMeta);
-            return head;
-        } catch (NoSuchFieldException | IllegalAccessException | SecurityException ex) {
-            throw new RuntimeException("Reflection error while setting head texture", ex);
-        }
+        skullMeta.setPlayerProfile(profile);
+        head.setItemMeta(skullMeta);
+        return head;
     }
 
     /**

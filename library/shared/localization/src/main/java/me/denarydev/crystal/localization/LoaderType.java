@@ -5,7 +5,7 @@
  * license that can be found in the LICENSE file or at
  * https://opensource.org/licenses/MIT.
  */
-package me.denarydev.crystal.locale;
+package me.denarydev.crystal.localization;
 
 import me.denarydev.crystal.config.CrystalConfigs;
 import org.spongepowered.configurate.ConfigurationNode;

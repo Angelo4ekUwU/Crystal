@@ -1,7 +1,7 @@
 crystalModule {
-    name.set("Crystal Shared Locale")
-    moduleName.set("locale")
-    description.set("Simple locale module for plugins")
+    name.set("Localization")
+    moduleName.set("localization")
+    description.set("Simple localization module for minecraft plugins")
     library.set("shared")
 }
 

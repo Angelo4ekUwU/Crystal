@@ -20,7 +20,7 @@ public interface ConnectionFactory {
      * @return database type
      */
     @NotNull
-    DatabaseType getDatabaseType();
+    DatabaseType databaseType();
 
     void initialize();
 
@@ -34,7 +34,7 @@ public interface ConnectionFactory {
      * @throws SQLException when the connection could not be received
      */
     @NotNull
-    Connection getConnection() throws SQLException;
+    Connection connection() throws SQLException;
 
     /**
      * Executes a callback with a Connection passed and automatically closes it when finished

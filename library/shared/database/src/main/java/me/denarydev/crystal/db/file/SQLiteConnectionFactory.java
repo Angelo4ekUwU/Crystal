@@ -28,7 +28,7 @@ public class SQLiteConnectionFactory extends FlatfileConnectionFactory {
     }
 
     @Override
-    public @NotNull DatabaseType getDatabaseType() {
+    public @NotNull DatabaseType databaseType() {
         return DatabaseType.SQLITE;
     }
 

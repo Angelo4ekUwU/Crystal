@@ -129,7 +129,7 @@ public abstract class HikariConnectionFactory implements ConnectionFactory {
     }
 
     @Override
-    public @NotNull Connection getConnection() throws SQLException {
+    public @NotNull Connection connection() throws SQLException {
         if (this.hikari == null) {
             throw new SQLException("Unable to get a connection from the pool. (hikari is null)");
         }
@@ -144,7 +144,7 @@ public abstract class HikariConnectionFactory implements ConnectionFactory {
 
     @Override
     public void connect(@NotNull ConnectionCallback callback) {
-        try (final Connection connection = getConnection()) {
+        try (final Connection connection = connection()) {
             callback.accept(connection);
         } catch (SQLException ex) {
             settings.logger().error("An error occured executing a SQL query", ex);

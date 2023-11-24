@@ -18,6 +18,7 @@ import me.denarydev.crystal.db.settings.HikariConnectionSettings;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -26,25 +27,23 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-public abstract class AbstractDataManager {
+public class DatabaseManager {
     private ConnectionSettings settings;
-    protected ConnectionFactory connectionFactory;
+    private ConnectionFactory connectionFactory;
 
-    protected final ExecutorService asyncPool = Executors.newSingleThreadExecutor();
+    private final ExecutorService asyncPool = Executors.newSingleThreadExecutor();
 
-    public void initialize(@NotNull ConnectionSettings settings) {
+    public void initialize(@NotNull ConnectionSettings settings) throws IllegalArgumentException {
         this.settings = settings;
 
         final var type = settings.databaseType();
-        if (type.isLocal()) {
+        if (type.local()) {
             if (!(settings instanceof FlatfileConnectionSettings)) {
-                settings.logger().error("FlatfileConnectionSettings class must be implemented for local databases such as SQLite and H2!");
-                return;
+                throw new IllegalArgumentException("FlatfileConnectionSettings class must be implemented for local databases such as SQLite and H2!");
             }
         } else {
             if (!(settings instanceof HikariConnectionSettings)) {
-                settings.logger().error("HikariConnectionSettings class must be implemented for the MySQL database!");
-                return;
+                throw new IllegalArgumentException("HikariConnectionSettings class must be implemented for the MySQL database!");
             }
         }
 
@@ -55,6 +54,50 @@ public abstract class AbstractDataManager {
             case MARIADB -> new MariaDBConnectionFactory((HikariConnectionSettings) settings);
             case POSTGRESQL -> new PostgresConnectionFactory((HikariConnectionSettings) settings);
         };
+        connectionFactory.initialize();
+    }
+
+    public void shutdown() {
+        // 3 minutes is overkill, but we just want to make sure
+        shutdown(15, TimeUnit.MINUTES.toSeconds(3));
+    }
+
+    public void shutdown(int reportInterval, long secondsUntilForceShutdown) {
+        shutdownTaskQueue();
+
+        while (!taskQueueTerminated() && secondsUntilForceShutdown > 0) {
+            long secondsToWait = Math.min(reportInterval, secondsUntilForceShutdown);
+
+            try {
+                if (waitForShutdown(secondsToWait, TimeUnit.SECONDS)) {
+                    break;
+                }
+
+                settings.logger().info(String.format("A DataManager is currently working on %d tasks... " +
+                        "We are giving him another %d seconds until we forcefully shut him down " +
+                        "(continuing to report in %d second intervals)",
+                    taskQueueSize(), secondsUntilForceShutdown, reportInterval));
+            } catch (InterruptedException ignore) {
+            } finally {
+                secondsUntilForceShutdown -= secondsToWait;
+            }
+        }
+
+        if (!taskQueueTerminated()) {
+            int unfinishedTasks = forceShutdownTaskQueue().size();
+
+            if (unfinishedTasks > 0) {
+                settings.logger().warn("A DataManager has been forcefully terminated with {} unfinished tasks - This can be a serious problem, please report it to plugin developer!", unfinishedTasks);
+            }
+        }
+    }
+
+    public ConnectionSettings settings() {
+        return settings;
+    }
+
+    public ConnectionFactory connectionFactory() {
+        return connectionFactory;
     }
 
     /**
@@ -92,7 +135,7 @@ public abstract class AbstractDataManager {
      * Queue a task to be run asynchronously.
      *
      * @param runnable task to run on the next server tick
-     * @param callback callback
+     * @param callback exception callback
      */
     public void runAsync(@NotNull final Runnable runnable, @Nullable final Consumer<Throwable> callback) {
         this.asyncPool.execute(() -> {
@@ -122,11 +165,11 @@ public abstract class AbstractDataManager {
         return this.asyncPool.shutdownNow();
     }
 
-    public boolean isTaskQueueTerminated() {
+    public boolean taskQueueTerminated() {
         return this.asyncPool.isTerminated();
     }
 
-    public long getTaskQueueSize() {
+    public long taskQueueSize() {
         if (this.asyncPool instanceof final ThreadPoolExecutor executor) {
             return executor.getTaskCount();
         }

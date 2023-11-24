@@ -23,7 +23,7 @@ public class PostgresConnectionFactory extends DriverBasedHikariConnectionFactor
     }
 
     @Override
-    public @NotNull DatabaseType getDatabaseType() {
+    public @NotNull DatabaseType databaseType() {
         return DatabaseType.POSTGRESQL;
     }
 

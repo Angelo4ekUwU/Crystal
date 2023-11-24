@@ -31,12 +31,12 @@ public abstract class FlatfileConnectionFactory implements ConnectionFactory {
 
     protected abstract Connection createConnection(Path file) throws SQLException;
 
-    public Path getWriteFile() {
+    public Path writeFile() {
         return file;
     }
 
     @Override
-    public @NotNull Connection getConnection() throws SQLException {
+    public @NotNull Connection connection() throws SQLException {
         NonClosableConnection connection = this.connection;
         if (connection == null || connection.isClosed()) {
             connection = new NonClosableConnection(createConnection(this.file));
@@ -56,9 +56,9 @@ public abstract class FlatfileConnectionFactory implements ConnectionFactory {
     @Override
     public void connect(@NotNull ConnectionCallback callback) {
         try {
-            callback.accept(getConnection());
+            callback.accept(connection());
         } catch (Exception ex) {
-            LoggerFactory.getLogger("Crystal").error("An error occurred executing an " + getDatabaseType().name().toLowerCase() + " query", ex);
+            LoggerFactory.getLogger("Crystal").error("An error occurred executing an " + databaseType().name().toLowerCase() + " query", ex);
         }
     }
 }

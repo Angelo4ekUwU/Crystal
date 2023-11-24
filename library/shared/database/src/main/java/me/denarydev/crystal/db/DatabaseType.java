@@ -21,11 +21,11 @@ public enum DatabaseType {
         this.local = local;
     }
 
-    public String getFriendlyName() {
+    public String friendlyName() {
         return friendlyName;
     }
 
-    public boolean isLocal() {
+    public boolean local() {
         return local;
     }
 }

@@ -44,7 +44,7 @@ public class NonClosableConnection implements Connection {
     }
 
     @Override
-    public final void close() throws SQLException {
+    public final void close() {
         // do nothing
     }
 

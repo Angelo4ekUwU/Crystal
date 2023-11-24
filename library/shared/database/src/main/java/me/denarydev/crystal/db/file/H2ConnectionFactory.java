@@ -28,7 +28,7 @@ public class H2ConnectionFactory extends FlatfileConnectionFactory {
     }
 
     @Override
-    public @NotNull DatabaseType getDatabaseType() {
+    public @NotNull DatabaseType databaseType() {
         return DatabaseType.H2;
     }
 
@@ -55,9 +55,9 @@ public class H2ConnectionFactory extends FlatfileConnectionFactory {
     }
 
     @Override
-    public Path getWriteFile() {
+    public Path writeFile() {
         // h2 appends '.mv.db' to the end of the database name
-        Path writeFile = super.getWriteFile();
+        Path writeFile = super.writeFile();
         return writeFile.getParent().resolve(writeFile.getFileName().toString() + ".mv.db");
     }
 }

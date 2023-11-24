@@ -21,7 +21,7 @@ public class MariaDBConnectionFactory extends DriverBasedHikariConnectionFactory
     }
 
     @Override
-    public @NotNull DatabaseType getDatabaseType() {
+    public @NotNull DatabaseType databaseType() {
         return DatabaseType.MARIADB;
     }
 

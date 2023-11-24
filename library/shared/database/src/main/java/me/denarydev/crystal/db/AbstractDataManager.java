@@ -7,6 +7,14 @@
  */
 package me.denarydev.crystal.db;
 
+import me.denarydev.crystal.db.file.H2ConnectionFactory;
+import me.denarydev.crystal.db.file.SQLiteConnectionFactory;
+import me.denarydev.crystal.db.hikari.MariaDBConnectionFactory;
+import me.denarydev.crystal.db.hikari.MySqlConnectionFactory;
+import me.denarydev.crystal.db.hikari.PostgresConnectionFactory;
+import me.denarydev.crystal.db.settings.ConnectionSettings;
+import me.denarydev.crystal.db.settings.FlatfileConnectionSettings;
+import me.denarydev.crystal.db.settings.HikariConnectionSettings;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,23 +27,35 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 public abstract class AbstractDataManager {
-    private AbstractDatabaseConfig config;
-    protected DatabaseConnector databaseConnector;
+    private ConnectionSettings settings;
+    protected ConnectionFactory connectionFactory;
 
     protected final ExecutorService asyncPool = Executors.newSingleThreadExecutor();
 
-    public void loadDatabase(@NotNull AbstractDatabaseConfig config) {
-        this.config = config;
-        this.databaseConnector = new DatabaseConnector(config);
-        onDatabaseLoad();
-    }
+    public void initialize(@NotNull ConnectionSettings settings) {
+        this.settings = settings;
 
-    /**
-     * Called when loading the database
-     * <p>
-     * You can use this method to create tables in the database.
-     */
-    protected abstract void onDatabaseLoad();
+        final var type = settings.databaseType();
+        if (type.isLocal()) {
+            if (!(settings instanceof FlatfileConnectionSettings)) {
+                settings.logger().error("FlatfileConnectionSettings class must be implemented for local databases such as SQLite and H2!");
+                return;
+            }
+        } else {
+            if (!(settings instanceof HikariConnectionSettings)) {
+                settings.logger().error("HikariConnectionSettings class must be implemented for the MySQL database!");
+                return;
+            }
+        }
+
+        this.connectionFactory = switch (type) {
+            case H2 -> new H2ConnectionFactory(((FlatfileConnectionSettings) settings).databaseFile());
+            case SQLITE -> new SQLiteConnectionFactory(((FlatfileConnectionSettings) settings).databaseFile());
+            case MYSQL -> new MySqlConnectionFactory((HikariConnectionSettings) settings);
+            case MARIADB -> new MariaDBConnectionFactory((HikariConnectionSettings) settings);
+            case POSTGRESQL -> new PostgresConnectionFactory((HikariConnectionSettings) settings);
+        };
+    }
 
     /**
      * Queue a task to be run asynchronously with all the
@@ -56,7 +76,7 @@ public abstract class AbstractDataManager {
      * @param runnable task to run on the next server tick
      */
     public void sync(@NotNull final Runnable runnable) {
-        config.runSyncTask(runnable);
+        settings.runSyncTask(runnable);
     }
 
     /**

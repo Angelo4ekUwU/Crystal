@@ -7,20 +7,17 @@
  */
 package me.denarydev.crystal.utils;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
+import com.destroystokyo.paper.profile.ProfileProperty;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.block.CreatureSpawner;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -89,13 +86,12 @@ public final class ItemUtils {
      * Builder for {@link ItemStack}
      */
     public static class Builder {
-        private ItemStack item;
-
         private Material type;
         private String texture;
+        private ItemStack itemStack;
         private int amount;
         private Component displayname;
-        private List<Component> lore;
+        private List<? extends Component> lore;
         private final Map<Enchantment, Integer> enchantments = new HashMap<>();
         private ItemFlag[] itemFlags;
         private boolean unbreakable;
@@ -118,13 +114,13 @@ public final class ItemUtils {
             return this;
         }
 
-        public Builder itemStack(ItemStack item) {
-            this.item = item;
+        public Builder itemStack(ItemStack itemStack) {
+            this.itemStack = itemStack;
             return this;
         }
 
         public Builder amount(int amount) {
-            this.amount = amount;
+            this.amount = Math.max(Math.min(amount, 64), 1);
             return this;
         }
 
@@ -154,7 +150,7 @@ public final class ItemUtils {
         }
 
         public Builder lorePlain(List<String> lore) {
-            this.lore = new ArrayList<>(lore.stream().map(s -> PlainTextComponentSerializer.plainText().deserialize(s)).toList());
+            this.lore = lore.stream().map(s -> PlainTextComponentSerializer.plainText().deserialize(s)).toList();
             return this;
         }
 
@@ -206,12 +202,20 @@ public final class ItemUtils {
         }
 
         public ItemStack build() {
-            if (item == null) {
-                amount = Math.max(Math.min(amount, 64), 1);
+            final ItemStack item;
+            if (itemStack != null) {
+                item = itemStack;
+                if (type != null) {
+                    item.setType(type);
+                }
+            } else {
                 if (texture != null) {
                     item = getCustomHead(texture, amount);
+                } else if (type != null) {
+                    item = new ItemStack(type, amount);
+                } else {
+                    throw new IllegalArgumentException("The ItemStack type or texture must be present!");
                 }
-                item = new ItemStack(type, amount);
             }
 
             if (metaEditor != null)

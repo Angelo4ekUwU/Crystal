@@ -44,10 +44,11 @@ java {
 }
 
 val env: Map<String, String> = System.getenv()
+val repo = if (rootProject.version.toString().endsWith("-SNAPSHOT")) "snapshots" else "releases"
 
 publishing {
     repositories {
-        maven("https://the-planet.fun/repo/snapshots/") {
+        maven("https://the-planet.fun/repo/$repo/") {
             name = "sapphire"
             credentials(PasswordCredentials::class)
         }

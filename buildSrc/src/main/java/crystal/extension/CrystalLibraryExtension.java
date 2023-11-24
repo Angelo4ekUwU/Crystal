@@ -27,8 +27,4 @@ public class CrystalLibraryExtension extends CrystalExtension {
     public Property<String> getLibraryName() {
         return this.libraryName;
     }
-
-    public void setLibraryName(String name) {
-        this.libraryName.set(name);
-    }
 }

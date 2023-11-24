@@ -1,5 +1,5 @@
 plugins {
-    id("io.papermc.paperweight.userdev") version "1.5.4"
+    id("io.papermc.paperweight.userdev") version "1.5.10"
 }
 
 crystalModule {
@@ -16,7 +16,6 @@ dependencies {
 
     testImplementation(platform(libs.junit.bom))
     testImplementation("org.junit.jupiter:junit-jupiter")
-    //testImplementation(libs.mockito)
     testImplementation(libs.mockbukkit)
 }
 

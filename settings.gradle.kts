@@ -12,13 +12,10 @@ dependencyResolutionManagement {
 
     versionCatalogs {
         create("libs") {
-            library("paper", "io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT")
+            library("paper", "io.papermc.paper:paper-api:1.20.2-R0.1-SNAPSHOT")
 
-            library("slf4j", "org.slf4j:slf4j-api:2.0.7")
-            library("annotations", "org.jetbrains:annotations:24.0.1")
-            library("lombok", "org.projectlombok:lombok:1.18.26")
-            library("commons-lang3", "org.apache.commons:commons-lang3:3.12.0")
-            library("authlib", "com.mojang:authlib:4.0.43")
+            library("slf4j", "org.slf4j:slf4j-api:2.0.9")
+            library("annotations", "org.jetbrains:annotations:24.1.0")
 
             val configurateVersion = "4.1.2"
             library("configurate", "org.spongepowered:configurate-core:$configurateVersion")
@@ -26,13 +23,12 @@ dependencyResolutionManagement {
             library("yaml", "org.spongepowered:configurate-yaml:$configurateVersion")
             library("gson", "org.spongepowered:configurate-gson:$configurateVersion")
 
-            library("hikari", "com.zaxxer:HikariCP:5.0.1")
-            library("mysql-connector", "com.mysql:mysql-connector-j:8.0.33")
-            library("sqlite-jdbc", "org.xerial:sqlite-jdbc:3.42.0.0")
+            library("hikari", "com.zaxxer:HikariCP:5.1.0")
+            library("mysql-connector", "com.mysql:mysql-connector-j:8.2.0")
+            library("sqlite-jdbc", "org.xerial:sqlite-jdbc:3.44.0.0")
 
-            library("junit-bom", "org.junit:junit-bom:5.10.0")
-            library("mockito", "org.mockito:mockito-core:5.6.0")
-            library("mockbukkit", "com.github.seeseemelk:MockBukkit-v1.20:3.44.0")
+            library("junit-bom", "org.junit:junit-bom:5.10.1")
+            library("mockbukkit", "com.github.seeseemelk:MockBukkit-v1.20:3.47.0")
 
             bundle("sql", listOf("hikari", "mysql-connector", "sqlite-jdbc"))
             bundle("configurate", listOf("hocon", "yaml", "gson"))

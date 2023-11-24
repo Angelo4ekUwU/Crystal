@@ -7,7 +7,4 @@ crystalModule {
 
 dependencies {
     compileOnly(libs.paper)
-    compileOnly(libs.lombok)
-    compileOnly(libs.authlib)
-    annotationProcessor(libs.lombok)
 }

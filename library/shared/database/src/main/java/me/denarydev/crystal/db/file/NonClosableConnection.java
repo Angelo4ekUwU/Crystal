@@ -7,6 +7,8 @@
  */
 package me.denarydev.crystal.db.file;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import java.sql.Array;
 import java.sql.Blob;
 import java.sql.CallableStatement;
@@ -29,6 +31,7 @@ import java.util.concurrent.Executor;
 /**
  * A wrapper around a {@link Connection} which blocks usage of the default {@link #close()} method.
  */
+@ApiStatus.Internal
 public class NonClosableConnection implements Connection {
     private final Connection delegate;
 

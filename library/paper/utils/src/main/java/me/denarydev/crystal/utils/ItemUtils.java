@@ -89,7 +89,7 @@ public final class ItemUtils {
         private String texture;
         private ItemStack itemStack;
         private int amount;
-        private Component displayname;
+        private Component displayName;
         private List<? extends Component> lore;
         private final Map<Enchantment, Integer> enchantments = new HashMap<>();
         private ItemFlag[] itemFlags;
@@ -128,18 +128,18 @@ public final class ItemUtils {
             return this;
         }
 
-        public Builder displayname(Component displayname) {
-            this.displayname = displayname;
+        public Builder displayName(Component displayName) {
+            this.displayName = displayName;
             return this;
         }
 
-        public Builder displaynameRich(String displayname, TagResolver... tags) {
-            this.displayname = MiniMessage.miniMessage().deserialize(displayname, tags);
+        public Builder displayNameRich(String displayName, TagResolver... tags) {
+            this.displayName = MiniMessage.miniMessage().deserialize(displayName, tags);
             return this;
         }
 
-        public Builder displaynamePlain(String displayname) {
-            this.displayname = PlainTextComponentSerializer.plainText().deserialize(displayname);
+        public Builder displayNamePlain(String displayName) {
+            this.displayName = PlainTextComponentSerializer.plainText().deserialize(displayName);
             return this;
         }
 
@@ -227,14 +227,14 @@ public final class ItemUtils {
 
             final var meta = item.getItemMeta();
 
-            if (displayname != null)
-                meta.displayName(displayname);
+            if (displayName != null)
+                meta.displayName(displayName);
             if (lore != null)
                 meta.lore(lore);
 
             if (!enchantments.isEmpty()) {
-                enchantments.forEach((ench, lvl) -> {
-                    if (ench != null && !meta.hasEnchant(ench) && lvl > 0) meta.addEnchant(ench, lvl, true);
+                enchantments.forEach((enchantment, level) -> {
+                    if (enchantment != null && !meta.hasEnchant(enchantment) && level > 0) meta.addEnchant(enchantment, level, true);
                 });
             }
 

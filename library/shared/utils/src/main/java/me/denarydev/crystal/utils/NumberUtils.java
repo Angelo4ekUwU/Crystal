@@ -7,14 +7,20 @@
  */
 package me.denarydev.crystal.utils;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 
-public class NumberUtils {
+public final class NumberUtils {
 
-    public static String formatNumber(double number) {
+    @NotNull
+    public static String formatNumber(final double number) {
         final var decimalFormatter = new DecimalFormat(number == Math.ceil(number) ? "#,###" : "#,###.00");
+        return formatNumber(number, decimalFormatter);
+    }
 
+    @NotNull
+    public static String formatNumber(final double number, @NotNull final DecimalFormat decimalFormatter) {
         // This is done to specifically prevent the NBSP character from printing in foreign languages.
         final var symbols = decimalFormatter.getDecimalFormatSymbols();
         symbols.setGroupingSeparator(',');
@@ -25,22 +31,7 @@ public class NumberUtils {
         return decimalFormatter.format(number);
     }
 
-    public static String formatWithSuffix(long count) {
-        if (count < 1000) {
-            return String.valueOf(count);
-        }
-
-        final int exp = (int) (Math.log(count) / Math.log(1000));
-
-        return String.format("%.1f%c", count / Math.pow(1000, exp),
-            "kMBTPE".charAt(exp - 1)).replace(".0", "");
-    }
-
-    public static boolean isInt(String number) {
-        if (number == null || number.isBlank()) {
-            return false;
-        }
-
+    public static boolean integer(final String number) {
         try {
             Integer.parseInt(number);
             return true;
@@ -49,11 +40,7 @@ public class NumberUtils {
         }
     }
 
-    public static boolean isNumeric(String s) {
-        if (s == null || s.isBlank()) {
-            return false;
-        }
-
+    public static boolean numeric(@NotNull final String s) {
         return s.matches("[-+]?\\d*\\.?\\d+");
     }
 }

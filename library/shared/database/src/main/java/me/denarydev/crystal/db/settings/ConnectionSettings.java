@@ -16,7 +16,7 @@ import org.slf4j.Logger;
  * @author DenaryDev
  * @since 0:58 24.11.2023
  */
-@ApiStatus.Internal
+@ApiStatus.NonExtendable
 public interface ConnectionSettings {
 
     /**

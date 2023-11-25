@@ -35,27 +35,27 @@ public final class Template {
         return new Builder();
     }
 
-    public Component getTitle() {
+    public Component title() {
         return title;
     }
 
-    public int getSize() {
+    public int size() {
         return size;
     }
 
-    public InventoryType getType() {
+    public InventoryType type() {
         return type;
     }
 
-    public Map<Integer, ItemStack> getItems() {
+    public Map<Integer, ItemStack> items() {
         return items;
     }
 
-    void setTitle(Component title) {
+    void title(Component title) {
         this.title = title;
     }
 
-    void setSize(int size) {
+    void size(int size) {
         this.size = size;
     }
 

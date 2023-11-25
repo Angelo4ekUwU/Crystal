@@ -43,7 +43,7 @@ public final class InventoryListener implements Listener {
             final UUID uuid = player.getUniqueId();
             final Long cooldownUntil = activeCooldowns.get(uuid);
             final long now = System.currentTimeMillis();
-            final long cooldown = menu.getClickCooldown();
+            final long cooldown = menu.clickCooldown();
 
             if (cooldown > 0) {
                 if (cooldownUntil != null && cooldownUntil > now) {
@@ -53,14 +53,14 @@ public final class InventoryListener implements Listener {
                 }
             }
 
-            menu.click(event);
+            menu.clickInternal(event);
         }
     }
 
     @EventHandler
     public void onInvClose(InventoryCloseEvent event) {
         if (event.getInventory().getHolder() instanceof final Menu menu && event.getPlayer() instanceof Player) {
-            menu.close(event);
+            menu.closeInternal(event);
         }
     }
 }

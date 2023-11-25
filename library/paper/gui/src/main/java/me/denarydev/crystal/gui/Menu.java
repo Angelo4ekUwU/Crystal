@@ -42,12 +42,12 @@ public class Menu implements InventoryHolder {
         this.clickCooldown = clickCooldown;
         this.clickAction = clickAction;
         this.closeAction = closeAction;
-        this.inventory = template.getType() != null ?
-            Bukkit.createInventory(this, template.getType(), template.getTitle()) :
-            Bukkit.createInventory(this, template.getSize(), template.getTitle());
-        template.getItems().forEach((slot, item) -> setItem(item, false, slot));
-        dynamicItems.forEach((slot, item) -> setItem(item, false, slot));
-        dynamicActions.forEach((slot, action) -> setAction(action, slot));
+        this.inventory = template.type() != null ?
+            Bukkit.createInventory(this, template.type(), template.title()) :
+            Bukkit.createInventory(this, template.size(), template.title());
+        template.items().forEach((slot, item) -> itemInternal(item, false, slot));
+        dynamicItems.forEach((slot, item) -> itemInternal(item, false, slot));
+        dynamicActions.forEach((slot, action) -> actionInternal(action, slot));
     }
 
     public static Builder builder(@NotNull Template template) {
@@ -55,12 +55,12 @@ public class Menu implements InventoryHolder {
     }
 
     @NotNull
-    public Template getTemplate() {
+    public Template template() {
         return template;
     }
 
     @Nullable
-    public Player getViewer() {
+    public Player viewer() {
         return viewer;
     }
 
@@ -69,25 +69,25 @@ public class Menu implements InventoryHolder {
     }
 
     public void item(@NotNull ItemStack item, int... slots) {
-        setItem(item, false, slots);
+        itemInternal(item, false, slots);
     }
 
     public void item(@NotNull ItemStack item, boolean update, int... slots) {
-        setItem(item, update, slots);
+        itemInternal(item, update, slots);
     }
 
     public void item(@NotNull ItemStack item, @Nullable ClickAction action, int... slots) {
-        setItem(item, false, slots);
-        setAction(action, slots);
+        itemInternal(item, false, slots);
+        actionInternal(action, slots);
     }
 
     public void item(@NotNull ItemStack item, @Nullable ClickAction action, boolean update, int... slots) {
-        setItem(item, update, slots);
-        setAction(action, slots);
+        itemInternal(item, update, slots);
+        actionInternal(action, slots);
     }
 
     public void action(@Nullable ClickAction action, int... slots) {
-        setAction(action, slots);
+        actionInternal(action, slots);
     }
 
     public void open(@NotNull Player viewer) {
@@ -100,32 +100,17 @@ public class Menu implements InventoryHolder {
         viewer.updateInventory();
     }
 
+    public long clickCooldown() {
+        return clickCooldown;
+    }
+
     @Override
     @NotNull
     public Inventory getInventory() {
         return inventory;
     }
 
-    long getClickCooldown() {
-        return clickCooldown;
-    }
-
-    void setItem(ItemStack item, boolean update, int... slots) {
-        for (final int slot : slots) {
-            if (slot < 0 || slot >= template.getSize()) continue;
-            inventory.setItem(slot, item);
-        }
-        if (update) update();
-    }
-
-    void setAction(ClickAction action, int... slots) {
-        for (final int slot : slots) {
-            if (slot < 0 || slot >= template.getSize()) continue;
-            clickActions.put(slot, action);
-        }
-    }
-
-    void click(InventoryClickEvent event) {
+    void clickInternal(InventoryClickEvent event) {
         if (clickAction != null) clickAction.click(event);
         final var action = clickActions.get(event.getSlot());
 
@@ -134,9 +119,24 @@ public class Menu implements InventoryHolder {
         }
     }
 
-    void close(InventoryCloseEvent event) {
+    void closeInternal(InventoryCloseEvent event) {
         if (closeAction != null) {
             closeAction.close(event);
+        }
+    }
+
+    private void itemInternal(ItemStack item, boolean update, int... slots) {
+        for (final int slot : slots) {
+            if (slot < 0 || slot >= template.size()) continue;
+            inventory.setItem(slot, item);
+        }
+        if (update) update();
+    }
+
+    private void actionInternal(ClickAction action, int... slots) {
+        for (final int slot : slots) {
+            if (slot < 0 || slot >= template.size()) continue;
+            clickActions.put(slot, action);
         }
     }
 
@@ -154,27 +154,27 @@ public class Menu implements InventoryHolder {
         }
 
         public Builder title(Component title) {
-            this.template.setTitle(title);
+            this.template.title(title);
             return this;
         }
 
         public Builder titleRich(String title, TagResolver... resolvers) {
-            this.template.setTitle(MiniMessage.miniMessage().deserialize(title, resolvers));
+            this.template.title(MiniMessage.miniMessage().deserialize(title, resolvers));
             return this;
         }
 
         public Builder titlePlain(String title) {
-            this.template.setTitle(PlainTextComponentSerializer.plainText().deserialize(title));
+            this.template.title(PlainTextComponentSerializer.plainText().deserialize(title));
             return this;
         }
 
         public Builder size(int size) {
-            this.template.setSize(size);
+            this.template.size(size);
             return this;
         }
 
         public Builder rows(int rows) {
-            this.template.setSize(rows * 9);
+            this.template.size(rows * 9);
             return this;
         }
 
@@ -193,13 +193,13 @@ public class Menu implements InventoryHolder {
             return this;
         }
 
-        public Builder clickAction(@NotNull ClickAction clickAction, int... slots) {
+        public Builder action(@NotNull ClickAction action, int... slots) {
             if (slots.length > 0) {
                 for (final int slot : slots) {
-                    dynamicActions.put(slot, clickAction);
+                    dynamicActions.put(slot, action);
                 }
             } else {
-                this.clickAction = clickAction;
+                this.clickAction = action;
             }
             return this;
         }

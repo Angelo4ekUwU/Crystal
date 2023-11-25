@@ -24,7 +24,6 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
@@ -38,27 +37,27 @@ public final class ItemUtils {
      * @return new {@link Builder}, that allows you to create
      * an {@link ItemStack} with custom parameters
      */
-    public static Builder itemBuilder() {
+    public static Builder buildItem() {
         return new Builder();
     }
 
     @NotNull
-    public static ItemStack getCustomHead(final String texture) {
-        return getCustomHead(null, texture, 1);
+    public static ItemStack createHead(final String texture) {
+        return createHead(null, texture, 1);
     }
 
     @NotNull
-    public static ItemStack getCustomHead(final String texture, final int amount) {
-        return getCustomHead(null, texture, amount);
+    public static ItemStack createHead(final String texture, final int amount) {
+        return createHead(null, texture, amount);
     }
 
     @NotNull
-    public static ItemStack getCustomHead(final String signature, final String texture) {
-        return getCustomHead(signature, texture, 1);
+    public static ItemStack createHead(final String signature, final String texture) {
+        return createHead(signature, texture, 1);
     }
 
     @NotNull
-    public static ItemStack getCustomHead(final String signature, final String texture, final int amount) {
+    public static ItemStack createHead(final String signature, final String texture, final int amount) {
         final var head = new ItemStack(Material.PLAYER_HEAD, Math.max(Math.min(amount, 64), 1));
         if (texture == null)
             return head;
@@ -121,6 +120,11 @@ public final class ItemUtils {
 
         public Builder amount(int amount) {
             this.amount = Math.max(Math.min(amount, 64), 1);
+            return this;
+        }
+
+        public Builder editMeta(Consumer<? super ItemMeta> editor) {
+            this.metaEditor = editor;
             return this;
         }
 
@@ -191,11 +195,6 @@ public final class ItemUtils {
             return this;
         }
 
-        public Builder metaEditor(Consumer<? super ItemMeta> editor) {
-            this.metaEditor = editor;
-            return this;
-        }
-
         public Builder persistentData(NamespacedKey key, Object value) {
             this.persistentData.put(key, value);
             return this;
@@ -205,12 +204,17 @@ public final class ItemUtils {
             final ItemStack item;
             if (itemStack != null) {
                 item = itemStack;
-                if (type != null) {
+                if (texture != null) {
+                    final var headMeta = (SkullMeta) createHead(texture).getItemMeta();
+                    final var itemMeta = (SkullMeta) item.getItemMeta();
+                    itemMeta.setPlayerProfile(headMeta.getPlayerProfile());
+                    item.setItemMeta(itemMeta);
+                } else if (type != null) {
                     item.setType(type);
                 }
             } else {
                 if (texture != null) {
-                    item = getCustomHead(texture, amount);
+                    item = createHead(texture, amount);
                 } else if (type != null) {
                     item = new ItemStack(type, amount);
                 } else {

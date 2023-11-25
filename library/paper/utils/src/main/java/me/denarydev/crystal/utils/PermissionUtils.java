@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 
 public final class PermissionUtils {
 
-    public static int getNumberFromPermission(final Player player, final String permission) {
+    public static int numberFromPermission(final Player player, final String permission) {
         final var values = player.getEffectivePermissions().stream()
             .filter(info -> info.getPermission().startsWith(permission))
             .map(info -> info.getPermission().substring(permission.length()))

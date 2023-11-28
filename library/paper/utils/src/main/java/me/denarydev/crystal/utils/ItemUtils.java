@@ -120,7 +120,7 @@ public final class ItemUtils {
         }
 
         public Builder amount(int amount) {
-            this.amount = Math.max(Math.min(amount, 64), 1);
+            this.amount = amount;
             return this;
         }
 
@@ -208,11 +208,14 @@ public final class ItemUtils {
                 if (type != null) {
                     item.setType(type);
                 }
+                if (amount > 0 && amount <= 64) {
+                    item.setAmount(amount);
+                }
             } else {
                 if (texture != null) {
-                    item = getCustomHead(texture, amount);
+                    item = getCustomHead(texture, Math.max(Math.min(amount, 64), 1));
                 } else if (type != null) {
-                    item = new ItemStack(type, amount);
+                    item = new ItemStack(type, Math.max(Math.min(amount, 64), 1));
                 } else {
                     throw new IllegalArgumentException("The ItemStack type or texture must be present!");
                 }

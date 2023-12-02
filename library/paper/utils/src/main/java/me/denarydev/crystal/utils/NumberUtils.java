@@ -8,7 +8,6 @@
 package me.denarydev.crystal.utils;
 
 import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 
 public class NumberUtils {
 

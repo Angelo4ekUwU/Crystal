@@ -25,7 +25,6 @@ import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 import java.nio.file.Path;
 
-@SuppressWarnings({"unused"})
 public final class CrystalConfigs {
 
     /**

@@ -31,6 +31,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 @SuppressWarnings("ConstantConditions")
+@Deprecated(forRemoval = true)
 public final class LocaleManager {
 
     private final Logger logger;

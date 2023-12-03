@@ -9,6 +9,7 @@ package me.denarydev.crystal.locale;
 
 import java.util.UUID;
 
+@Deprecated(forRemoval = true)
 public interface MessageSender {
 
     void sendMessage(UUID uuid, String message);

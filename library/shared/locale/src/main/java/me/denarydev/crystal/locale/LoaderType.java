@@ -13,6 +13,7 @@ import org.spongepowered.configurate.loader.ConfigurationLoader;
 
 import java.nio.file.Path;
 
+@Deprecated(forRemoval = true)
 public enum LoaderType {
     HOCON(".conf"),
     YAML(".yml"),

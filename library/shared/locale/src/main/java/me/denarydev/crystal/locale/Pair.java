@@ -7,6 +7,7 @@
  */
 package me.denarydev.crystal.locale;
 
+@Deprecated(forRemoval = true)
 public record Pair(String key, Object obj) {
 
     public static Pair of(String key, Object value) {

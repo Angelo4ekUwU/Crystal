@@ -1,0 +1,62 @@
+[versions]
+# Platforms
+paper = "1.20.2-R0.1-SNAPSHOT"
+
+# Configs
+configurate = "4.1.2"
+
+# SQL
+hikari = "5.1.0"
+## Local
+sqlite = "3.44.0.0"
+h2 = "2.2.224"
+## Remote
+mysql = "8.2.0"
+mariadb = "3.3.1"
+postgresql = "42.7.1"
+
+# Shared
+slf4j = "2.0.9"
+annotations = "24.1.0"
+
+# Tests
+junit-bom = "5.10.1"
+mockbukkit = "3.47.0"
+
+# Plugins
+paperweight = "1.5.11"
+
+[libraries]
+# Platforms
+paper = { module = "io.papermc.paper:paper-api", version.ref = "paper" }
+
+# Configs
+configurate-core = { module = "org.spongepowered:configurate-core", version.ref = "configurate" }
+configurate-hocon = { module = "org.spongepowered:configurate-hocon", version.ref = "configurate" }
+configurate-yaml = { module = "org.spongepowered:configurate-yaml", version.ref = "configurate" }
+configurate-gson = { module = "org.spongepowered:configurate-gson", version.ref = "configurate" }
+
+# SQL
+hikaricp = { module = "com.zaxxer:HikariCP", version.ref = "hikari" }
+## Local
+driver-sqlite = { module = "org.xerial:sqlite-jdbc", version.ref = "sqlite" }
+driver-h2 = { module = "com.h2database:h2", version.ref = "h2" }
+## Remote
+driver-mysql = { module = "com.mysql:mysql-connector-j", version.ref = "mysql" }
+driver-mariadb = { module = "org.mariadb.jdbc:mariadb-java-client", version.ref = "mariadb" }
+driver-postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
+
+# Shared
+slf4j = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
+annotations = { module = "org.jetbrains:annotations", version.ref = "annotations" }
+
+# Tests
+junit-bom = { module = "org.junit:junit-bom", version.ref = "junit-bom" }
+mockbukkit = { module = "com.github.seeseemelk:MockBukkit-v1.20", version.ref = "mockbukkit" }
+
+[plugins]
+paperweight = { id = "io.papermc.paperweight.userdev", version.ref = "paperweight" }
+
+[bundles]
+sql = ["hikaricp", "driver-sqlite", "driver-h2", "driver-mysql", "driver-mariadb", "driver-postgresql"]
+configurate = ["configurate-hocon", "configurate-yaml", "configurate-gson"]

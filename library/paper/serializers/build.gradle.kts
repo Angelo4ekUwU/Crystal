@@ -1,5 +1,5 @@
 plugins {
-    id("io.papermc.paperweight.userdev") version "1.5.10"
+    alias(libs.plugins.paperweight)
 }
 
 crystalModule {
@@ -10,9 +10,9 @@ crystalModule {
 }
 
 dependencies {
-    paperweight.paperDevBundle(libs.paper.get().version)
+    paperweight.paperDevBundle(libs.versions.paper.get())
     implementation(project(":paper:nms"))
-    compileOnly(libs.configurate)
+    compileOnly(libs.configurate.core)
 
     testImplementation(platform(libs.junit.bom))
     testImplementation("org.junit.jupiter:junit-jupiter")

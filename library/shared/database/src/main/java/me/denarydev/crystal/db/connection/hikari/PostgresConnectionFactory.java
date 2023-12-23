@@ -5,25 +5,28 @@
  * license that can be found in the LICENSE file or at
  * https://opensource.org/licenses/MIT.
  */
-package me.denarydev.crystal.db.hikari;
+package me.denarydev.crystal.db.connection.hikari;
 
 import me.denarydev.crystal.db.DatabaseType;
 import me.denarydev.crystal.db.settings.HikariConnectionSettings;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * @author DenaryDev
  * @since 0:50 24.11.2023
  */
-public class PostgresConnectionFactory extends DriverBasedHikariConnectionFactory {
+@ApiStatus.Internal
+public final class PostgresConnectionFactory extends DriverBasedHikariConnectionFactory {
     public PostgresConnectionFactory(HikariConnectionSettings settings) {
         super(settings);
     }
 
     @Override
-    public @NotNull DatabaseType databaseType() {
+    public @NotNull DatabaseType implementationType() {
         return DatabaseType.POSTGRESQL;
     }
 
@@ -49,5 +52,10 @@ public class PostgresConnectionFactory extends DriverBasedHikariConnectionFactor
         // remove the default config properties which don't exist for PostgreSQL
         properties.remove("useUnicode");
         properties.remove("characterEncoding");
+    }
+
+    @Override
+    public Function<String, String> statementProcessor() {
+        return s -> s.replace('\'', '"');
     }
 }

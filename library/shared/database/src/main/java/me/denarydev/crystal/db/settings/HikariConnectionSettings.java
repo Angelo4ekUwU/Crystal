@@ -7,6 +7,9 @@
  */
 package me.denarydev.crystal.db.settings;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,11 +17,12 @@ import java.util.Map;
  * @author DenaryDev
  * @since 0:58 24.11.2023
  */
-public interface HikariConnectionSettings extends ConnectionSettings {
+public non-sealed interface HikariConnectionSettings extends ConnectionSettings {
 
     /**
      * The IP or address of the database.
      */
+    @NotNull
     String address();
 
     /**
@@ -26,6 +30,7 @@ public interface HikariConnectionSettings extends ConnectionSettings {
      * <p>
      * If null, the default port of selected type will be used.
      */
+    @Nullable
     default String port() {
         return null;
     }
@@ -33,16 +38,19 @@ public interface HikariConnectionSettings extends ConnectionSettings {
     /**
      * The database to use in the database.
      */
+    @NotNull
     String database();
 
     /**
      * The username to authenticate as.
      */
+    @NotNull
     String username();
 
     /**
      * The password to authenticate with.
      */
+    @NotNull
     String password();
 
     /**
@@ -85,12 +93,13 @@ public interface HikariConnectionSettings extends ConnectionSettings {
     /**
      * Other properties you may want to set.
      * <p>
-     * You can also add the following properties here:
+     * You can disable SSL by adding the following properties:
      * <pre>
-     * <strong>useSSL = true
-     * verifyServerCertificate = true</strong>
-     * ...and any other sql properties</pre>
+     * <strong>useSSL = false
+     * verifyServerCertificate = false</strong>
+     * ...and can add any other sql properties</pre>
      */
+    @NotNull
     default Map<String, String> properties() {
         final var map = new HashMap<String, String>();
         map.put("useUnicode", "true");

@@ -5,9 +5,9 @@
  * license that can be found in the LICENSE file or at
  * https://opensource.org/licenses/MIT.
  */
-package me.denarydev.crystal.db.file;
+package me.denarydev.crystal.db.connection.file;
 
-import me.denarydev.crystal.db.ConnectionFactory;
+import me.denarydev.crystal.db.connection.ConnectionFactory;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.LoggerFactory;
@@ -21,7 +21,7 @@ import java.sql.SQLException;
  * @since 16:40 23.11.2023
  */
 @ApiStatus.Internal
-public abstract class FlatfileConnectionFactory implements ConnectionFactory {
+public sealed abstract class FlatfileConnectionFactory implements ConnectionFactory permits H2ConnectionFactory, SQLiteConnectionFactory {
     private final Path file;
     private NonClosableConnection connection;
 
@@ -30,10 +30,6 @@ public abstract class FlatfileConnectionFactory implements ConnectionFactory {
     }
 
     protected abstract Connection createConnection(Path file) throws SQLException;
-
-    public Path writeFile() {
-        return file;
-    }
 
     @Override
     public @NotNull Connection connection() throws SQLException {
@@ -58,7 +54,7 @@ public abstract class FlatfileConnectionFactory implements ConnectionFactory {
         try {
             callback.accept(connection());
         } catch (Exception ex) {
-            LoggerFactory.getLogger("Crystal").error("An error occurred executing an " + databaseType().name().toLowerCase() + " query", ex);
+            LoggerFactory.getLogger("Crystal").error("An error occurred executing an " + implementationType().name().toLowerCase() + " query", ex);
         }
     }
 }

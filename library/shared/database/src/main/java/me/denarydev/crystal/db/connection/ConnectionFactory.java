@@ -5,14 +5,18 @@
  * license that can be found in the LICENSE file or at
  * https://opensource.org/licenses/MIT.
  */
-package me.denarydev.crystal.db;
+package me.denarydev.crystal.db.connection;
 
+import me.denarydev.crystal.db.DatabaseType;
+import me.denarydev.crystal.db.connection.file.FlatfileConnectionFactory;
+import me.denarydev.crystal.db.connection.hikari.HikariConnectionFactory;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.function.Function;
 
-public interface ConnectionFactory {
+public sealed interface ConnectionFactory permits FlatfileConnectionFactory, HikariConnectionFactory {
 
     /**
      * Returns selected database type.
@@ -20,7 +24,7 @@ public interface ConnectionFactory {
      * @return database type
      */
     @NotNull
-    DatabaseType databaseType();
+    DatabaseType implementationType();
 
     void initialize();
 
@@ -42,6 +46,8 @@ public interface ConnectionFactory {
      * @param callback The callback to execute once the connection is retrieved
      */
     void connect(@NotNull final ConnectionCallback callback);
+
+    Function<String, String> statementProcessor();
 
     /**
      * Wraps a connection in a callback which will automagically handle catching sql errors

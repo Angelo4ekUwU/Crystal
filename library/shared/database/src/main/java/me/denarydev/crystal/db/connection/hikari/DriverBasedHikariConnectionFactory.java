@@ -5,7 +5,7 @@
  * license that can be found in the LICENSE file or at
  * https://opensource.org/licenses/MIT.
  */
-package me.denarydev.crystal.db.hikari;
+package me.denarydev.crystal.db.connection.hikari;
 
 import com.zaxxer.hikari.HikariConfig;
 import me.denarydev.crystal.db.settings.HikariConnectionSettings;
@@ -21,7 +21,7 @@ import java.util.Enumeration;
  * @since 0:38 24.11.2023
  */
 @ApiStatus.Internal
-public abstract class DriverBasedHikariConnectionFactory extends HikariConnectionFactory {
+public abstract sealed class DriverBasedHikariConnectionFactory extends HikariConnectionFactory permits MySqlConnectionFactory, MariaDBConnectionFactory, PostgresConnectionFactory {
     protected DriverBasedHikariConnectionFactory(HikariConnectionSettings settings) {
         super(settings);
     }

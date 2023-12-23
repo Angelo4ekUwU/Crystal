@@ -5,11 +5,11 @@
  * license that can be found in the LICENSE file or at
  * https://opensource.org/licenses/MIT.
  */
-package me.denarydev.crystal.db.hikari;
+package me.denarydev.crystal.db.connection.hikari;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import me.denarydev.crystal.db.ConnectionFactory;
+import me.denarydev.crystal.db.connection.ConnectionFactory;
 import me.denarydev.crystal.db.settings.HikariConnectionSettings;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
  * @since 16:48 23.11.2023
  */
 @ApiStatus.Internal
-public abstract class HikariConnectionFactory implements ConnectionFactory {
+public abstract sealed class HikariConnectionFactory implements ConnectionFactory permits DriverBasedHikariConnectionFactory {
     private final HikariConnectionSettings settings;
     private HikariDataSource hikari;
 
@@ -88,7 +88,7 @@ public abstract class HikariConnectionFactory implements ConnectionFactory {
         final var config = new HikariConfig();
 
         // set pool name so the logging output can be linked back to us
-        config.setPoolName(settings.poolNamePrefix() + "-Hikari");
+        config.setPoolName(settings.pluginName() + "-Hikari");
 
         // get the database port from the config
         final var port = settings.port() != null ? settings.port() : defaultPort();

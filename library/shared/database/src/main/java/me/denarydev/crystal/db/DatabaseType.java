@@ -8,24 +8,24 @@
 package me.denarydev.crystal.db;
 
 public enum DatabaseType {
-    SQLITE("SQLite", true),
-    H2("H2", true),
-    MYSQL("MySQL", false),
-    MARIADB("MariaDB", false),
-    POSTGRESQL("PostgreSQL", false);
+    SQLITE("SQLite", false),
+    H2("H2", false),
+    MYSQL("MySQL", true),
+    MARIADB("MariaDB", true),
+    POSTGRESQL("PostgreSQL", true);
 
     private final String friendlyName;
-    private final boolean local;
-    DatabaseType(String friendlyName, boolean local) {
+    private final boolean remote;
+    DatabaseType(String friendlyName, boolean remote) {
         this.friendlyName = friendlyName;
-        this.local = local;
+        this.remote = remote;
     }
 
     public String friendlyName() {
         return friendlyName;
     }
 
-    public boolean local() {
-        return local;
+    public boolean remote() {
+        return remote;
     }
 }

@@ -8,7 +8,6 @@
 package me.denarydev.crystal.db.settings;
 
 import me.denarydev.crystal.db.DatabaseType;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
@@ -16,20 +15,18 @@ import org.slf4j.Logger;
  * @author DenaryDev
  * @since 0:58 24.11.2023
  */
-@ApiStatus.NonExtendable
-public interface ConnectionSettings {
+public sealed interface ConnectionSettings permits FlatfileConnectionSettings, HikariConnectionSettings {
 
     /**
-     * {@link org.slf4j.Logger} impl from your plugin
+     * Prefix for pool names in hikari.
+     * <p>
+     * Unique prefix will allow you to distinguish
+     * hikari logs from this plugin from hikari logs of other plugins.
+     * <p>
+     * <u>It's best to use your plugin name as pool name prefix.
      */
-    Logger logger();
-
-    /**
-     * You must implement this using same method on your platform
-     *
-     * @param task task
-     */
-    void runSyncTask(@NotNull final Runnable task);
+    @NotNull
+    String pluginName();
 
     /**
      * Database type
@@ -40,17 +37,12 @@ public interface ConnectionSettings {
      *
      * @see DatabaseType
      */
-    @NotNull DatabaseType databaseType();
+    @NotNull
+    DatabaseType databaseType();
 
     /**
-     * Prefix for pool names in hikari.
-     * <p>
-     * Unique prefix will allow you to distinguish
-     * hikari logs from this plugin from hikari logs of other plugins.
-     * <p>
-     * <u>It's best to use your plugin name as pool name prefix.
+     * {@link org.slf4j.Logger} impl from your plugin
      */
-    default String poolNamePrefix() {
-        return "Crystal";
-    }
+    @NotNull
+    Logger logger();
 }

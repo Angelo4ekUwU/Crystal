@@ -5,23 +5,27 @@
  * license that can be found in the LICENSE file or at
  * https://opensource.org/licenses/MIT.
  */
-package me.denarydev.crystal.db.hikari;
+package me.denarydev.crystal.db.connection.hikari;
 
 import me.denarydev.crystal.db.DatabaseType;
 import me.denarydev.crystal.db.settings.HikariConnectionSettings;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.function.Function;
 
 /**
  * @author DenaryDev
  * @since 0:09 24.11.2023
  */
-public class MariaDBConnectionFactory extends DriverBasedHikariConnectionFactory {
+@ApiStatus.Internal
+public final class MariaDBConnectionFactory extends DriverBasedHikariConnectionFactory {
     public MariaDBConnectionFactory(HikariConnectionSettings settings) {
         super(settings);
     }
 
     @Override
-    public @NotNull DatabaseType databaseType() {
+    public @NotNull DatabaseType implementationType() {
         return DatabaseType.MARIADB;
     }
 
@@ -38,5 +42,10 @@ public class MariaDBConnectionFactory extends DriverBasedHikariConnectionFactory
     @Override
     protected String driverJdbcIdentifier() {
         return "mariadb";
+    }
+
+    @Override
+    public Function<String, String> statementProcessor() {
+        return s -> s.replace('\'', '`'); // use backticks for quotes
     }
 }

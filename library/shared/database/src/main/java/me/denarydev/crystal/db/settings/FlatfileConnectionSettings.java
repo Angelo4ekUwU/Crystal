@@ -7,18 +7,22 @@
  */
 package me.denarydev.crystal.db.settings;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.nio.file.Path;
 
 /**
+ * This class is used to configure connections to local databases.
+ * Currently only SQLite and H2 are supported.
+ *
  * @author DenaryDev
  * @since 0:58 24.11.2023
  */
-public interface FlatfileConnectionSettings extends ConnectionSettings {
+public non-sealed interface FlatfileConnectionSettings extends ConnectionSettings {
 
     /**
-     * File for SQLite or H2 database
-     * <p>
-     * <u>Must be implemented only if database type is SQLite or H2.
+     * Path to the plugin's data folder.
      */
-    Path databaseFile();
+    @NotNull
+    Path dataFolder();
 }

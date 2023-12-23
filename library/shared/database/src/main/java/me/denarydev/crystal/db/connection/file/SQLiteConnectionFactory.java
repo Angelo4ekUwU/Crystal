@@ -5,9 +5,10 @@
  * license that can be found in the LICENSE file or at
  * https://opensource.org/licenses/MIT.
  */
-package me.denarydev.crystal.db.file;
+package me.denarydev.crystal.db.connection.file;
 
 import me.denarydev.crystal.db.DatabaseType;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Constructor;
@@ -15,28 +16,30 @@ import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
+import java.util.function.Function;
 
 /**
  * @author DenaryDev
  * @since 16:46 23.11.2023
  */
-public class H2ConnectionFactory extends FlatfileConnectionFactory {
+@ApiStatus.Internal
+public final class SQLiteConnectionFactory extends FlatfileConnectionFactory {
     private Constructor<?> connectionConstructor;
 
-    public H2ConnectionFactory(Path file) {
+    public SQLiteConnectionFactory(Path file) {
         super(file);
     }
 
     @Override
-    public @NotNull DatabaseType databaseType() {
-        return DatabaseType.H2;
+    public @NotNull DatabaseType implementationType() {
+        return DatabaseType.SQLITE;
     }
 
     @Override
     public void initialize() {
         try {
-            Class<?> clazz = Class.forName("org.h2.jdbc.JdbcDataSource");
-            this.connectionConstructor = clazz.getConstructor(String.class, Properties.class, String.class, boolean.class);
+            Class<?> clazz = Class.forName("org.sqlite.jdbc4.JDBC4Connection");
+            this.connectionConstructor = clazz.getConstructor(String.class, String.class, Properties.class);
         } catch (ReflectiveOperationException ex) {
             throw new RuntimeException(ex);
         }
@@ -45,7 +48,7 @@ public class H2ConnectionFactory extends FlatfileConnectionFactory {
     @Override
     protected Connection createConnection(Path file) throws SQLException {
         try {
-            return (Connection) this.connectionConstructor.newInstance("jdbc:h2:" + file.toString(), new Properties(), null, null, false);
+            return (Connection) this.connectionConstructor.newInstance("jdbc:sqlite:" + file.toAbsolutePath(), file.toAbsolutePath(), new Properties());
         } catch (ReflectiveOperationException e) {
             if (e.getCause() instanceof SQLException) {
                 throw (SQLException) e.getCause();
@@ -55,9 +58,7 @@ public class H2ConnectionFactory extends FlatfileConnectionFactory {
     }
 
     @Override
-    public Path writeFile() {
-        // h2 appends '.mv.db' to the end of the database name
-        Path writeFile = super.writeFile();
-        return writeFile.getParent().resolve(writeFile.getFileName().toString() + ".mv.db");
+    public Function<String, String> statementProcessor() {
+        return s -> s.replace('\'', '`');
     }
 }

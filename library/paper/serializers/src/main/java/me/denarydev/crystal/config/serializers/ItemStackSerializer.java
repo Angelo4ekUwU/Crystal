@@ -8,12 +8,10 @@
 package me.denarydev.crystal.config.serializers;
 
 import io.leangen.geantyref.TypeToken;
-import me.denarydev.crystal.nms.CrystalNMS;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
@@ -80,15 +78,6 @@ public class ItemStackSerializer implements TypeSerializer<ItemStack> {
 
             item.setItemMeta(meta);
 
-            if (material.equals(Material.SPAWNER) && node.hasChild("spawner-entity")) {
-                final var entity = node.node("spawner-entity").get(EntityType.class);
-                if (entity != null) {
-                    return CrystalNMS.applySpawnerEntity(item, entity);
-                } else {
-                    throw new SerializationException("Unknown spawner entity type at " + Arrays.toString(node.path().array()));
-                }
-            }
-
             return item;
         }
         return null;
@@ -110,7 +99,7 @@ public class ItemStackSerializer implements TypeSerializer<ItemStack> {
                 if (meta.hasCustomModelData()) node.node("custom-model-data").set(meta.getCustomModelData());
 
                 final var flags = new ArrayList<>(meta.getItemFlags());
-                if (flags.size() > 0) node.node("flags").setList(ItemFlag.class, flags);
+                if (!flags.isEmpty()) node.node("flags").setList(ItemFlag.class, flags);
 
                 if (meta.hasEnchants()) {
                     final var enchants = meta.getEnchants();
@@ -122,13 +111,6 @@ public class ItemStackSerializer implements TypeSerializer<ItemStack> {
                 if (meta instanceof final Damageable damageable) {
                     if (damageable.hasDamage()) {
                         node.node("damage").set(damageable.getDamage());
-                    }
-                }
-
-                if (item.getType().equals(Material.SPAWNER)) {
-                    final var entity = CrystalNMS.getSpawnerEntity(item);
-                    if (entity != null) {
-                        node.node("spawner-entity").set(entity);
                     }
                 }
             }

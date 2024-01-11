@@ -42,22 +42,22 @@ public final class ItemUtils {
     }
 
     @NotNull
-    public static ItemStack getCustomHead(final String texture) {
-        return getCustomHead(null, texture, 1);
+    public static ItemStack createHead(final String texture) {
+        return createHead(null, texture, 1);
     }
 
     @NotNull
-    public static ItemStack getCustomHead(final String texture, final int amount) {
-        return getCustomHead(null, texture, amount);
+    public static ItemStack createHead(final String texture, final int amount) {
+        return createHead(null, texture, amount);
     }
 
     @NotNull
-    public static ItemStack getCustomHead(final String signature, final String texture) {
-        return getCustomHead(signature, texture, 1);
+    public static ItemStack createHead(final String signature, final String texture) {
+        return createHead(signature, texture, 1);
     }
 
     @NotNull
-    public static ItemStack getCustomHead(final String signature, final String texture, final int amount) {
+    public static ItemStack createHead(final String signature, final String texture, final int amount) {
         final var head = new ItemStack(Material.PLAYER_HEAD, Math.max(Math.min(amount, 64), 1));
         if (texture == null)
             return head;
@@ -89,7 +89,7 @@ public final class ItemUtils {
         private String texture;
         private ItemStack itemStack;
         private int amount;
-        private Component displayname;
+        private Component displayName;
         private List<? extends Component> lore;
         private final Map<Enchantment, Integer> enchantments = new HashMap<>();
         private ItemFlag[] itemFlags;
@@ -99,7 +99,7 @@ public final class ItemUtils {
         private Consumer<? super ItemMeta> metaEditor;
         private final Map<NamespacedKey, Object> persistentData = new HashMap<>();
 
-        protected Builder() {
+        private Builder() {
             // Do nothing
         }
 
@@ -123,18 +123,23 @@ public final class ItemUtils {
             return this;
         }
 
-        public Builder displayname(Component displayname) {
-            this.displayname = displayname;
+        public Builder editMeta(Consumer<? super ItemMeta> editor) {
+            this.metaEditor = editor;
             return this;
         }
 
-        public Builder displaynameRich(String displayname, TagResolver... tags) {
-            this.displayname = MiniMessage.miniMessage().deserialize(displayname, tags);
+        public Builder displayName(Component displayName) {
+            this.displayName = displayName;
             return this;
         }
 
-        public Builder displaynamePlain(String displayname) {
-            this.displayname = PlainTextComponentSerializer.plainText().deserialize(displayname);
+        public Builder displayNameRich(String displayName, TagResolver... tags) {
+            this.displayName = MiniMessage.miniMessage().deserialize(displayName, tags);
+            return this;
+        }
+
+        public Builder displayNamePlain(String displayName) {
+            this.displayName = PlainTextComponentSerializer.plainText().deserialize(displayName);
             return this;
         }
 
@@ -190,11 +195,6 @@ public final class ItemUtils {
             return this;
         }
 
-        public Builder metaEditor(Consumer<? super ItemMeta> editor) {
-            this.metaEditor = editor;
-            return this;
-        }
-
         public Builder persistentData(NamespacedKey key, Object value) {
             this.persistentData.put(key, value);
             return this;
@@ -204,7 +204,12 @@ public final class ItemUtils {
             final ItemStack item;
             if (itemStack != null) {
                 item = itemStack;
-                if (type != null) {
+                if (texture != null) {
+                    final var headMeta = (SkullMeta) createHead(texture).getItemMeta();
+                    final var itemMeta = (SkullMeta) item.getItemMeta();
+                    itemMeta.setPlayerProfile(headMeta.getPlayerProfile());
+                    item.setItemMeta(itemMeta);
+                } else if (type != null) {
                     item.setType(type);
                 }
                 if (amount > 0 && amount <= 64) {
@@ -212,7 +217,7 @@ public final class ItemUtils {
                 }
             } else {
                 if (texture != null) {
-                    item = getCustomHead(texture, Math.max(Math.min(amount, 64), 1));
+                    item = createHead(texture, Math.max(Math.min(amount, 64), 1));
                 } else if (type != null) {
                     item = new ItemStack(type, Math.max(Math.min(amount, 64), 1));
                 } else {
@@ -225,14 +230,14 @@ public final class ItemUtils {
 
             final var meta = item.getItemMeta();
 
-            if (displayname != null)
-                meta.displayName(displayname);
+            if (displayName != null)
+                meta.displayName(displayName);
             if (lore != null)
                 meta.lore(lore);
 
             if (!enchantments.isEmpty()) {
-                enchantments.forEach((ench, lvl) -> {
-                    if (ench != null && !meta.hasEnchant(ench) && lvl > 0) meta.addEnchant(ench, lvl, true);
+                enchantments.forEach((enchantment, level) -> {
+                    if (enchantment != null && !meta.hasEnchant(enchantment) && level > 0) meta.addEnchant(enchantment, level, true);
                 });
             }
 

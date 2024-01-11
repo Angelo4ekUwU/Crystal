@@ -1,7 +1,7 @@
 crystalModule {
-    name.set("Crystal Shared DB Connector")
+    name.set("Database Connector")
     moduleName.set("database")
-    description.set("Provides api for MySQL and SQLite")
+    description.set("Library for SQL-based databases")
     library.set("shared")
 }
 

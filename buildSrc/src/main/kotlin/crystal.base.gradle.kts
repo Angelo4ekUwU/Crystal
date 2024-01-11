@@ -49,7 +49,7 @@ val repo = if (rootProject.version.toString().endsWith("-SNAPSHOT")) "snapshots"
 publishing {
     repositories {
         maven("https://the-planet.fun/repo/$repo/") {
-            name = "sapphire"
+            name = "theplanet"
             credentials(PasswordCredentials::class)
         }
     }

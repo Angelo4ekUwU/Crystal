@@ -48,7 +48,7 @@ public final class SQLiteConnectionFactory extends FlatfileConnectionFactory {
     @Override
     protected Connection createConnection(Path file) throws SQLException {
         try {
-            return (Connection) this.connectionConstructor.newInstance("jdbc:sqlite:" + file.toAbsolutePath(), file.toAbsolutePath(), new Properties());
+            return (Connection) this.connectionConstructor.newInstance("jdbc:sqlite:" + file.toAbsolutePath(), file.toAbsolutePath().toString(), new Properties());
         } catch (ReflectiveOperationException e) {
             if (e.getCause() instanceof SQLException) {
                 throw (SQLException) e.getCause();

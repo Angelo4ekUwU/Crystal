@@ -7,14 +7,17 @@
  */
 package me.denarydev.crystal.config.serializers;
 
+import com.destroystokyo.paper.profile.ProfileProperty;
 import io.leangen.geantyref.TypeToken;
-import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.serialize.SerializationException;
@@ -22,65 +25,85 @@ import org.spongepowered.configurate.serialize.TypeSerializer;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.Objects;
+import java.util.UUID;
 
 public class ItemStackSerializer implements TypeSerializer<ItemStack> {
-
     public static final TypeToken<ItemStack> TYPE = TypeToken.get(ItemStack.class);
 
     @Override
     public ItemStack deserialize(Type type, ConfigurationNode node) throws SerializationException {
-        if (node.hasChild("material")) {
-            //noinspection DataFlowIssue
-            final var material = Material.matchMaterial(node.node("material").getString());
-            if (material == null)
-                throw new SerializationException("Unknown item material at " + Arrays.toString(node.path().array()));
-            int amount = 1;
-            if (node.hasChild("amount"))
-                amount = node.node("amount").getInt();
+        final var material = node.node("material").get(Material.class);
+        if (material == null) throw new SerializationException("Invalid ItemStack material");
+        final int amount = node.node("amount").getInt(1);
+        if (amount < 1 || amount > 64) throw new SerializationException("Invalid ItemStack amount");
 
-            var item = new ItemStack(material, amount);
-            final var meta = item.getItemMeta();
+        final var item = node.hasChild("texture") ?
+            createHead(node.node("texture").getString(), amount)
+            : new ItemStack(material, amount);
+        final var meta = item.getItemMeta();
 
-            if (node.hasChild("name"))
-                meta.displayName(node.node("name").get(Component.class));
-            if (node.hasChild("lore"))
-                meta.lore(node.node("lore").getList(Component.class, Collections.emptyList()));
-
-            if (node.hasChild("unbreakable"))
-                meta.setUnbreakable(node.node("unbreakable").getBoolean(false));
-            if (node.hasChild("flags"))
-                node.node("flags").getList(String.class, Collections.emptyList()).stream()
-                    .map(s -> {
-                        try {
-                            return ItemFlag.valueOf(s);
-                        } catch (IllegalArgumentException ex) {
-                            return null;
-                        }
-                    })
-                    .filter(Objects::nonNull)
-                    .forEach(meta::addItemFlags);
-
-            if (node.hasChild("custom-model-data"))
-                meta.setCustomModelData(node.node("custom-model-data").getInt(0));
-            if (meta instanceof Damageable damageable) damageable.setDamage(node.node("damage").getInt(0));
-
-            if (node.hasChild("enchants")) {
-                node.node("enchants").childrenMap().forEach(((key, value) -> {
-                    final var ench = Enchantment.getByKey(NamespacedKey.minecraft(key.toString().toLowerCase()));
-                    if (ench == null) return;
-                    final int level = value.getInt();
-                    meta.addEnchant(ench, level, true);
-                }));
-            }
-
-            item.setItemMeta(meta);
-
-            return item;
+        if (node.hasChild("name")) {
+            final String name = node.node("name").getString();
+            if (name != null) meta.displayName(MiniMessage.miniMessage().deserialize(name));
         }
-        return null;
+        if (node.hasChild("lore")) {
+            final var lore = node.node("lore").getList(String.class);
+            if (lore != null) meta.lore(lore.stream().map(MiniMessage.miniMessage()::deserialize).toList());
+        }
+
+        if (node.hasChild("unbreakable"))
+            meta.setUnbreakable(node.node("unbreakable").getBoolean(false));
+        if (node.hasChild("flags"))
+            node.node("flags").getList(String.class, Collections.emptyList()).stream()
+                .map(s -> {
+                    try {
+                        return ItemFlag.valueOf(s);
+                    } catch (IllegalArgumentException ex) {
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .forEach(meta::addItemFlags);
+
+        if (node.hasChild("custom-model-data"))
+            meta.setCustomModelData(node.node("custom-model-data").getInt(0));
+        if (meta instanceof Damageable damageable) damageable.setDamage(node.node("damage").getInt(0));
+
+        if (node.hasChild("enchants")) {
+            node.node("enchants").childrenMap().forEach(((key, value) -> {
+                final var ench = Enchantment.getByKey(NamespacedKey.minecraft(key.toString().toLowerCase()));
+                if (ench == null) return;
+                final int level = value.getInt();
+                meta.addEnchant(ench, level, true);
+            }));
+        }
+
+        item.setItemMeta(meta);
+
+        return item;
+    }
+
+    private ItemStack createHead(final String texture, final int amount) {
+        final var head = new ItemStack(Material.PLAYER_HEAD, Math.max(Math.min(amount, 64), 1));
+        if (texture == null)
+            return head;
+
+        final var skullMeta = (SkullMeta) head.getItemMeta();
+        final var profile = Bukkit.createProfile(UUID.nameUUIDFromBytes(texture.getBytes()), "CrystalCustomHead");
+
+        if (texture.endsWith("=")) {
+            profile.setProperty(new ProfileProperty("textures", texture.replaceAll("=", "")));
+        } else {
+            final byte[] encodedData = Base64.getEncoder().encode(String.format("{textures:{SKIN:{url:\"https://textures.minecraft.net/texture/%s\"}}}", texture).getBytes());
+            profile.setProperty(new ProfileProperty("textures", new String(encodedData)));
+        }
+
+        skullMeta.setPlayerProfile(profile);
+        head.setItemMeta(skullMeta);
+        return head;
     }
 
     @Override
@@ -89,11 +112,25 @@ public class ItemStackSerializer implements TypeSerializer<ItemStack> {
             node.node("material").set(item.getType());
             if (item.getAmount() > 1) node.node("amount").set(item.getAmount());
 
-            if (item.hasItemMeta()) {
-                final var meta = item.getItemMeta();
+            final var meta = item.getItemMeta();
 
-                if (meta.hasDisplayName()) node.node("name").set(Component.class, meta.displayName());
-                if (meta.hasLore()) node.node("lore").setList(Component.class, meta.lore());
+            if (meta instanceof SkullMeta head) {
+                final var profile = head.getPlayerProfile();
+                if (profile != null) {
+                    final var skin = profile.getTextures().getSkin();
+                    if (skin != null) node.node("texture").set(skin.toExternalForm().substring(39));
+                }
+            }
+
+            if (item.hasItemMeta()) {
+                if (meta.hasDisplayName()) {
+                    final var name = meta.displayName();
+                    if (name != null) node.node("name").set(String.class, MiniMessage.miniMessage().serialize(name));
+                }
+                if (meta.hasLore()) {
+                    final var lore = meta.lore();
+                    if (lore != null) node.node("lore").setList(String.class, lore.stream().map(MiniMessage.miniMessage()::serialize).toList());
+                }
 
                 if (meta.isUnbreakable()) node.node("unbreakable").set(true);
                 if (meta.hasCustomModelData()) node.node("custom-model-data").set(meta.getCustomModelData());
@@ -114,6 +151,8 @@ public class ItemStackSerializer implements TypeSerializer<ItemStack> {
                     }
                 }
             }
+        } else {
+            node.set(null);
         }
     }
 }

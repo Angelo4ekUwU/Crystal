@@ -8,4 +8,10 @@ crystalModule {
 dependencies {
     compileOnly(libs.paper)
     compileOnly(libs.configurate.core)
+
+    testImplementation(platform(libs.junit.bom))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation(libs.mockbukkit)
+    testImplementation(libs.configurate.core)
+    testImplementation(project(":paper:utils"))
 }

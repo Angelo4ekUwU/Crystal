@@ -144,11 +144,13 @@ public class ItemBuilder {
 
     /**
      * Устанавливает имя предмета в виде {@link Component}.
+     * <p>
+     * Если будет передано null, название предмета не изменится.
      *
      * @param displayName имя предмета.
      * @return {@link ItemBuilder} для дальнейшего использования.
      */
-    public ItemBuilder displayName(@NotNull final Component displayName) {
+    public ItemBuilder displayName(@Nullable final Component displayName) {
         this.displayName = displayName;
         return this;
     }
@@ -157,34 +159,44 @@ public class ItemBuilder {
      * Устанавливает имя предмета, используя формат MiniMessage
      * <p>
      * Так же поддерживает методы для замены тегов.
+     * <p>
+     * Если будет передано null, название предмета не изменится.
      *
      * @param displayName имя предмета.
      * @param tags        методы для замены тегов.
      * @return {@link ItemBuilder} для дальнейшего использования.
      */
-    public ItemBuilder displayNameRich(@NotNull final String displayName, @NotNull final TagResolver... tags) {
-        this.displayName = MiniMessage.miniMessage().deserialize(displayName, tags);
+    public ItemBuilder displayNameRich(@Nullable final String displayName, @NotNull final TagResolver... tags) {
+        if (displayName != null) {
+            this.displayName = MiniMessage.miniMessage().deserialize(displayName, tags);
+        }
         return this;
     }
 
     /**
-     * Устанавливает имя предмета, не применяя никакие форматы
+     * Устанавливает имя предмета, не применяя никакие форматы.
+     * <p>
+     * Если будет передано null, название предмета не изменится.
      *
      * @param displayName имя предмета.
      * @return {@link ItemBuilder} для дальнейшего использования.
      */
-    public ItemBuilder displayNamePlain(@NotNull final String displayName) {
-        this.displayName = Component.text(displayName);
+    public ItemBuilder displayNamePlain(@Nullable final String displayName) {
+        if (displayName != null) {
+            this.displayName = Component.text(displayName);
+        }
         return this;
     }
 
     /**
      * Устанавливает описание предмета из списка {@link Component}.
+     * <p>
+     * Если будет передано null, описание предмета не изменится.
      *
      * @param lore описание предмета.
      * @return {@link ItemBuilder} для дальнейшего использования.
      */
-    public ItemBuilder lore(@NotNull final List<Component> lore) {
+    public ItemBuilder lore(@Nullable final List<Component> lore) {
         this.lore = lore;
         return this;
     }
@@ -193,29 +205,37 @@ public class ItemBuilder {
      * Устанавливает описание предмета, используя формат MiniMessage
      * <p>
      * Так же поддерживает методы для замены тегов.
+     * <p>
+     * Если будет передано null, описание предмета не изменится.
      *
      * @param lore описание предмета.
      * @param tags методы для замены тегов.
      * @return {@link ItemBuilder} для дальнейшего использования.
      */
-    public ItemBuilder loreRich(@NotNull final List<String> lore, @NotNull final TagResolver... tags) {
-        this.lore = new ArrayList<>();
-        for (final String line : lore) {
-            this.lore.add(MiniMessage.miniMessage().deserialize(line, tags));
+    public ItemBuilder loreRich(@Nullable final List<String> lore, @NotNull final TagResolver... tags) {
+        if (lore != null) {
+            this.lore = new ArrayList<>();
+            for (final String line : lore) {
+                this.lore.add(MiniMessage.miniMessage().deserialize(line, tags));
+            }
         }
         return this;
     }
 
     /**
      * Устанавливает описание предмета, не применяя никакие форматы.
+     * <p>
+     * Если будет передано null, описание предмета не изменится.
      *
      * @param lore описание предмета.
      * @return {@link ItemBuilder} для дальнейшего использования.
      */
-    public ItemBuilder lorePlain(@NotNull final List<String> lore) {
-        this.lore = new ArrayList<>();
-        for (final String line : lore) {
-            this.lore.add(Component.text(line));
+    public ItemBuilder lorePlain(@Nullable final List<String> lore) {
+        if (lore != null) {
+            this.lore = new ArrayList<>();
+            for (final String line : lore) {
+                this.lore.add(Component.text(line));
+            }
         }
         return this;
     }

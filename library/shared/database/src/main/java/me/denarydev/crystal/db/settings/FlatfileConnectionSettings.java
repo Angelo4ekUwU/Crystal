@@ -7,6 +7,7 @@
  */
 package me.denarydev.crystal.db.settings;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
@@ -18,6 +19,7 @@ import java.nio.file.Path;
  * @author DenaryDev
  * @since 0:58 24.11.2023
  */
+@ApiStatus.AvailableSince("2.1.0")
 public non-sealed interface FlatfileConnectionSettings extends ConnectionSettings {
 
     /**

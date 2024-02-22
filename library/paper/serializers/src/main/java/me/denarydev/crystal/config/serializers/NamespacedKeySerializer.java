@@ -8,6 +8,7 @@
 package me.denarydev.crystal.config.serializers;
 
 import org.bukkit.NamespacedKey;
+import org.jetbrains.annotations.ApiStatus;
 import org.spongepowered.configurate.serialize.ScalarSerializer;
 import org.spongepowered.configurate.serialize.SerializationException;
 
@@ -18,6 +19,7 @@ import java.util.function.Predicate;
  * @author DenaryDev
  * @since 0:00 18.02.2024
  */
+@ApiStatus.AvailableSince("2.1.1")
 public class NamespacedKeySerializer extends ScalarSerializer<NamespacedKey> {
     public NamespacedKeySerializer() {
         super(NamespacedKey.class);

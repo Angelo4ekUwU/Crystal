@@ -21,6 +21,7 @@ import java.sql.SQLException;
  * @since 16:40 23.11.2023
  */
 @ApiStatus.Internal
+@ApiStatus.AvailableSince("2.1.0")
 public sealed abstract class FlatfileConnectionFactory implements ConnectionFactory permits H2ConnectionFactory, SQLiteConnectionFactory {
     private final Path file;
     private NonClosableConnection connection;

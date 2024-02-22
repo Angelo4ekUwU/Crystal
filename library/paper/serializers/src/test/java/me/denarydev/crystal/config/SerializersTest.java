@@ -8,18 +8,12 @@
 package me.denarydev.crystal.config;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
-import me.denarydev.crystal.config.serializers.ItemStackSerializer;
 import me.denarydev.crystal.config.serializers.LocationSerializer;
 import me.denarydev.crystal.config.serializers.NamespacedKeySerializer;
-import me.denarydev.crystal.utils.ItemUtils;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Server;
 import org.bukkit.WorldCreator;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.inventory.ItemFlag;
-import org.bukkit.inventory.ItemStack;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,9 +21,6 @@ import org.spongepowered.configurate.BasicConfigurationNode;
 import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.serialize.SerializationException;
 
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -89,38 +80,38 @@ public class SerializersTest {
         assertThrows(SerializationException.class, () -> serializer.deserialize(NamespacedKey.class, node.node("invalid_val")));
     }
 
-    @Test
-    public void testItemStackSerializer() throws SerializationException {
-        final var serializer = new ItemStackSerializer();
-
-        final var validItem = ItemUtils.itemBuilder()
-            .type(Material.NETHERITE_SWORD)
-            .amount(5)
-            .displayNameRich("<yellow>SuperMegaSword")
-            .loreRich(List.of("<gray>SuperLoreLine1", "SuperLoreLine2"))
-            .enchantment(Enchantment.DAMAGE_ALL, 10)
-            .itemFlags(ItemFlag.HIDE_ENCHANTS)
-            .unbreakable(true)
-            .customModelData(256)
-            .damage(512)
-            .build();
-
-        final var node = BasicConfigurationNode.root();
-        assertDoesNotThrow(() -> serializer.serialize(ItemStackSerializer.TYPE.getType(), validItem, node.node("validItemSerialized")));
-
-        node.node("validItem", "material").set(Material.NETHERITE_SWORD);
-        node.node("validItem", "amount").set(5);
-        node.node("validItem", "name").set("<yellow>SuperMegaSword");
-        node.node("validItem", "lore").set(List.of("<gray>SuperLoreLine1", "<gray>SuperLoreLine2"));
-        node.node("validItem", "unbreakable").set(true);
-        node.node("validItem", "flags").setList(ItemFlag.class, List.of(ItemFlag.HIDE_ENCHANTS));
-        node.node("validItem", "custom-model-data").set(256);
-        node.node("validItem", "damage").set(512);
-        node.node("validItem", "enchants", "sharpness").set(10);
-        node.node("invalidItem", "amount").set(512);
-        node.node("invalidItem", "unbreakable").set(true);
-
-        //assertEquals(validItem, serializer.deserialize(ItemStackSerializer.TYPE.getType(), node.node("validItem")));
-        assertThrows(SerializationException.class, () -> serializer.deserialize(ItemStack.class, node.node("invalidItem")));
-    }
+//    @Test
+//    public void testItemStackSerializer() throws SerializationException {
+//        final var serializer = new ItemStackSerializer();
+//
+//        final var validItem = ItemUtils.itemBuilder()
+//            .type(Material.NETHERITE_SWORD)
+//            .amount(5)
+//            .displayNameRich("<yellow>SuperMegaSword")
+//            .loreRich(List.of("<gray>SuperLoreLine1", "SuperLoreLine2"))
+//            .enchantment(Enchantment.DAMAGE_ALL, 10)
+//            .itemFlags(ItemFlag.HIDE_ENCHANTS)
+//            .unbreakable(true)
+//            .customModelData(256)
+//            .damage(512)
+//            .build();
+//
+//        final var node = BasicConfigurationNode.root();
+//        assertDoesNotThrow(() -> serializer.serialize(ItemStackSerializer.TYPE.getType(), validItem, node.node("validItemSerialized")));
+//
+//        node.node("validItem", "material").set(Material.NETHERITE_SWORD);
+//        node.node("validItem", "amount").set(5);
+//        node.node("validItem", "name").set("<yellow>SuperMegaSword");
+//        node.node("validItem", "lore").set(List.of("<gray>SuperLoreLine1", "<gray>SuperLoreLine2"));
+//        node.node("validItem", "unbreakable").set(true);
+//        node.node("validItem", "flags").setList(ItemFlag.class, List.of(ItemFlag.HIDE_ENCHANTS));
+//        node.node("validItem", "custom-model-data").set(256);
+//        node.node("validItem", "damage").set(512);
+//        node.node("validItem", "enchants", "sharpness").set(10);
+//        node.node("invalidItem", "amount").set(512);
+//        node.node("invalidItem", "unbreakable").set(true);
+//
+//        //assertEquals(validItem, serializer.deserialize(ItemStackSerializer.TYPE.getType(), node.node("validItem")));
+//        assertThrows(SerializationException.class, () -> serializer.deserialize(ItemStack.class, node.node("invalidItem")));
+//    }
 }

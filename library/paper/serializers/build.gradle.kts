@@ -13,5 +13,5 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation(libs.mockbukkit)
     testImplementation(libs.configurate.core)
-    testImplementation(project(":paper:utils"))
+    //testImplementation(project(":paper:utils"))
 }

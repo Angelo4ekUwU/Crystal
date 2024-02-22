@@ -16,12 +16,14 @@ import me.denarydev.crystal.db.connection.hikari.PostgresConnectionFactory;
 import me.denarydev.crystal.db.settings.ConnectionSettings;
 import me.denarydev.crystal.db.settings.FlatfileConnectionSettings;
 import me.denarydev.crystal.db.settings.HikariConnectionSettings;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * @author DenaryDev
  * @since 2:23 23.12.2023
  */
+@ApiStatus.AvailableSince("2.1.0")
 public final class DatabaseManager {
     private ConnectionSettings settings;
     private ConnectionFactory connectionFactory;

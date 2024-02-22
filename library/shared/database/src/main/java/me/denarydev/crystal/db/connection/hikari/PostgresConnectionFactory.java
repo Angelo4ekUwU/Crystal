@@ -20,6 +20,7 @@ import java.util.function.Function;
  * @since 0:50 24.11.2023
  */
 @ApiStatus.Internal
+@ApiStatus.AvailableSince("2.1.0")
 public final class PostgresConnectionFactory extends DriverBasedHikariConnectionFactory {
     public PostgresConnectionFactory(HikariConnectionSettings settings) {
         super(settings);

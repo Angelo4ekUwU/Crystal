@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
  * @since 16:48 23.11.2023
  */
 @ApiStatus.Internal
+@ApiStatus.AvailableSince("2.1.0")
 public abstract sealed class HikariConnectionFactory implements ConnectionFactory permits DriverBasedHikariConnectionFactory {
     private final HikariConnectionSettings settings;
     private HikariDataSource hikari;

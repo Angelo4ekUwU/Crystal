@@ -7,6 +7,7 @@
  */
 package me.denarydev.crystal.db.settings;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,6 +18,7 @@ import java.util.Map;
  * @author DenaryDev
  * @since 0:58 24.11.2023
  */
+@ApiStatus.AvailableSince("2.1.0")
 public non-sealed interface HikariConnectionSettings extends ConnectionSettings {
 
     /**

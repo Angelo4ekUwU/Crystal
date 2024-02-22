@@ -20,6 +20,7 @@ import java.util.function.Function;
  * @since 0:09 24.11.2023
  */
 @ApiStatus.Internal
+@ApiStatus.AvailableSince("2.1.0")
 public final class MySqlConnectionFactory extends DriverBasedHikariConnectionFactory {
     public MySqlConnectionFactory(HikariConnectionSettings settings) {
         super(settings);

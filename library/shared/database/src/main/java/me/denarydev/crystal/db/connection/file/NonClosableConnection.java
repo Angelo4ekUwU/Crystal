@@ -32,6 +32,7 @@ import java.util.concurrent.Executor;
  * A wrapper around a {@link Connection} which blocks usage of the default {@link #close()} method.
  */
 @ApiStatus.Internal
+@ApiStatus.AvailableSince("2.1.0")
 public class NonClosableConnection implements Connection {
     private final Connection delegate;
 

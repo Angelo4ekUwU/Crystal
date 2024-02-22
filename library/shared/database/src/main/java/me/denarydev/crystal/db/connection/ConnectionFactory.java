@@ -10,12 +10,14 @@ package me.denarydev.crystal.db.connection;
 import me.denarydev.crystal.db.DatabaseType;
 import me.denarydev.crystal.db.connection.file.FlatfileConnectionFactory;
 import me.denarydev.crystal.db.connection.hikari.HikariConnectionFactory;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.function.Function;
 
+@ApiStatus.AvailableSince("2.1.0")
 public sealed interface ConnectionFactory permits FlatfileConnectionFactory, HikariConnectionFactory {
 
     /**

@@ -23,6 +23,7 @@ import java.util.function.Function;
  * @since 16:46 23.11.2023
  */
 @ApiStatus.Internal
+@ApiStatus.AvailableSince("2.1.0")
 public final class SQLiteConnectionFactory extends FlatfileConnectionFactory {
     private Constructor<?> connectionConstructor;
 

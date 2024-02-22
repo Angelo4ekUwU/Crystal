@@ -8,6 +8,7 @@
 package me.denarydev.crystal.db.settings;
 
 import me.denarydev.crystal.db.DatabaseType;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
@@ -15,6 +16,7 @@ import org.slf4j.Logger;
  * @author DenaryDev
  * @since 0:58 24.11.2023
  */
+@ApiStatus.AvailableSince("2.1.0")
 public sealed interface ConnectionSettings permits FlatfileConnectionSettings, HikariConnectionSettings {
 
     /**

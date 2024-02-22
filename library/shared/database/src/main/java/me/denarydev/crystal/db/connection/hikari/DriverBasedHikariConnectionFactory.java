@@ -21,6 +21,7 @@ import java.util.Enumeration;
  * @since 0:38 24.11.2023
  */
 @ApiStatus.Internal
+@ApiStatus.AvailableSince("2.1.0")
 public abstract sealed class DriverBasedHikariConnectionFactory extends HikariConnectionFactory permits MySqlConnectionFactory, MariaDBConnectionFactory, PostgresConnectionFactory {
     protected DriverBasedHikariConnectionFactory(HikariConnectionSettings settings) {
         super(settings);

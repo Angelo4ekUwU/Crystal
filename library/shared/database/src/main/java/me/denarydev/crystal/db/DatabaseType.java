@@ -7,6 +7,9 @@
  */
 package me.denarydev.crystal.db;
 
+import org.jetbrains.annotations.ApiStatus;
+
+@ApiStatus.AvailableSince("2.1.0")
 public enum DatabaseType {
     SQLITE("SQLite", false),
     H2("H2", false),

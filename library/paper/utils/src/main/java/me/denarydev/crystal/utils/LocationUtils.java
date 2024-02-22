@@ -8,12 +8,14 @@
 package me.denarydev.crystal.utils;
 
 import org.bukkit.Location;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * @author DenaryDev
  * @since 13:56 25.11.2023
  */
+@ApiStatus.AvailableSince("2.1.0")
 public final class LocationUtils {
 
     public static boolean inArea(@NotNull final Location loc, @NotNull final Location pos1, @NotNull final Location pos2) {

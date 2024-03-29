@@ -22,7 +22,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionType;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -56,6 +58,7 @@ public class ItemBuilder {
     private boolean unbreakable;
     private Integer customModelData;
     private int damage;
+    private PotionType potionType;
     private final Map<Enchantment, Integer> enchantments = new HashMap<>();
     private final Map<PotionEffect, Boolean> potionEffects = new HashMap<>();
     private final Map<Enchantment, Integer> storedEnchantments = new HashMap<>();
@@ -347,6 +350,20 @@ public class ItemBuilder {
     //region Методы добавления эффектов к зельям
 
     /**
+     * Устанавливает тип зелья.
+     * <p>
+     * Работает только если тип предмета {@link Material#POTION},
+     * {@link Material#SPLASH_POTION} или {@link Material#LINGERING_POTION}.
+     *
+     * @param type тип зелья.
+     * @return {@link ItemBuilder} для дальнейшего использования.
+     */
+    public ItemBuilder potionType(@NotNull final PotionType type) {
+        this.potionType = type;
+        return this;
+    }
+
+    /**
      * Добавляет эффекты зелий к предмету.
      * <p>
      * Эффект не применится, если уже есть эффект такого же типа.
@@ -521,8 +538,9 @@ public class ItemBuilder {
             });
         }
 
-        if (!potionEffects.isEmpty() && meta instanceof PotionMeta potion) {
-            potionEffects.forEach(potion::addCustomEffect);
+        if (meta instanceof PotionMeta potion) {
+            if (potionType != null) potion.setBasePotionData(new PotionData(potionType));
+            if (!potionEffects.isEmpty()) potionEffects.forEach(potion::addCustomEffect);
         }
 
         if (!storedEnchantments.isEmpty() && meta instanceof EnchantmentStorageMeta storage) {

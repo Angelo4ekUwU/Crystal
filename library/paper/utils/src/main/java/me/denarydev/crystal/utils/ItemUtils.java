@@ -18,6 +18,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Base64;
 import java.util.UUID;
 
+/**
+ * Утилиты для работы с предметами.
+ */
 public final class ItemUtils {
 
     /**

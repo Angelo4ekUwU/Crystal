@@ -9,8 +9,18 @@ package me.denarydev.crystal.utils;
 
 import org.bukkit.entity.Player;
 
+/**
+ * Утилиты для работы с пермишенами.
+ */
 public final class PermissionUtils {
 
+    /**
+     * Получает число из пермишена игрока.
+     *
+     * @param player игрок
+     * @param permission пермишен
+     * @return число из пермишена
+     */
     public static int numberFromPermission(final Player player, final String permission) {
         final var values = player.getEffectivePermissions().stream()
             .filter(info -> info.getPermission().startsWith(permission))

@@ -20,7 +20,7 @@ import java.util.List;
  * @since 13:47 25.11.2023
  */
 @ApiStatus.AvailableSince("2.1.0")
-public class TextUtils {
+public final class TextUtils {
 
     /**
      * Делает первый символ строки заглавным.

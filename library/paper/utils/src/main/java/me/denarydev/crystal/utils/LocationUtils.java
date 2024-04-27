@@ -11,8 +11,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Утилиты для работы с местоположением игрока.

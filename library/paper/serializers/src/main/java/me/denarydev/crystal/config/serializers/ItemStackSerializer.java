@@ -30,7 +30,7 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.UUID;
 
-public class ItemStackSerializer implements TypeSerializer<ItemStack> {
+public final class ItemStackSerializer implements TypeSerializer<ItemStack> {
     public static final TypeToken<ItemStack> TYPE = TypeToken.get(ItemStack.class);
 
     @Override

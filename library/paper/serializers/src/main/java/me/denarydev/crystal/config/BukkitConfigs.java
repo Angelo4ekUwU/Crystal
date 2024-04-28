@@ -10,6 +10,7 @@ package me.denarydev.crystal.config;
 import me.denarydev.crystal.config.serializers.ComponentSerializer;
 import me.denarydev.crystal.config.serializers.ItemStackSerializer;
 import me.denarydev.crystal.config.serializers.LocationSerializer;
+import me.denarydev.crystal.config.serializers.MaterialSerializer;
 import me.denarydev.crystal.config.serializers.NamespacedKeySerializer;
 import org.spongepowered.configurate.serialize.TypeSerializerCollection;
 
@@ -27,6 +28,7 @@ public final class BukkitConfigs {
             .register(LocationSerializer.TYPE, new LocationSerializer())
             .register(new ComponentSerializer())
             .register(new NamespacedKeySerializer())
+            .register(new MaterialSerializer())
             .build();
     }
 }

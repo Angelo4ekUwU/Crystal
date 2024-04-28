@@ -28,7 +28,7 @@ public final class ItemUtils {
      * создавать {@link ItemStack} с нужными параметрами.
      * <p>
      * <b><u>Будет удалено в 2.3.0</u></b>
-     * 
+     *
      * @deprecated используйте {@link ItemBuilder#empty()} или {@link ItemBuilder#fromStack(ItemStack)}
      */
     @Deprecated(forRemoval = true)

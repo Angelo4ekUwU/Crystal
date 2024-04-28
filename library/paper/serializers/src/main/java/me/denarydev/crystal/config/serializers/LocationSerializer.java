@@ -17,8 +17,7 @@ import org.spongepowered.configurate.serialize.TypeSerializer;
 
 import java.lang.reflect.Type;
 
-public class LocationSerializer implements TypeSerializer<Location> {
-
+public final class LocationSerializer implements TypeSerializer<Location> {
     public static final TypeToken<Location> TYPE = TypeToken.get(Location.class);
 
     @Override

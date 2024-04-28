@@ -3,6 +3,13 @@ plugins {
     `maven-publish`
     id("com.github.johnrengelman.shadow")
     id("crystal.formatting")
+    id("org.gradlex.extra-java-module-info")
+}
+
+extraJavaModuleInfo {
+    failOnMissingModuleInfo.set(false)
+    automaticModule("io.leangen.geantyref:geantyref", "io.leangen.geantyref")
+    automaticModule("com.mysql:mysql-connector-j", "com.mysql")
 }
 
 tasks {

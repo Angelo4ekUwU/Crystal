@@ -10,6 +10,7 @@ module crystal.paper.utils {
     requires org.jetbrains.annotations;
     requires net.kyori.adventure;
     requires net.kyori.adventure.text.minimessage;
+    requires net.kyori.examination.api;
 
     exports me.denarydev.crystal.utils;
     exports me.denarydev.crystal.utils.item;

@@ -11,7 +11,8 @@ module crystal.paper.serializers {
     requires org.jetbrains.annotations;
     requires net.kyori.adventure.text.minimessage;
     requires net.kyori.adventure;
-    requires geantyref;
+    requires net.kyori.examination.api;
+    requires io.leangen.geantyref;
 
     exports me.denarydev.crystal.config;
     exports me.denarydev.crystal.config.serializers;

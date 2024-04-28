@@ -12,7 +12,9 @@ module crystal.shared.database {
     requires org.xerial.sqlitejdbc;
     requires com.h2database;
     requires com.zaxxer.hikari;
+    requires com.mysql;
     requires org.mariadb.jdbc;
+    requires org.postgresql.jdbc;
 
     exports me.denarydev.crystal.db;
     exports me.denarydev.crystal.db.settings;

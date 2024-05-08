@@ -13,6 +13,10 @@ extraJavaModuleInfo {
 }
 
 tasks {
+    assemble {
+        dependsOn(spotlessCheck)
+    }
+
     withType<AbstractPublishToMaven> {
         dependsOn(jar)
     }
@@ -48,7 +52,10 @@ tasks {
 }
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+        vendor = JvmVendorSpec.AMAZON
+    }
 }
 
 val env: Map<String, String> = System.getenv()

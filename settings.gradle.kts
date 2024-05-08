@@ -2,10 +2,15 @@
 
 import java.nio.file.Files
 
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
+}
+
 dependencyResolutionManagement {
     repositories {
         mavenCentral()
-        maven("https://papermc.io/repo/repository/maven-public/")
+        maven("https://papermc.io/repo/repository/maven-public/") { name = "PaperMC" }
+        maven("https://repo.activmine.ru/public") { name = "ActivMine" }
     }
 }
 

@@ -49,8 +49,8 @@ val repo = if (rootProject.version.toString().endsWith("-SNAPSHOT")) "snapshots"
 
 publishing {
     repositories {
-        maven("https://the-planet.fun/repo/$repo/") {
-            name = "theplanet"
+        maven("https://repo.activmine.ru/$repo/") {
+            name = "activmine"
             credentials(PasswordCredentials::class)
         }
     }

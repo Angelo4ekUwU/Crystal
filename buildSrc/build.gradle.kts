@@ -14,8 +14,22 @@ dependencies {
     implementation("gradle.plugin.org.cadixdev.gradle:licenser:0.6.1")
 }
 
-tasks.withType<KotlinCompile>().configureEach {
-    kotlinOptions {
-        jvmTarget = "17"
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+}
+
+kotlin {
+    jvmToolchain(17)
+}
+
+tasks {
+    withType<JavaCompile>().configureEach {
+        options.release.set(17)
+    }
+
+    withType<KotlinCompile>().configureEach {
+        kotlinOptions {
+            jvmTarget = "17"
+        }
     }
 }

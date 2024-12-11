@@ -1,7 +1,7 @@
 plugins {
     `java-library`
     `maven-publish`
-    id("com.github.johnrengelman.shadow")
+    id("com.gradleup.shadow")
     id("crystal.formatting")
     id("org.gradlex.extra-java-module-info")
 }
@@ -58,7 +58,6 @@ java {
     }
 }
 
-val env: Map<String, String> = System.getenv()
 val repo = if (rootProject.version.toString().endsWith("-SNAPSHOT")) "snapshots" else "releases"
 
 publishing {

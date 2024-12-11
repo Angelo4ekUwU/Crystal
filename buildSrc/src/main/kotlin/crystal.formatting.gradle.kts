@@ -5,10 +5,12 @@ plugins {
     id("com.diffplug.spotless")
 }
 
-license.include("**/me/denarydev/crystal/**")
+license {
+    include("**/me/denarydev/crystal/**")
 
-license.header(rootProject.file("HEADER"))
-license.newLine(false)
+    header(rootProject.file("HEADER"))
+    newLine(false)
+}
 
 spotless {
     java {

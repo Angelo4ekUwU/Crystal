@@ -12,7 +12,7 @@ java {
 }
 
 afterEvaluate {
-    group = "me.denarydev.crystal"
+    group = "${rootProject.group}.crystal"
 
     subprojects.forEach {
         it.plugins.apply("crystal.module")

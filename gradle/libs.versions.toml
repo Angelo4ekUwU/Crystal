@@ -6,21 +6,21 @@ paper = "1.18.2-R0.1-SNAPSHOT"
 configurate = "4.1.2"
 
 # SQL
-hikari = "5.1.0"
+hikari = "6.2.1"
 ## Local
-sqlite = "3.44.0.0"
-h2 = "2.2.224"
+sqlite = "3.47.1.0"
+h2 = "2.3.232"
 ## Remote
-mysql = "8.2.0"
-mariadb = "3.3.1"
-postgresql = "42.7.1"
+mysql = "9.1.0"
+mariadb = "3.5.1"
+postgresql = "42.7.4"
 
 # Shared
-slf4j = "2.0.9"
-annotations = "24.1.0"
+slf4j = "2.0.16"
+annotations = "26.0.1"
 
 # Tests
-junit-bom = "5.10.1"
+junit-bom = "5.11.3"
 mockbukkit = "2.85.2"
 
 [libraries]

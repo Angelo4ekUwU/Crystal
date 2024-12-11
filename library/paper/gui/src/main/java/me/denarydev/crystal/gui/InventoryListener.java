@@ -18,8 +18,11 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.WeakHashMap;
 
+/**
+ * Вы должны зарегистрировать этот слушатель в методе onEnable() вашего плагина.
+ * @see org.bukkit.plugin.PluginManager#registerEvents
+ */
 public final class InventoryListener implements Listener {
-
     private final Map<UUID, Long> activeCooldowns = new WeakHashMap<>();
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -43,7 +46,7 @@ public final class InventoryListener implements Listener {
             final UUID uuid = player.getUniqueId();
             final Long cooldownUntil = activeCooldowns.get(uuid);
             final long now = System.currentTimeMillis();
-            final long cooldown = menu.clickCooldown();
+            final long cooldown = menu.template().cooldown();
 
             if (cooldown > 0) {
                 if (cooldownUntil != null && cooldownUntil > now) {
@@ -58,9 +61,9 @@ public final class InventoryListener implements Listener {
     }
 
     @EventHandler
-    public void onInvClose(InventoryCloseEvent event) {
-        if (event.getInventory().getHolder() instanceof final Menu menu && event.getPlayer() instanceof Player) {
-            menu.closeInternal(event);
+    public void onInventoryClose(InventoryCloseEvent event) {
+        if (event.getInventory().getHolder() instanceof final Menu Menu && event.getPlayer() instanceof Player) {
+            Menu.closeInternal(event);
         }
     }
 }

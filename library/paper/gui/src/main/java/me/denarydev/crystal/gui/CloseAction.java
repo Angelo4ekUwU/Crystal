@@ -11,5 +11,5 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 
 @FunctionalInterface
 public interface CloseAction {
-    void close(InventoryCloseEvent event);
+    void close(final InventoryCloseEvent event);
 }

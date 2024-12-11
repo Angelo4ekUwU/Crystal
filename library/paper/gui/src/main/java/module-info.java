@@ -11,6 +11,7 @@ module crystal.paper.gui {
     requires net.kyori.adventure;
     requires net.kyori.adventure.text.minimessage;
     requires net.kyori.adventure.text.serializer.plain;
+    requires com.google.common;
 
     exports me.denarydev.crystal.gui;
 }

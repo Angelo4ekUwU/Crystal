@@ -92,7 +92,7 @@ public final class ItemStackSerializer implements TypeSerializer<ItemStack> {
             return head;
 
         final var skullMeta = (SkullMeta) head.getItemMeta();
-        final var profile = Bukkit.createProfile(UUID.nameUUIDFromBytes(texture.getBytes()), "CrystalCustomHead");
+        final var profile = Bukkit.createProfile(UUID.nameUUIDFromBytes(texture.getBytes()), "CustomHead");
 
         if (texture.endsWith("=")) {
             profile.setProperty(new ProfileProperty("textures", texture.replaceAll("=", "")));
